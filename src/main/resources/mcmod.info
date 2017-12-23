@@ -1,0 +1,14 @@
+[{
+  "modid": "consecration",
+  "name": "Consecration",
+  "description": "Makes the undead unkillable except through fire and holy damage",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["C4"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}]
