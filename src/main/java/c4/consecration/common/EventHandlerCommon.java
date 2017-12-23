@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 <C4>
+ *
+ * This Java class is distributed as a part of Consecration.
+ * Consecration is open source and licensed under the GNU General Public License v3.
+ * A copy of the license can be found here: https://www.gnu.org/licenses/gpl.txt
+ */
+
 package c4.consecration.common;
 
 import c4.consecration.common.potions.ModPotions;
@@ -11,10 +19,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.utils.TagUtil;
 import slimeknights.tconstruct.library.utils.TinkerUtil;
-import slimeknights.tconstruct.library.utils.ToolHelper;
 import slimeknights.tconstruct.tools.TinkerTools;
 import slimeknights.tconstruct.tools.TinkerTraits;
-import slimeknights.tconstruct.tools.traits.TraitHoly;
 
 public class EventHandlerCommon {
 
