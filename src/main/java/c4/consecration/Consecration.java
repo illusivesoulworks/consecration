@@ -29,7 +29,7 @@ public class Consecration {
 
     public static final String MODID = "consecration";
     public static final String MODNAME = "Consecration";
-    public static final String MODVER = "0.0.2";
+    public static final String MODVER = "0.0.3";
 
     @SidedProxy(clientSide = "c4.consecration.proxy.ClientProxy", serverSide = "c4.consecration.proxy.CommonProxy")
     public static CommonProxy proxy;

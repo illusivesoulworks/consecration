@@ -9,19 +9,23 @@
 package c4.consecration.common;
 
 import c4.consecration.Consecration;
-import c4.consecration.common.potions.ModPotions;
+import c4.consecration.init.ModPotions;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.monster.EntityZombieVillager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemTool;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.fml.common.Loader;
@@ -29,19 +33,19 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.Level;
 import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.library.tinkering.TinkersItem;
 import slimeknights.tconstruct.library.utils.TagUtil;
 import slimeknights.tconstruct.library.utils.TinkerUtil;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.tools.TinkerTools;
 import slimeknights.tconstruct.tools.TinkerTraits;
+import xreliquary.entities.EntityGlowingWater;
 import xreliquary.entities.EntityHolyHandGrenade;
-import xreliquary.entities.shot.EntityExorcismShot;
-import xreliquary.items.ItemHandgun;
-import xreliquary.util.NBTHelper;
+import xreliquary.items.ItemMercyCross;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -53,7 +57,8 @@ public class EventHandlerCommon {
     @SubscribeEvent
     public void onPlayerAttack(AttackEntityEvent evt) {
 
-        if (Loader.isModLoaded("survivalist")) {
+        //Don't load this feature if survivalist is also loaded
+        if (!Loader.isModLoaded("survivalist")) {
             Entity entity = evt.getTarget();
 
             if (entity.world.isRemote) {
@@ -77,6 +82,26 @@ public class EventHandlerCommon {
     }
 
     @SubscribeEvent
+    public void onThrowable(ProjectileImpactEvent.Throwable evt) {
+
+        if (Loader.isModLoaded("xreliquary") && !evt.getThrowable().world.isRemote) {
+
+            EntityThrowable entityThrowable = evt.getThrowable();
+
+            if (entityThrowable instanceof EntityGlowingWater) {
+
+                AxisAlignedBB bb = entityThrowable.getEntityBoundingBox().grow(4.0D, 2.0D, 4.0D);
+                List<EntityLivingBase> eList = entityThrowable.world.getEntitiesWithinAABB(EntityLivingBase.class, bb);
+                for (EntityLivingBase entity : eList) {
+                    if (entity.isEntityUndead()) {
+                        entity.addPotionEffect(new PotionEffect(ModPotions.SMITE_POTION, 2, 0, false, false));
+                    }
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
     public void onUndeath(LivingDeathEvent evt) {
 
         if (!evt.getEntityLiving().getEntityWorld().isRemote) {
@@ -85,30 +110,31 @@ public class EventHandlerCommon {
 
                 EntityLivingBase entity = evt.getEntityLiving();
 
-                if (!evt.getSource().damageType.equals(ModPotions.HOLY_DAMAGE.damageType) && !isNonApplicableDamage(evt.getSource())) {
+                if (entity.isPotionActive(ModPotions.SMITE_POTION)) {
+                    return;
+                }
+
+                if (!evt.getSource().damageType.equals(ModPotions.HOLY_DAMAGE.damageType) && !isNaturalDamage(evt.getSource())) {
+
+                    Entity immediateSource = evt.getSource().getImmediateSource();
 
                     //Fire damage will still kill undead if they're not immune to fire
                     if (!entity.isImmuneToFire() && evt.getSource().isFireDamage()) {
                         return;
                     }
 
-                    //Smite will still work also
+                    //Iron Golems are still capable of defending villages from the undead
+                    if (immediateSource instanceof EntityIronGolem) {
+                        return;
+                    }
+
                     boolean smite = false;
-                    if (evt.getSource().getImmediateSource() instanceof EntityLivingBase) {
-                        EntityLivingBase source = (EntityLivingBase) evt.getSource().getImmediateSource();
-                        if (EnchantmentHelper.getModifierForCreature(source.getHeldItemMainhand(), entity.getCreatureAttribute()) > 0) {
-                            smite = true;
-                        } else if (Loader.isModLoaded("tconstruct")) {
-                            if (TConstruct.pulseManager.isPulseLoaded(TinkerTools.PulseId)) {
-                                if (TinkerUtil.hasTrait(TagUtil.getTagSafe(source.getHeldItemMainhand()), TinkerTraits.holy.getIdentifier())) {
-                                    smite = true;
-                                } else if (TinkerUtil.hasModifier(TagUtil.getTagSafe(source.getHeldItemMainhand()), TinkerModifiers.modSmite.getIdentifier())) {
-                                    smite = true;
-                                }
-                            }
-                        }
-                    } else if (Loader.isModLoaded("xreliquary")) {
-                        if (evt.getSource().getImmediateSource() instanceof EntityHolyHandGrenade) {
+
+                    //Smite will still work also
+                    if (immediateSource instanceof EntityLivingBase) {
+                        smite = isSmiteWeapon(((EntityLivingBase) immediateSource).getHeldItemMainhand(), evt.getEntityLiving());
+                    } else if (Loader.isModLoaded("xreliquary") ) {
+                        if (immediateSource instanceof EntityHolyHandGrenade) {
                             smite = true;
                         }
                     }
@@ -117,18 +143,14 @@ public class EventHandlerCommon {
                         return;
                     }
 
-                    evt.setCanceled(true);
-                    entity.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, 1200, 2));
-                    entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 1200, 2));
-                    entity.setHealth(1);
+                    cancelUndeath(evt);
+
                 } else if (entity instanceof EntityZombieVillager) {
+
                     EntityZombieVillager zombievillager = (EntityZombieVillager) entity;
 
                     if (zombievillager.isConverting()) {
-                        evt.setCanceled(true);
-                        entity.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, 1200, 2));
-                        entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 1200, 2));
-                        entity.setHealth(1);
+                        cancelUndeath(evt);
                         return;
                     }
 
@@ -147,7 +169,63 @@ public class EventHandlerCommon {
         }
     }
 
-    private static boolean isNonApplicableDamage(DamageSource source) {
+    private static void cancelUndeath(LivingDeathEvent evt) {
+
+        EntityLivingBase entity = evt.getEntityLiving();
+        evt.setCanceled(true);
+        entity.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, 1200, 2));
+        entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 1200, 2));
+        entity.setHealth(1);
+    }
+
+    private static boolean isSmiteWeapon(ItemStack stack, EntityLivingBase target) {
+
+        //Smite enchantment
+        if (EnchantmentHelper.getModifierForCreature(stack, target.getCreatureAttribute()) > 0) {
+            return true;
+        }
+
+        //Silver tools/weapons
+        if (stack.getItem() instanceof ItemTool && isSilverTool((ItemTool) stack.getItem())) {
+            return true;
+        }
+
+        //Silver TiCon tools/weapons
+        if (Loader.isModLoaded("tconstruct") && stack.getItem() instanceof TinkersItem) {
+            if (TConstruct.pulseManager.isPulseLoaded(TinkerTools.PulseId)) {
+                if (TinkerUtil.hasTrait(TagUtil.getTagSafe(stack), TinkerTraits.holy.getIdentifier()) || TinkerUtil.hasModifier(TagUtil.getTagSafe(stack), TinkerModifiers.modSmite.getIdentifier())) {
+                    return true;
+                }
+            }
+        }
+
+        //Cross of Mercy from Reliquary
+        if (Loader.isModLoaded("xreliquary")) {
+            if (stack.getItem() instanceof ItemMercyCross) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean isNaturalDamage(DamageSource source) {
         return source == DamageSource.IN_WALL || source == DamageSource.CRAMMING || source == DamageSource.OUT_OF_WORLD;
+    }
+
+    private static boolean isSilverTool(ItemTool tool) {
+
+        String materialName = tool.getToolMaterialName();
+
+        if (materialName != null) {
+            if (materialName.equalsIgnoreCase("SILVER")) {
+                return true;
+            }
+            int colonIndex = materialName.lastIndexOf(":");
+            if (colonIndex >= 0 && colonIndex < materialName.length()) {
+                return materialName.substring(colonIndex).equalsIgnoreCase("SILVER");
+            }
+        }
+        return false;
     }
 }

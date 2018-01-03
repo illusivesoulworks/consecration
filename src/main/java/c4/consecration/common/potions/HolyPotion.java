@@ -8,6 +8,7 @@
 
 package c4.consecration.common.potions;
 
+import c4.consecration.init.ModPotions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.MobEffects;
