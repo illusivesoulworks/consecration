@@ -43,7 +43,7 @@ public class ItemFireStick extends Item {
     {
         if (!player.world.isRemote && !entity.isImmuneToFire()) {
             stack.damageItem(1, player);
-            entity.setFire(4);
+            entity.setFire(2);
         }
         return false;
     }
