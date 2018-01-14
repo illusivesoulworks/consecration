@@ -1,0 +1,21 @@
+{
+  "result": {
+    "item": "consecration:fire_stick"
+  },
+  "pattern": [
+    " c ",
+    "csc",
+    "sc "
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "c": {
+      "item": "minecraft:coal",
+      "data": 32767
+    },
+    "s": {
+      "type": "forge:ore_dict",
+      "ore": "stickWood"
+    }
+  }
+}

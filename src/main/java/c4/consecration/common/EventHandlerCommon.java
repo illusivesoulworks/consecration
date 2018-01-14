@@ -8,46 +8,66 @@
 
 package c4.consecration.common;
 
+import blusunrize.immersiveengineering.api.Lib;
 import c4.consecration.Consecration;
+import c4.consecration.init.ModItems;
 import c4.consecration.init.ModPotions;
+import com.google.common.base.Predicate;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityIronGolem;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.monster.EntityZombieVillager;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemTool;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.*;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.Level;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.tinkering.TinkersItem;
 import slimeknights.tconstruct.library.utils.TagUtil;
 import slimeknights.tconstruct.library.utils.TinkerUtil;
+import slimeknights.tconstruct.shared.TinkerCommons;
+import slimeknights.tconstruct.shared.block.BlockSoil;
 import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.tools.TinkerTools;
 import slimeknights.tconstruct.tools.TinkerTraits;
+import tamaized.aov.registry.AoVDamageSource;
 import xreliquary.entities.EntityGlowingWater;
 import xreliquary.entities.EntityHolyHandGrenade;
 import xreliquary.items.ItemMercyCross;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class EventHandlerCommon {
 
@@ -55,40 +75,44 @@ public class EventHandlerCommon {
     private static final Method START_CONVERTING = ReflectionHelper.findMethod(EntityZombieVillager.class, "startConverting", "func_191991_a", UUID.class, Integer.TYPE);
 
     @SubscribeEvent
-    public void onPlayerAttack(AttackEntityEvent evt) {
-
-        //Don't load this feature if survivalist is also loaded
-        if (!Loader.isModLoaded("survivalist")) {
-            Entity entity = evt.getTarget();
-
-            if (entity.world.isRemote) {
-                return;
-            }
-
-            if (!entity.isImmuneToFire() && entity instanceof EntityLivingBase) {
-                EntityPlayer player = evt.getEntityPlayer();
-                ItemStack stack = player.getHeldItemMainhand();
-                if (stack.getItem() instanceof ItemBlock) {
-                    ItemBlock itemblock = (ItemBlock) stack.getItem();
-                    if (itemblock.getBlock() == Blocks.TORCH) {
-                        entity.setFire(2);
-                        if (rand.nextFloat() < 0.25F && !player.isCreative()) {
-                            stack.shrink(1);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @SubscribeEvent
     public void onThrowable(ProjectileImpactEvent.Throwable evt) {
 
-        if (Loader.isModLoaded("xreliquary") && !evt.getThrowable().world.isRemote) {
+        if (!evt.getThrowable().world.isRemote) {
 
             EntityThrowable entityThrowable = evt.getThrowable();
 
-            if (entityThrowable instanceof EntityGlowingWater) {
+            if (entityThrowable instanceof EntityPotion) {
+                ItemStack stack = ((EntityPotion) entityThrowable).getPotion();
+                List<PotionEffect> list = PotionUtils.getEffectsFromStack(stack);
+                boolean holyPotion = false;
+                if (list.isEmpty()) {
+                    return;
+                } else {
+                    for (PotionEffect effect : list) {
+                        if (effect.getPotion() == ModPotions.HOLY_POTION) {
+                            holyPotion = true;
+                            break;
+                        }
+                    }
+                }
+                if (!holyPotion) {
+                    return;
+                }
+
+                AxisAlignedBB axisalignedbb = entityThrowable.getEntityBoundingBox().grow(4.0D, 2.0D, 4.0D);
+                List<EntityItem> items = entityThrowable.world.getEntitiesWithinAABB(EntityItem.class, axisalignedbb,
+                        (apply) -> apply.getItem().getItem() == Items.GLOWSTONE_DUST);
+
+                if (items.isEmpty()) {
+                    return;
+                }
+
+                for (EntityItem item : items) {
+                    EntityItem newItem = new EntityItem(item.world, item.posX, item.posY, item.posZ, new ItemStack(ModItems.blessedDust, item.getItem().getCount()));
+                    item.world.spawnEntity(newItem);
+                    item.setDead();
+                }
+            } else if (Loader.isModLoaded("xreliquary") && entityThrowable instanceof EntityGlowingWater) {
 
                 AxisAlignedBB bb = entityThrowable.getEntityBoundingBox().grow(4.0D, 2.0D, 4.0D);
                 List<EntityLivingBase> eList = entityThrowable.world.getEntitiesWithinAABB(EntityLivingBase.class, bb);
@@ -101,7 +125,7 @@ public class EventHandlerCommon {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent (priority = EventPriority.HIGHEST)
     public void onUndeath(LivingDeathEvent evt) {
 
         if (!evt.getEntityLiving().getEntityWorld().isRemote) {
@@ -114,7 +138,18 @@ public class EventHandlerCommon {
                     return;
                 }
 
-                if (!evt.getSource().damageType.equals(ModPotions.HOLY_DAMAGE.damageType) && !isNaturalDamage(evt.getSource())) {
+                //Consecrated Soil compatibility
+                if (Loader.isModLoaded("tconstruct")) {
+                    BlockPos standingOn = entity.getPosition().down();
+                    IBlockState state = entity.world.getBlockState(standingOn);
+                    if (state.getBlock() == TinkerCommons.blockSoil) {
+                        if (state.getValue(BlockSoil.TYPE) == BlockSoil.SoilTypes.CONSECRATED) {
+                            return;
+                        }
+                    }
+                }
+
+                if (!isHolyDamage(evt.getSource()) && !isNaturalDamage(evt.getSource())) {
 
                     Entity immediateSource = evt.getSource().getImmediateSource();
 
@@ -178,6 +213,18 @@ public class EventHandlerCommon {
         entity.setHealth(1);
     }
 
+    private static boolean isHolyDamage(DamageSource source) {
+        String damageType = source.getDamageType();
+        boolean flag = false;
+        if (Loader.isModLoaded("immersiveengineering")) {
+            flag = damageType.equals(Lib.DMG_RevolverSilver);
+        }
+        if (!flag && Loader.isModLoaded("aov")) {
+            flag = source == AoVDamageSource.NIMBUS;
+        }
+        return damageType.equals(ModPotions.HOLY_DAMAGE.damageType) || flag;
+    }
+
     private static boolean isSmiteWeapon(ItemStack stack, EntityLivingBase target) {
 
         //Smite enchantment
@@ -186,7 +233,9 @@ public class EventHandlerCommon {
         }
 
         //Silver tools/weapons
-        if (stack.getItem() instanceof ItemTool && isSilverTool((ItemTool) stack.getItem())) {
+        if (stack.getItem() instanceof ItemTool && isSilverMaterial(((ItemTool) stack.getItem()).getToolMaterialName())) {
+            return true;
+        } else if (stack.getItem() instanceof ItemSword && isSilverMaterial(((ItemSword) stack.getItem()).getToolMaterialName())) {
             return true;
         }
 
@@ -213,9 +262,7 @@ public class EventHandlerCommon {
         return source == DamageSource.IN_WALL || source == DamageSource.CRAMMING || source == DamageSource.OUT_OF_WORLD;
     }
 
-    private static boolean isSilverTool(ItemTool tool) {
-
-        String materialName = tool.getToolMaterialName();
+    private static boolean isSilverMaterial(String materialName) {
 
         if (materialName != null) {
             if (materialName.equalsIgnoreCase("SILVER")) {

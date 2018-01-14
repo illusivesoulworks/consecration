@@ -8,13 +8,16 @@
 
 package c4.consecration.common.potions;
 
+import c4.consecration.Consecration;
 import c4.consecration.init.ModPotions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
+import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nullable;
 
@@ -28,6 +31,21 @@ public class HolyPotion extends Potion {
     public boolean isInstant()
     {
         return true;
+    }
+
+    @Override
+    public boolean isReady(int duration, int amplifier) {
+        return true;
+    }
+
+    @Override
+    public void performEffect(EntityLivingBase entityLivingBaseIn, int amplifier) {
+
+        if (entityLivingBaseIn.isEntityUndead()) {
+
+            entityLivingBaseIn.attackEntityFrom(ModPotions.HOLY_DAMAGE, (float)(8 << amplifier));
+
+        }
     }
 
     @Override

@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "consecration:fire_bomb"
+  },
+  "ingredients": [
+    {
+      "type": "forge:ore_dict",
+      "ore": "gunpowder"
+    },
+    {
+      "item": "minecraft:coal",
+      "data": 32767
+    },
+    {
+      "item": "minecraft:glass_bottle"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "string"
+    }
+  ],
+  "type": "forge:ore_shapeless"
+}

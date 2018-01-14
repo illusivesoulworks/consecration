@@ -8,10 +8,15 @@
 
 package c4.consecration.proxy;
 
+import c4.consecration.common.entities.EntityFireBomb;
+import c4.consecration.init.ModBlocks;
+import c4.consecration.init.ModItems;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 @Mod.EventBusSubscriber(Side.CLIENT)
@@ -30,5 +35,17 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void postInit(FMLPostInitializationEvent evt) {
         super.postInit(evt);
+    }
+
+    @SubscribeEvent
+    public static void registerModels(ModelRegistryEvent evt) {
+
+        ModItems.blessedDust.initModel();
+        ModItems.fireStick.initModel();
+        ModItems.fireBomb.initModel();
+
+        ModBlocks.hallowedGrounds.initModel();
+
+        EntityFireBomb.initModel();
     }
 }
