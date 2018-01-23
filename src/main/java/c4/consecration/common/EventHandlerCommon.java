@@ -8,6 +8,7 @@
 
 package c4.consecration.common;
 
+import api.materials.*;
 import blusunrize.immersiveengineering.api.Lib;
 import c4.consecration.Consecration;
 import c4.consecration.init.ModItems;
@@ -44,12 +45,14 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.Level;
+import slimeknights.mantle.typesafe.config.*;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.tinkering.TinkersItem;
 import slimeknights.tconstruct.library.utils.TagUtil;
@@ -60,6 +63,8 @@ import slimeknights.tconstruct.tools.TinkerModifiers;
 import slimeknights.tconstruct.tools.TinkerTools;
 import slimeknights.tconstruct.tools.TinkerTraits;
 import tamaized.aov.registry.AoVDamageSource;
+import toolbox.common.items.ItemBase;
+import toolbox.common.items.tools.*;
 import xreliquary.entities.EntityGlowingWater;
 import xreliquary.entities.EntityHolyHandGrenade;
 import xreliquary.items.ItemMercyCross;
@@ -239,6 +244,13 @@ public class EventHandlerCommon {
             return true;
         }
 
+        //Silver Adventurer's Toolbox tools/weapons
+        if (Loader.isModLoaded("toolbox")) {
+            if (isSilverToolbox(stack)) {
+                return true;
+            }
+        }
+
         //Silver TiCon tools/weapons
         if (Loader.isModLoaded("tconstruct") && stack.getItem() instanceof TinkersItem) {
             if (TConstruct.pulseManager.isPulseLoaded(TinkerTools.PulseId)) {
@@ -258,6 +270,38 @@ public class EventHandlerCommon {
         return false;
     }
 
+    @Optional.Method(modid = "toolbox")
+    private static boolean isSilverToolbox(ItemStack stack) {
+        Item item = stack.getItem();
+        List<PartMaterial> materials = new ArrayList<>();
+        if (item instanceof IHeadTool) {
+            materials.add(IHeadTool.getHeadMat(stack));
+        }
+        if (item instanceof IBladeTool) {
+            materials.add(IBladeTool.getBladeMat(stack));
+        }
+        if (item instanceof ICrossguardTool) {
+            materials.add(ICrossguardTool.getCrossguardMat(stack));
+        }
+        if (item instanceof IHaftTool) {
+            materials.add(IHaftTool.getHaftMat(stack));
+        }
+        if (item instanceof IHandleTool) {
+            materials.add(IHandleTool.getHandleMat(stack));
+        }
+        if (item instanceof IAdornedTool) {
+            materials.add(IAdornedTool.getAdornmentMat(stack));
+        }
+
+        for (PartMaterial mat : materials) {
+            if (isSilverMaterial(mat.getName())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static boolean isNaturalDamage(DamageSource source) {
         return source == DamageSource.IN_WALL || source == DamageSource.CRAMMING || source == DamageSource.OUT_OF_WORLD;
     }
@@ -265,14 +309,10 @@ public class EventHandlerCommon {
     private static boolean isSilverMaterial(String materialName) {
 
         if (materialName != null) {
-            if (materialName.equalsIgnoreCase("SILVER")) {
-                return true;
-            }
-            int colonIndex = materialName.lastIndexOf(":");
-            if (colonIndex >= 0 && colonIndex < materialName.length()) {
-                return materialName.substring(colonIndex).equalsIgnoreCase("SILVER");
-            }
+            materialName = materialName.toLowerCase();
+            return materialName.contains("silver");
         }
+
         return false;
     }
 }
