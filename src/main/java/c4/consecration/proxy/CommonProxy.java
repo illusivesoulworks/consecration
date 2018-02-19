@@ -9,9 +9,11 @@
 package c4.consecration.proxy;
 
 import c4.consecration.Consecration;
-import c4.consecration.common.EventHandlerCommon;
+import c4.consecration.common.CommonEventHandler;
+import c4.consecration.common.UndeathEventHandler;
 import c4.consecration.common.entities.EntityFireBomb;
 import c4.consecration.common.trading.ListPotionForEmeralds;
+import c4.consecration.config.ConfigHandler;
 import c4.consecration.init.ModBlocks;
 import c4.consecration.init.ModItems;
 import c4.consecration.init.ModPotions;
@@ -34,6 +36,7 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -45,14 +48,22 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 
+import java.io.File;
+
 @Mod.EventBusSubscriber
 public class CommonProxy {
 
+    public static Configuration config;
+
     public void preInit(FMLPreInitializationEvent evt) {
+        File directory = evt.getModConfigurationDirectory();
+        config = new Configuration(new File(directory.getPath(), "consecration.cfg"));
+        ConfigHandler.readConfig();
     }
 
     public void init(FMLInitializationEvent evt) {
-        MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
+        MinecraftForge.EVENT_BUS.register(new CommonEventHandler());
+        MinecraftForge.EVENT_BUS.register(new UndeathEventHandler());
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(ModItems.fireBomb, new BehaviorProjectileDispense()
         {
             /**
@@ -72,6 +83,9 @@ public class CommonProxy {
             VillagerRegistry.VillagerCareer priestCareer = priest.getCareer(0);
             priestCareer.addTrade(2, new ListPotionForEmeralds(ModPotions.HOLY, new EntityVillager.PriceInfo(4, 6)));
             priestCareer.addTrade(3, new ListPotionForEmeralds(ModPotions.STRONG_HOLY, new EntityVillager.PriceInfo(6, 9)));
+        }
+        if (config.hasChanged()) {
+            config.save();
         }
     }
 

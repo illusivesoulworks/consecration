@@ -29,9 +29,9 @@ public class Consecration {
 
     public static final String MODID = "consecration";
     public static final String MODNAME = "Consecration";
-    public static final String MODVER = "0.0.5";
+    public static final String MODVER = "0.0.6";
 
-    @SidedProxy(clientSide = "c4.consecration.proxy.ClientProxy", serverSide = "c4.consecration.proxy.CommonProxy")
+    @SidedProxy(clientSide = "c4.consecration.proxy.ClientProxy", serverSide = "c4.consecration.proxy.ServerProxy")
     public static CommonProxy proxy;
 
     @Mod.Instance
