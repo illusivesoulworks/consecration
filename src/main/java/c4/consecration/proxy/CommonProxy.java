@@ -11,6 +11,7 @@ package c4.consecration.proxy;
 import c4.consecration.Consecration;
 import c4.consecration.common.CommonEventHandler;
 import c4.consecration.common.UndeathEventHandler;
+import c4.consecration.common.entities.EntityFireArrow;
 import c4.consecration.common.entities.EntityFireBomb;
 import c4.consecration.common.trading.ListPotionForEmeralds;
 import c4.consecration.config.ConfigHandler;
@@ -98,7 +99,14 @@ public class CommonProxy {
                 .name("entity_fire_bomb")
                 .tracker(64, 5, true)
                 .build();
+        EntityEntry entry2 = EntityEntryBuilder.create()
+                .entity(EntityFireArrow.class)
+                .id(new ResourceLocation(Consecration.MODID, "_entity_fire_arrow"), id++)
+                .name("entity_fire_arrow")
+                .tracker(64, 5, true)
+                .build();
         evt.getRegistry().register(entry);
+        evt.getRegistry().register(entry2);
     }
 
     @SubscribeEvent
@@ -112,6 +120,7 @@ public class CommonProxy {
         evt.getRegistry().register(ModItems.blessedDust);
         evt.getRegistry().register(ModItems.fireStick);
         evt.getRegistry().register(ModItems.fireBomb);
+        evt.getRegistry().register(ModItems.fireArrow);
     }
 
     @SubscribeEvent

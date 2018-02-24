@@ -90,7 +90,7 @@ public class UndeathEventHandler {
                     Entity immediateSource = evt.getSource().getImmediateSource();
 
                     //Fire damage will still kill undead if they're not immune to fire
-                    if (!entity.isImmuneToFire() && evt.getSource().isFireDamage()) {
+                    if (!entity.isImmuneToFire() && (evt.getSource().isFireDamage() || entity.isBurning())) {
                         return;
                     }
 

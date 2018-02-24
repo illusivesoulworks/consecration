@@ -9,6 +9,7 @@
 package c4.consecration.init;
 
 import c4.consecration.common.items.ItemBlessedDust;
+import c4.consecration.common.items.ItemFireArrow;
 import c4.consecration.common.items.ItemFireBomb;
 import c4.consecration.common.items.ItemFireStick;
 
@@ -17,4 +18,5 @@ public class ModItems {
     public static final ItemFireStick fireStick = new ItemFireStick();
     public static final ItemFireBomb fireBomb = new ItemFireBomb();
     public static final ItemBlessedDust blessedDust = new ItemBlessedDust();
+    public static final ItemFireArrow fireArrow = new ItemFireArrow();
 }

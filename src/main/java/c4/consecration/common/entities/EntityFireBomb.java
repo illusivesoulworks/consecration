@@ -8,6 +8,7 @@
 
 package c4.consecration.common.entities;
 
+import c4.consecration.client.RenderFireArrow;
 import c4.consecration.client.RenderFireBomb;
 import c4.consecration.init.ModPotions;
 import net.minecraft.entity.EntityLivingBase;
@@ -70,5 +71,6 @@ public class EntityFireBomb extends EntityThrowable {
     @SideOnly(Side.CLIENT)
     public static void initModel() {
         RenderingRegistry.registerEntityRenderingHandler(EntityFireBomb.class, RenderFireBomb.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(EntityFireArrow.class, RenderFireArrow.FACTORY);
     }
 }

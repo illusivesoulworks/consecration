@@ -43,6 +43,7 @@ public class ClientProxy extends CommonProxy {
         ModItems.blessedDust.initModel();
         ModItems.fireStick.initModel();
         ModItems.fireBomb.initModel();
+        ModItems.fireArrow.initModel();
 
         ModBlocks.hallowedGrounds.initModel();
 
