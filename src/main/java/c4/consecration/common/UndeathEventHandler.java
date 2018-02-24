@@ -41,6 +41,8 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.Level;
+import defeatedcrow.hac.magic.proj.EntityProjSilver;
+import defeatedcrow.hac.main.entity.EntitySilverBullet;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.entity.EntityProjectileBase;
 import slimeknights.tconstruct.library.tinkering.TinkersItem;
@@ -224,6 +226,15 @@ public class UndeathEventHandler {
 
                 //Reliquary's Holy Hand Grenade
                 if (Loader.isModLoaded("xreliquary") && immediateSource instanceof EntityHolyHandGrenade) {
+                    return true;
+                }
+                
+                //Heat and climate's Silver Dagger
+                if (Loader.isModLoaded("dcs_climate") && immediateSource instanceof EntityProjSilver) {
+                    return true;
+                }
+				//Heat and climate's Silver Bullets
+                if (Loader.isModLoaded("dcs_climate") && immediateSource instanceof EntitySilverBullet) {
                     return true;
                 }
             }
