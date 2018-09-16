@@ -10,15 +10,9 @@ package c4.consecration.client;
 
 import c4.consecration.Consecration;
 import c4.consecration.common.entities.EntityFireArrow;
-import c4.consecration.common.entities.EntityFireBomb;
-import c4.consecration.init.ModItems;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderArrow;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.RenderSnowball;
-import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.relauncher.Side;

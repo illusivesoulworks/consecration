@@ -9,15 +9,21 @@
 package c4.consecration.proxy;
 
 import c4.consecration.Consecration;
-import c4.consecration.common.CommonEventHandler;
-import c4.consecration.common.UndeathEventHandler;
+import c4.consecration.common.EventHandlerCommon;
+import c4.consecration.common.EventHandlerUndying;
+import c4.consecration.common.blocks.BlockBlessedTrail;
+import c4.consecration.common.capabilities.CapabilityUndying;
 import c4.consecration.common.entities.EntityFireArrow;
 import c4.consecration.common.entities.EntityFireBomb;
+import c4.consecration.common.items.ItemBlessedDust;
+import c4.consecration.common.items.ItemFireArrow;
+import c4.consecration.common.items.ItemFireBomb;
+import c4.consecration.common.items.ItemFireStick;
 import c4.consecration.common.trading.ListPotionForEmeralds;
-import c4.consecration.config.ConfigHandler;
-import c4.consecration.init.ModBlocks;
-import c4.consecration.init.ModItems;
-import c4.consecration.init.ModPotions;
+import c4.consecration.config.HandlerConfig;
+import c4.consecration.init.HolderConsecration;
+import c4.consecration.init.PotionsConsecration;
+import c4.consecration.integrations.ModuleCompatibility;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.dispenser.BehaviorProjectileDispense;
@@ -27,7 +33,6 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.init.Items;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
@@ -37,8 +42,8 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -48,24 +53,21 @@ import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
-
-import java.io.File;
+import org.apache.logging.log4j.Level;
 
 @Mod.EventBusSubscriber
 public class CommonProxy {
 
-    public static Configuration config;
-
     public void preInit(FMLPreInitializationEvent evt) {
-        File directory = evt.getModConfigurationDirectory();
-        config = new Configuration(new File(directory.getPath(), "consecration.cfg"));
-        ConfigHandler.readConfig();
+
     }
 
+    @SuppressWarnings("ConstantConditions")
     public void init(FMLInitializationEvent evt) {
-        MinecraftForge.EVENT_BUS.register(new CommonEventHandler());
-        MinecraftForge.EVENT_BUS.register(new UndeathEventHandler());
-        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(ModItems.fireBomb, new BehaviorProjectileDispense()
+        MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
+        MinecraftForge.EVENT_BUS.register(new EventHandlerUndying());
+        CapabilityUndying.register();
+        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(HolderConsecration.fireBomb, new BehaviorProjectileDispense()
         {
             /**
              * Return the projectile entity spawned by this dispense behavior.
@@ -75,6 +77,15 @@ public class CommonProxy {
                 return new EntityFireBomb(worldIn, position.getX(), position.getY(), position.getZ());
             }
         });
+        for (String modid : ModuleCompatibility.compatDeps.keySet()) {
+            if (Loader.isModLoaded(modid)) {
+                try {
+                    ModuleCompatibility.compatDeps.get(modid).newInstance();
+                } catch (Exception e) {
+                    Consecration.logger.log(Level.ERROR, "Error loading compatibility module " + ModuleCompatibility.compatDeps.get(modid));
+                }
+            }
+        }
     }
 
     public void postInit(FMLPostInitializationEvent evt) {
@@ -82,11 +93,18 @@ public class CommonProxy {
         if (priest != null) {
             new VillagerRegistry.VillagerCareer(priest, "paladin");
             VillagerRegistry.VillagerCareer priestCareer = priest.getCareer(0);
-            priestCareer.addTrade(2, new ListPotionForEmeralds(ModPotions.HOLY, new EntityVillager.PriceInfo(4, 6)));
-            priestCareer.addTrade(3, new ListPotionForEmeralds(ModPotions.STRONG_HOLY, new EntityVillager.PriceInfo(6, 9)));
+            priestCareer.addTrade(2, new ListPotionForEmeralds(PotionsConsecration.HOLY, new EntityVillager.PriceInfo(4, 6)));
+            priestCareer.addTrade(3, new ListPotionForEmeralds(PotionsConsecration.STRONG_HOLY, new EntityVillager.PriceInfo(6, 9)));
         }
-        if (config.hasChanged()) {
-            config.save();
+        parseDimensionConfigs();
+    }
+
+    private static void parseDimensionConfigs() {
+        if (HandlerConfig.dimensionList.length > 0) {
+            for (String s : HandlerConfig.dimensionList) {
+                int dimension = Integer.parseInt(s);
+                EventHandlerUndying.dimensions.add(dimension);
+            }
         }
     }
 
@@ -105,41 +123,40 @@ public class CommonProxy {
                 .name("entity_fire_arrow")
                 .tracker(64, 5, true)
                 .build();
-        evt.getRegistry().register(entry);
-        evt.getRegistry().register(entry2);
+        evt.getRegistry().registerAll(entry, entry2);
     }
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> evt) {
-        evt.getRegistry().register(ModBlocks.hallowedGrounds);
+        evt.getRegistry().register(new BlockBlessedTrail());
     }
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> evt) {
-        evt.getRegistry().register(new ItemBlock(ModBlocks.hallowedGrounds).setRegistryName(ModBlocks.hallowedGrounds.getRegistryName()));
-        evt.getRegistry().register(ModItems.blessedDust);
-        evt.getRegistry().register(ModItems.fireStick);
-        evt.getRegistry().register(ModItems.fireBomb);
-        evt.getRegistry().register(ModItems.fireArrow);
+        evt.getRegistry().registerAll(
+                new ItemBlessedDust(),
+                new ItemFireArrow(),
+                new ItemFireBomb(),
+                new ItemFireStick());
     }
 
     @SubscribeEvent
     public static void registerPotionTypes(RegistryEvent.Register<PotionType> evt) {
-        evt.getRegistry().register(ModPotions.HOLY);
-        evt.getRegistry().register(ModPotions.STRONG_HOLY);
-        evt.getRegistry().register(ModPotions.ULTIMATE_HOLY);
+        evt.getRegistry().registerAll(
+                PotionsConsecration.HOLY,
+                PotionsConsecration.STRONG_HOLY,
+                PotionsConsecration.ULTIMATE_HOLY);
     }
 
     @SubscribeEvent
     public static void registerPotions(RegistryEvent.Register<Potion> evt) {
-        evt.getRegistry().register(ModPotions.HOLY_POTION);
-        evt.getRegistry().register(ModPotions.SMITE_POTION);
+        evt.getRegistry().register(PotionsConsecration.HOLY_POTION);
     }
 
     @SubscribeEvent
     public static void registerRecipes(RegistryEvent.Register<IRecipe> evt) {
-        PotionHelper.addMix(PotionTypes.AWKWARD, Ingredient.fromStacks(new ItemStack(Items.GOLDEN_APPLE, 1, 0)), ModPotions.HOLY);
-        PotionHelper.addMix(PotionTypes.AWKWARD, Ingredient.fromStacks(new ItemStack(Items.GOLDEN_APPLE, 1, 1)), ModPotions.ULTIMATE_HOLY);
-        PotionHelper.addMix(ModPotions.HOLY, Items.GLOWSTONE_DUST, ModPotions.STRONG_HOLY);
+        PotionHelper.addMix(PotionTypes.AWKWARD, Ingredient.fromStacks(new ItemStack(Items.GOLDEN_APPLE, 1, 0)), PotionsConsecration.HOLY);
+        PotionHelper.addMix(PotionTypes.AWKWARD, Ingredient.fromStacks(new ItemStack(Items.GOLDEN_APPLE, 1, 1)), PotionsConsecration.ULTIMATE_HOLY);
+        PotionHelper.addMix(PotionsConsecration.HOLY, Items.GLOWSTONE_DUST, PotionsConsecration.STRONG_HOLY);
     }
 }

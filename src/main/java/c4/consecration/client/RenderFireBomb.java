@@ -9,7 +9,7 @@
 package c4.consecration.client;
 
 import c4.consecration.common.entities.EntityFireBomb;
-import c4.consecration.init.ModItems;
+import c4.consecration.init.HolderConsecration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.entity.Render;
@@ -24,9 +24,10 @@ public class RenderFireBomb extends RenderSnowball<EntityFireBomb>
 {
     public static final Factory FACTORY = new Factory();
 
+    @SuppressWarnings("ConstantConditions")
     public RenderFireBomb(RenderManager renderManagerIn, RenderItem itemRendererIn)
     {
-        super(renderManagerIn, ModItems.fireBomb, itemRendererIn);
+        super(renderManagerIn, HolderConsecration.fireBomb, itemRendererIn);
     }
 
     public static class Factory implements IRenderFactory<EntityFireBomb> {

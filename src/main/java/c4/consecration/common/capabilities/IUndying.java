@@ -6,13 +6,15 @@
  * A copy of the license can be found here: https://www.gnu.org/licenses/gpl.txt
  */
 
-package c4.consecration.common.potions;
+package c4.consecration.common.capabilities;
 
-import net.minecraft.potion.Potion;
+public interface IUndying {
 
-public class SmitePotion extends Potion {
+    boolean isSmote();
 
-    public SmitePotion() {
-        super(true, 0xffffff);
-    }
+    int getSmite();
+
+    void setSmite(int duration);
+
+    void decrementSmite();
 }

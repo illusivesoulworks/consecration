@@ -9,8 +9,7 @@
 package c4.consecration.proxy;
 
 import c4.consecration.common.entities.EntityFireBomb;
-import c4.consecration.init.ModBlocks;
-import c4.consecration.init.ModItems;
+import c4.consecration.init.HolderConsecration;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -38,14 +37,13 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
+    @SuppressWarnings("ConstantConditions")
     public static void registerModels(ModelRegistryEvent evt) {
 
-        ModItems.blessedDust.initModel();
-        ModItems.fireStick.initModel();
-        ModItems.fireBomb.initModel();
-        ModItems.fireArrow.initModel();
-
-        ModBlocks.hallowedGrounds.initModel();
+        HolderConsecration.blessedDust.initModel();
+        HolderConsecration.fireStick.initModel();
+        HolderConsecration.fireBomb.initModel();
+        HolderConsecration.fireArrow.initModel();
 
         EntityFireBomb.initModel();
     }

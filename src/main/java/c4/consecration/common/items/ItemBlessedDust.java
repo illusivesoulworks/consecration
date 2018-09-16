@@ -9,24 +9,49 @@
 package c4.consecration.common.items;
 
 import c4.consecration.Consecration;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import c4.consecration.init.HolderConsecration;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
-public class ItemBlessedDust extends Item {
+import javax.annotation.Nonnull;
+
+public class ItemBlessedDust extends ItemBase {
 
     public ItemBlessedDust() {
-        super();
-        this.setRegistryName("blessed_dust");
-        this.setUnlocalizedName(Consecration.MODID + ".blessed_dust");
+        super("blessed_dust");
         this.setCreativeTab(CreativeTabs.MATERIALS);
     }
 
-    @SideOnly(Side.CLIENT)
-    public void initModel() {
-        ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation(getRegistryName(), "inventory"));
+    @Nonnull
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing,
+                                      float hitX, float hitY, float hitZ) {
+        boolean flag = worldIn.getBlockState(pos).getBlock().isReplaceable(worldIn, pos);
+        BlockPos blockpos = flag ? pos : pos.offset(facing);
+        ItemStack itemstack = player.getHeldItem(hand);
+
+        if (player.canPlayerEdit(blockpos, facing, itemstack)
+                && worldIn.mayPlace(worldIn.getBlockState(blockpos).getBlock(), blockpos, false, facing, null)
+                && HolderConsecration.blessedTrail.canPlaceBlockAt(worldIn, blockpos)) {
+            worldIn.setBlockState(blockpos, HolderConsecration.blessedTrail.getDefaultState());
+
+            if (player instanceof EntityPlayerMP) {
+                CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)player, blockpos, itemstack);
+            }
+            itemstack.shrink(1);
+            return EnumActionResult.SUCCESS;
+        } else {
+            return EnumActionResult.FAIL;
+        }
     }
 }

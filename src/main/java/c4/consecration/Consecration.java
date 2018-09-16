@@ -8,14 +8,12 @@
 
 package c4.consecration;
 
+import c4.consecration.api.UndeadRegistry;
 import c4.consecration.proxy.CommonProxy;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
@@ -53,6 +51,11 @@ public class Consecration {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent evt) {
         proxy.postInit(evt);
+    }
+
+    @Mod.EventHandler
+    public void onMessageReceived(FMLInterModComms.IMCEvent evt) {
+        UndeadRegistry.processIMC(evt);
     }
 
     @Mod.EventHandler

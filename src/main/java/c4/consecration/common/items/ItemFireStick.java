@@ -27,20 +27,18 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.tconstruct.library.utils.ToolHelper;
 
-public class ItemFireStick extends Item {
+public class ItemFireStick extends ItemBase {
 
     public ItemFireStick() {
-        super();
-        this.setRegistryName("fire_stick");
-        this.setUnlocalizedName(Consecration.MODID + ".fire_stick");
+        super("fire_stick");
         this.setMaxDamage(13);
         this.setMaxStackSize(1);
         this.setCreativeTab(CreativeTabs.TOOLS);
     }
 
     @Override
-    public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
-    {
+    public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity) {
+
         if (!player.world.isRemote && !entity.isImmuneToFire()) {
             stack.damageItem(1, player);
             entity.setFire(2);
@@ -53,10 +51,5 @@ public class ItemFireStick extends Item {
     public boolean isFull3D()
     {
         return true;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void initModel() {
-        ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation(getRegistryName(), "inventory"));
     }
 }

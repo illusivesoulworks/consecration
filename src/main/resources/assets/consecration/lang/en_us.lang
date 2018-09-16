@@ -5,8 +5,6 @@ tipped_arrow.effect.holy=Arrow of Consecration
 splash_potion.effect.holy=Splash Potion of Consecration
 lingering_potion.effect.holy=Lingering Potion of Consecration
 
-tile.consecration.hallowed_grounds.name=Hallowed Grounds
-
 item.consecration.blessed_dust.name=Blessed Dust
 item.consecration.fire_bomb.name=Fire Bomb
 item.consecration.fire_stick.name=Fire Stick

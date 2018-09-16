@@ -8,9 +8,9 @@
 
 package c4.consecration.init;
 
-import c4.consecration.common.blocks.BlockHallowedGrounds;
+import net.minecraft.util.DamageSource;
 
-public class ModBlocks {
+public class DamageSourcesConsecration {
 
-    public static final BlockHallowedGrounds hallowedGrounds = new BlockHallowedGrounds();
+    public static final DamageSource HOLY = new DamageSource("holy").setMagicDamage().setDamageBypassesArmor();
 }
