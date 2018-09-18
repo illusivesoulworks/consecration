@@ -29,6 +29,7 @@ public abstract class ModuleCompatibility {
         compatDeps.put("toolbox", ModuleToolbox.class);
         compatDeps.put("tconstruct", ModuleTConstruct.class);
         compatDeps.put("dcs_climate", ModuleDCS.class);
+        compatDeps.put("somanyenchantments", ModuleSME.class);
     }
 
     public ModuleCompatibility(String modid) {
