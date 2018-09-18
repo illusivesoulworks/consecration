@@ -43,6 +43,8 @@ import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
+import java.util.List;
+
 @Mod(	modid = Consecration.MODID,
 		name = Consecration.MODNAME,
 		version = Consecration.MODVER,
@@ -99,7 +101,6 @@ public class Consecration {
     public void postInit(FMLPostInitializationEvent evt) {
         VillagerRegistry.VillagerProfession priest = ForgeRegistries.VILLAGER_PROFESSIONS.getValue(new ResourceLocation("minecraft:priest"));
         if (priest != null) {
-            new VillagerRegistry.VillagerCareer(priest, "paladin");
             VillagerRegistry.VillagerCareer priestCareer = priest.getCareer(0);
             priestCareer.addTrade(2, new ListPotionForEmeralds(ConsecrationPotions.HOLY, new EntityVillager.PriceInfo(4, 6)));
             priestCareer.addTrade(3, new ListPotionForEmeralds(ConsecrationPotions.STRONG_HOLY, new EntityVillager.PriceInfo(6, 9)));
