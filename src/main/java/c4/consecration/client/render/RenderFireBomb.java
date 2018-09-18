@@ -6,10 +6,10 @@
  * A copy of the license can be found here: https://www.gnu.org/licenses/gpl.txt
  */
 
-package c4.consecration.client;
+package c4.consecration.client.render;
 
 import c4.consecration.common.entities.EntityFireBomb;
-import c4.consecration.init.HolderConsecration;
+import c4.consecration.common.init.ConsecrationItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.entity.Render;
@@ -27,7 +27,7 @@ public class RenderFireBomb extends RenderSnowball<EntityFireBomb>
     @SuppressWarnings("ConstantConditions")
     public RenderFireBomb(RenderManager renderManagerIn, RenderItem itemRendererIn)
     {
-        super(renderManagerIn, HolderConsecration.fireBomb, itemRendererIn);
+        super(renderManagerIn, ConsecrationItems.fireBomb, itemRendererIn);
     }
 
     public static class Factory implements IRenderFactory<EntityFireBomb> {

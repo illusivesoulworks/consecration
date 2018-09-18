@@ -6,7 +6,7 @@
  * A copy of the license can be found here: https://www.gnu.org/licenses/gpl.txt
  */
 
-package c4.consecration.client;
+package c4.consecration.client.render;
 
 import c4.consecration.Consecration;
 import c4.consecration.common.entities.EntityFireArrow;

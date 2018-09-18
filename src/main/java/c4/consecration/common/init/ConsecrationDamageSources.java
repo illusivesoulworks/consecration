@@ -6,11 +6,11 @@
  * A copy of the license can be found here: https://www.gnu.org/licenses/gpl.txt
  */
 
-package c4.consecration.init;
+package c4.consecration.common.init;
 
 import net.minecraft.util.DamageSource;
 
-public class DamageSourcesConsecration {
+public class ConsecrationDamageSources {
 
     public static final DamageSource HOLY = new DamageSource("holy").setMagicDamage().setDamageBypassesArmor();
 }

@@ -8,8 +8,6 @@
 
 package c4.consecration.common.capabilities;
 
-import net.minecraft.entity.EntityLivingBase;
-
 public class Undying implements IUndying {
 
     private static final int SMITE_DURATION = 200;

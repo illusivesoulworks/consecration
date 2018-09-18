@@ -8,7 +8,7 @@
 
 package c4.consecration.common.entities;
 
-import c4.consecration.init.HolderConsecration;
+import c4.consecration.common.init.ConsecrationItems;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -60,6 +60,6 @@ public class EntityFireArrow extends EntityArrow {
     @Nonnull
     @SuppressWarnings("ConstantConditions")
     protected ItemStack getArrowStack() {
-        return new ItemStack(HolderConsecration.fireArrow);
+        return new ItemStack(ConsecrationItems.fireArrow);
     }
 }

@@ -8,7 +8,7 @@
 
 package c4.consecration.integrations;
 
-import c4.consecration.api.UndeadRegistry;
+import c4.consecration.common.util.UndeadRegistry;
 
 public class ModuleAoV extends ModuleCompatibility {
 
@@ -18,6 +18,6 @@ public class ModuleAoV extends ModuleCompatibility {
 
     @Override
     public void register() {
-        UndeadRegistry.addHolyDamage("aov.nimbusRay");
+        UndeadRegistry.addHolyDamage("aov.nimbusray");
     }
 }

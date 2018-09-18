@@ -17,6 +17,7 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 
+import javax.annotation.Nonnull;
 import java.util.Random;
 
 public class ListPotionForEmeralds implements EntityVillager.ITradeList
@@ -36,7 +37,7 @@ public class ListPotionForEmeralds implements EntityVillager.ITradeList
     }
 
     @Override
-    public void addMerchantRecipe(IMerchant merchant, MerchantRecipeList recipeList, Random random)
+    public void addMerchantRecipe(@Nonnull IMerchant merchant, @Nonnull MerchantRecipeList recipeList, @Nonnull Random random)
     {
         int i = 1;
 

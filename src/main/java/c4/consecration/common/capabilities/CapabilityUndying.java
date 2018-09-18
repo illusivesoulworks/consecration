@@ -9,19 +9,29 @@
 package c4.consecration.common.capabilities;
 
 import c4.consecration.Consecration;
-import c4.consecration.common.UndeadHelper;
+import c4.consecration.common.config.ConfigHandler;
+import c4.consecration.common.util.UndeadHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import scala.collection.immutable.Stream;
 
 import javax.annotation.Nullable;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class CapabilityUndying {
 
@@ -48,6 +58,7 @@ public final class CapabilityUndying {
                 instance.setSmite(compound.getInteger(SMITE_TAG));
             }
         }, Undying::new);
+        MinecraftForge.EVENT_BUS.register(new EventHandler());
     }
 
     @Nullable
@@ -110,13 +121,89 @@ public final class CapabilityUndying {
         }
     }
 
-    @Mod.EventBusSubscriber
-    private static class EventHandler {
+    @Mod.EventBusSubscriber(modid = Consecration.MODID)
+    public static class EventHandler {
+
+        private static Set<Integer> dimensions = new HashSet<>();
+        private static final int SMITE_DURATION = 200;
 
         @SubscribeEvent
         public static void attachCapabilities(final AttachCapabilitiesEvent<Entity> evt) {
             if (evt.getObject() instanceof EntityLivingBase && UndeadHelper.isUndead((EntityLivingBase) evt.getObject())) {
-                evt.addCapability(ID, createProvider(new Undying()));
+                EntityLivingBase living = (EntityLivingBase)evt.getObject();
+                if (UndeadHelper.isUndead(living) && isAllowedDimension(living)) {
+                    evt.addCapability(ID, createProvider(new Undying()));
+                }
+            }
+        }
+
+        @SubscribeEvent
+        public static void onLivingUpdate(LivingEvent.LivingUpdateEvent evt) {
+            EntityLivingBase entitylivingbase = evt.getEntityLiving();
+
+            if (!entitylivingbase.getEntityWorld().isRemote) {
+                IUndying undying = CapabilityUndying.getUndying(entitylivingbase);
+
+                if (undying != null) {
+
+                    if (UndeadHelper.isSmote(entitylivingbase, undying)) {
+
+                        if (entitylivingbase.ticksExisted % 10 == 0) {
+                            WorldServer worldIn = (WorldServer) entitylivingbase.getEntityWorld();
+                            worldIn.spawnParticle(EnumParticleTypes.SPELL_INSTANT, entitylivingbase.posX,
+                                    entitylivingbase.posY + entitylivingbase.height / 2.0D, entitylivingbase.posZ, 2,
+                                    entitylivingbase.width / 2.0D, entitylivingbase.height / 4.0D,
+                                    entitylivingbase.width / 2.0D, 0.0D);
+                        }
+                        undying.decrementSmite();
+
+                    } else if (entitylivingbase.ticksExisted % 20 == 0) {
+                        entitylivingbase.heal(ConfigHandler.undying.healthRegen);
+                    }
+                }
+            }
+        }
+
+        @SubscribeEvent
+        public static void onLivingDamage(LivingDamageEvent evt) {
+            EntityLivingBase entitylivingbase = evt.getEntityLiving();
+
+            if (!entitylivingbase.getEntityWorld().isRemote) {
+                DamageSource source = evt.getSource();
+
+                //Check for "natural" damage
+                if (source == DamageSource.OUT_OF_WORLD || source == DamageSource.CRAMMING
+                        || source == DamageSource.IN_WALL) {
+                    return;
+                }
+                IUndying undying = CapabilityUndying.getUndying(entitylivingbase);
+
+                if (undying != null) {
+                    if (UndeadHelper.doSmite(entitylivingbase, source)) {
+                        if (source.isFireDamage()) {
+                            undying.setSmite(SMITE_DURATION / 2);
+                        } else {
+                            undying.setSmite(SMITE_DURATION);
+                        }
+                    } else if (!source.isDamageAbsolute() && !UndeadHelper.isSmote(entitylivingbase, undying)) {
+                        evt.setAmount(evt.getAmount() * (float) (1 - ConfigHandler.undying.damageReduction));
+                    }
+                }
+            }
+        }
+
+        public static void addDimension(int dimension) {
+            dimensions.add(dimension);
+        }
+
+        public static boolean isAllowedDimension(EntityLivingBase entity) {
+            int dimension = entity.dimension;
+            if (dimensions.isEmpty()) {
+                return true;
+            } else if (ConfigHandler.dimensionPermission == ConfigHandler.PermissionMode.BLACKLIST) {
+                return !dimensions.contains(dimension);
+            } else {
+                return dimensions.contains(dimension);
             }
         }
     }

@@ -6,11 +6,7 @@
  * A copy of the license can be found here: https://www.gnu.org/licenses/gpl.txt
  */
 
-package c4.consecration.init;
+package c4.consecration.proxy;
 
-public class InitConsecration {
-
-    public static void init() {
-
-    }
+public class ServerProxy implements IProxy {
 }

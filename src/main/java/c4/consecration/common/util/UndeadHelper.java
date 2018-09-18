@@ -6,18 +6,17 @@
  * A copy of the license can be found here: https://www.gnu.org/licenses/gpl.txt
  */
 
-package c4.consecration.common;
+package c4.consecration.common.util;
 
-import c4.consecration.api.UndeadRegistry;
 import c4.consecration.common.capabilities.CapabilityUndying;
 import c4.consecration.common.capabilities.IUndying;
+import c4.consecration.common.config.ConfigHandler;
 import c4.consecration.integrations.ModuleCompatibility;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
@@ -54,6 +53,12 @@ public class UndeadHelper {
                 return true;
             } else if (stack.getItem() instanceof ItemSword && isHolyMaterial(((ItemSword) stack.getItem()).getToolMaterialName())) {
                 return true;
+            } else {
+                for (ItemStack stack1 : UndeadRegistry.getHolyWeapons()) {
+                    if (ItemStack.areItemsEqualIgnoreDurability(stack1, stack)) {
+                        return true;
+                    }
+                }
             }
 
             //Check enchantments
@@ -77,18 +82,6 @@ public class UndeadHelper {
             }
         }
 
-        return false;
-    }
-
-    private boolean isHolyDamage(EntityLivingBase target, DamageSource source) {
-//                //Heat and climate's Silver Dagger
-//                if (Loader.isModLoaded("dcs_climate") && immediateSource instanceof EntityProjSilver) {
-//                    return true;
-//                }
-//				//Heat and climate's Silver Bullets
-//                if (Loader.isModLoaded("dcs_climate") && immediateSource instanceof EntitySilverBullet) {
-//                    return true;
-//                }
         return false;
     }
 
@@ -116,9 +109,9 @@ public class UndeadHelper {
     public static boolean isHolyMaterial(String mat) {
 
         mat = mat.toLowerCase();
-        String pattern = "(?i)(?<=^|[^a-z])" + mat + "\b";
         for (String name : UndeadRegistry.getHolyMaterials()) {
-            if (name.matches(pattern)) {
+            String pattern = "((.*[^a-z])|\\b)" + name + "\\b";
+            if (mat.matches(pattern)) {
                 return true;
             }
         }

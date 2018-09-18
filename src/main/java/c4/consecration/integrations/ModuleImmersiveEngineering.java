@@ -8,8 +8,7 @@
 
 package c4.consecration.integrations;
 
-import blusunrize.immersiveengineering.api.Lib;
-import c4.consecration.api.UndeadRegistry;
+import c4.consecration.common.util.UndeadRegistry;
 
 public class ModuleImmersiveEngineering extends ModuleCompatibility {
 

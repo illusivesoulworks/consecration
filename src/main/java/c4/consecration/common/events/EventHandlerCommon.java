@@ -1,23 +1,25 @@
 /*
- * Copyright (c) 2017 <C4>
+ * Copyright (c) 2018 <C4>
  *
  * This Java class is distributed as a part of Consecration.
  * Consecration is open source and licensed under the GNU General Public License v3.
  * A copy of the license can be found here: https://www.gnu.org/licenses/gpl.txt
  */
 
-package c4.consecration.common;
+package c4.consecration.common.events;
 
 import c4.consecration.Consecration;
-import c4.consecration.init.HolderConsecration;
-import c4.consecration.init.PotionsConsecration;
+import c4.consecration.common.init.ConsecrationBlocks;
+import c4.consecration.common.init.ConsecrationItems;
+import c4.consecration.common.init.ConsecrationPotions;
+import c4.consecration.common.util.UndeadHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityZombieVillager;
 import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.init.Items;
-import net.minecraft.item.*;
+import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -34,7 +36,9 @@ import org.apache.logging.log4j.Level;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 public class EventHandlerCommon {
 
@@ -49,8 +53,8 @@ public class EventHandlerCommon {
             World world = evt.getWorld();
             BlockPos pos = evt.getEntityLiving().getPosition();
 
-            if (world.getBlockState(pos).getBlock() == HolderConsecration.blessedTrail
-                    || world.getBlockState(pos.down(2)).getBlock() == HolderConsecration.blessedTrail)
+            if (world.getBlockState(pos).getBlock() == ConsecrationBlocks.blessedTrail
+                    || world.getBlockState(pos.down(2)).getBlock() == ConsecrationBlocks.blessedTrail)
                 evt.setResult(Event.Result.DENY);
         }
     }
@@ -71,7 +75,7 @@ public class EventHandlerCommon {
                     return;
                 } else {
                     for (PotionEffect effect : list) {
-                        if (effect.getPotion() == PotionsConsecration.HOLY_POTION) {
+                        if (effect.getPotion() == ConsecrationPotions.HOLY_POTION) {
                             holyPotion = true;
                             break;
                         }
@@ -91,7 +95,7 @@ public class EventHandlerCommon {
 
                 for (EntityItem item : items) {
                     EntityItem newItem = new EntityItem(item.world, item.posX, item.posY, item.posZ, new ItemStack
-                            (HolderConsecration.blessedDust, item.getItem().getCount()));
+                            (ConsecrationItems.blessedDust, item.getItem().getCount()));
                     item.world.spawnEntity(newItem);
                     item.setDead();
                 }

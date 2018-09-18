@@ -8,8 +8,8 @@
 
 package c4.consecration.common.entities;
 
-import c4.consecration.client.RenderFireArrow;
-import c4.consecration.client.RenderFireBomb;
+import c4.consecration.client.render.RenderFireArrow;
+import c4.consecration.client.render.RenderFireBomb;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -59,11 +59,5 @@ public class EntityFireBomb extends EntityThrowable {
             this.world.newExplosion(this, this.posX, this.posY, this.posZ, 1.0F, true, false);
             this.setDead();
         }
-    }
-
-    @SideOnly(Side.CLIENT)
-    public static void initModel() {
-        RenderingRegistry.registerEntityRenderingHandler(EntityFireBomb.class, RenderFireBomb.FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityFireArrow.class, RenderFireArrow.FACTORY);
     }
 }

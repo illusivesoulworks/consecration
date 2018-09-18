@@ -8,9 +8,9 @@
 
 package c4.consecration.integrations;
 
-import c4.consecration.api.UndeadRegistry;
 import c4.consecration.common.capabilities.CapabilityUndying;
 import c4.consecration.common.capabilities.IUndying;
+import c4.consecration.common.util.UndeadRegistry;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;
@@ -54,7 +54,7 @@ public class ModuleReliquary extends ModuleCompatibility {
                 for (EntityLivingBase entity : eList) {
                     IUndying undying = CapabilityUndying.getUndying(entity);
                     if (undying != null) {
-                        undying.receiveSmiting();
+                        undying.setSmite(200);
                     }
                 }
             }

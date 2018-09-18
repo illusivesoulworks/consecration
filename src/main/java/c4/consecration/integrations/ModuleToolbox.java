@@ -9,7 +9,7 @@
 package c4.consecration.integrations;
 
 import api.materials.PartMaterial;
-import c4.consecration.common.UndeadHelper;
+import c4.consecration.common.util.UndeadHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

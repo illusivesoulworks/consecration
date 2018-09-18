@@ -28,6 +28,7 @@ public abstract class ModuleCompatibility {
         compatDeps.put("xreliquary", ModuleReliquary.class);
         compatDeps.put("toolbox", ModuleToolbox.class);
         compatDeps.put("tconstruct", ModuleTConstruct.class);
+        compatDeps.put("dcs_climate", ModuleDCS.class);
     }
 
     public ModuleCompatibility(String modid) {

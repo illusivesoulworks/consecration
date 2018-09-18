@@ -9,10 +9,11 @@
 package c4.consecration.common.blocks;
 
 import c4.consecration.Consecration;
-import c4.consecration.common.UndeadHelper;
-import c4.consecration.init.DamageSourcesConsecration;
-import c4.consecration.init.HolderConsecration;
-import net.minecraft.block.*;
+import c4.consecration.common.init.ConsecrationDamageSources;
+import c4.consecration.common.init.ConsecrationItems;
+import c4.consecration.common.util.UndeadHelper;
+import com.google.common.base.Predicate;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
@@ -22,6 +23,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathNodeType;
@@ -36,6 +38,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Random;
 
 public class BlockBlessedTrail extends Block {
@@ -241,23 +244,11 @@ public class BlockBlessedTrail extends Block {
     @SuppressWarnings("ConstantConditions")
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return HolderConsecration.blessedDust;
+        return ConsecrationItems.blessedDust;
     }
 
     private boolean canConnectUpwardsTo(IBlockAccess worldIn, BlockPos pos) {
         return worldIn.getBlockState(pos).getBlock() == this;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
-        double d0 = (double)pos.getX() + 0.5D + ((double)rand.nextFloat() - 0.5D) * 0.2D;
-        double d1 = (double)((float)pos.getY() + 0.0625F);
-        double d2 = (double)pos.getZ() + 0.5D + ((double)rand.nextFloat() - 0.5D) * 0.2D;
-        float f = 0.5F;
-        float f1 = f * 0.6F + 0.4F;
-        float f2 = Math.max(0.0F, f * f * 0.7F - 0.5F);
-        float f3 = Math.max(0.0F, f * f * 0.6F - 0.7F);
-        worldIn.spawnParticle(EnumParticleTypes.END_ROD, d0, d1, d2, (double)f1, (double)f2, (double)f3);
     }
 
     @Nonnull
@@ -265,12 +256,11 @@ public class BlockBlessedTrail extends Block {
     @SuppressWarnings("ConstantConditions")
     public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target, @Nonnull World world,
                                   @Nonnull BlockPos pos, EntityPlayer player) {
-        return new ItemStack(HolderConsecration.blessedDust);
+        return new ItemStack(ConsecrationItems.blessedDust);
     }
 
     @Override
-    public int getMetaFromState(IBlockState state)
-    {
+    public int getMetaFromState(IBlockState state) {
         return 0;
     }
 
@@ -331,16 +321,17 @@ public class BlockBlessedTrail extends Block {
 
         if (entityIn instanceof EntityLivingBase && UndeadHelper.isUndead((EntityLivingBase)entityIn)) {
             EntityLivingBase entityliving = (EntityLivingBase)entityIn;
-            entityliving.attackEntityFrom(DamageSourcesConsecration.HOLY, 10);
+            entityliving.attackEntityFrom(ConsecrationDamageSources.HOLY, 10);
             entityliving.setFire(4);
-            this.dropBlockAsItem(worldIn, pos, state, 0);
-            worldIn.setBlockToAir(pos);
+            if (worldIn.rand.nextInt(100) == 0) {
+                worldIn.setBlockToAir(pos);
+            }
         }
     }
 
     @Nullable
     public PathNodeType getAiPathNodeType(IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
-        return PathNodeType.DAMAGE_FIRE;
+        return PathNodeType.LAVA;
     }
 
     @Nonnull

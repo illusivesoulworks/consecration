@@ -8,13 +8,11 @@
 
 package c4.consecration.common.items;
 
-import c4.consecration.Consecration;
-import c4.consecration.init.HolderConsecration;
+import c4.consecration.common.init.ConsecrationBlocks;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
@@ -42,8 +40,8 @@ public class ItemBlessedDust extends ItemBase {
 
         if (player.canPlayerEdit(blockpos, facing, itemstack)
                 && worldIn.mayPlace(worldIn.getBlockState(blockpos).getBlock(), blockpos, false, facing, null)
-                && HolderConsecration.blessedTrail.canPlaceBlockAt(worldIn, blockpos)) {
-            worldIn.setBlockState(blockpos, HolderConsecration.blessedTrail.getDefaultState());
+                && ConsecrationBlocks.blessedTrail.canPlaceBlockAt(worldIn, blockpos)) {
+            worldIn.setBlockState(blockpos, ConsecrationBlocks.blessedTrail.getDefaultState());
 
             if (player instanceof EntityPlayerMP) {
                 CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)player, blockpos, itemstack);
