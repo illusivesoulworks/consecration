@@ -1,2 +1,2 @@
 # Consecration
-Makes undead mobs unkillable except through fire and holy damage
+Makes the undead more resilient except when attacked by fire or holy damage
