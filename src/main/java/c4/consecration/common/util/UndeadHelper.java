@@ -17,6 +17,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
@@ -102,6 +103,14 @@ public class UndeadHelper {
         return false;
     }
 
+    public static boolean isHolyArmor(ItemStack armor) {
+        if (armor.getItem() instanceof ItemArmor) {
+            ItemArmor armorItem = (ItemArmor)armor.getItem();
+            return isHolyMaterial(armorItem.getArmorMaterial().getName());
+        }
+        return false;
+    }
+
     public static boolean isHolyDamage(String name) {
         return UndeadRegistry.getHolyDamage().contains(name);
     }
@@ -110,7 +119,7 @@ public class UndeadHelper {
 
         mat = mat.toLowerCase();
         for (String name : UndeadRegistry.getHolyMaterials()) {
-            String pattern = "((.*[^a-z])|\\b)" + name + "\\b";
+            String pattern = "((.*[^a-z])|\\b)" + name + "((.*[^a-z])|\\b)(.*|\\b)";
             if (mat.matches(pattern)) {
                 return true;
             }

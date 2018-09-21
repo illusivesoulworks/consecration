@@ -9,6 +9,8 @@
 package c4.consecration.common.events;
 
 import c4.consecration.Consecration;
+import c4.consecration.common.capabilities.CapabilityUndying;
+import c4.consecration.common.capabilities.IUndying;
 import c4.consecration.common.init.ConsecrationBlocks;
 import c4.consecration.common.init.ConsecrationItems;
 import c4.consecration.common.init.ConsecrationPotions;
@@ -22,10 +24,12 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -98,6 +102,31 @@ public class EventHandlerCommon {
                             (ConsecrationItems.blessedDust, item.getItem().getCount()));
                     item.world.spawnEntity(newItem);
                     item.setDead();
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onLivingDamage(LivingDamageEvent evt) {
+        EntityLivingBase entityLivingBase = evt.getEntityLiving();
+        DamageSource source = evt.getSource();
+
+        if (!entityLivingBase.getEntityWorld().isRemote && source.getTrueSource() instanceof EntityLivingBase) {
+            EntityLivingBase attacker = (EntityLivingBase)source.getTrueSource();
+            IUndying undying = CapabilityUndying.getUndying(attacker);
+
+            if (undying != null) {
+                int level = 0;
+
+                for (ItemStack stack : entityLivingBase.getArmorInventoryList()) {
+                    if (UndeadHelper.isHolyArmor(stack)) {
+                        level++;
+                    }
+                }
+
+                if (level > 0 && entityLivingBase.getEntityWorld().rand.nextFloat() < 0.15F * (float)level ) {
+                    undying.setSmite(200);
                 }
             }
         }
