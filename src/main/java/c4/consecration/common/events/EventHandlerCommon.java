@@ -11,6 +11,7 @@ package c4.consecration.common.events;
 import c4.consecration.Consecration;
 import c4.consecration.common.capabilities.CapabilityUndying;
 import c4.consecration.common.capabilities.IUndying;
+import c4.consecration.common.config.ConfigHandler;
 import c4.consecration.common.init.ConsecrationBlocks;
 import c4.consecration.common.init.ConsecrationItems;
 import c4.consecration.common.init.ConsecrationPotions;
@@ -126,7 +127,7 @@ public class EventHandlerCommon {
                 }
 
                 if (level > 0 && entityLivingBase.getEntityWorld().rand.nextFloat() < 0.15F * (float)level ) {
-                    undying.setSmite(200);
+                    undying.setSmite(ConfigHandler.holy.smiteDuration * 20);
                 }
             }
         }

@@ -125,7 +125,6 @@ public final class CapabilityUndying {
     public static class EventHandler {
 
         private static Set<Integer> dimensions = new HashSet<>();
-        private static final int SMITE_DURATION = 200;
 
         @SubscribeEvent
         public static void attachCapabilities(final AttachCapabilitiesEvent<Entity> evt) {
@@ -181,9 +180,9 @@ public final class CapabilityUndying {
                 if (undying != null) {
                     if (UndeadHelper.doSmite(entitylivingbase, source)) {
                         if (source.isFireDamage()) {
-                            undying.setSmite(SMITE_DURATION / 2);
+                            undying.setSmite(ConfigHandler.holy.smiteDuration * 20 / 2);
                         } else {
-                            undying.setSmite(SMITE_DURATION);
+                            undying.setSmite(ConfigHandler.holy.smiteDuration * 20);
                         }
                     } else if (!source.isDamageAbsolute() && !UndeadHelper.isSmote(entitylivingbase, undying)) {
                         evt.setAmount(evt.getAmount() * (float) (1 - ConfigHandler.undying.damageReduction));

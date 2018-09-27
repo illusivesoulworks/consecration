@@ -35,6 +35,10 @@ public class ConfigHandler {
 
     public static class Holy {
 
+        @Name("Smite Duration")
+        @Comment("The amount of time, in seconds, that smiting lasts")
+        public int smiteDuration = 10;
+
         @Name("Holy Entities")
         @Comment("A list of entities that will be able to damage and smite undead")
         @RequiresMcRestart
