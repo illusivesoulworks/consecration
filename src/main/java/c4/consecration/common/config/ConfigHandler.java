@@ -72,6 +72,11 @@ public class ConfigHandler {
 
     public static class Undying {
 
+        @Name("Auto-Include Default Undead Mobs")
+        @Comment("Set to true to include all mobs that are listed as undead by default")
+        @RequiresWorldRestart
+        public boolean defaultUndead = true;
+
         @Name("Include as Undead Mob")
         @Comment("A list of mobs that will be classified as undead by this mod in addition to the regular undead")
         @RequiresMcRestart

@@ -30,7 +30,8 @@ import javax.annotation.Nonnull;
 public class UndeadHelper {
 
     public static boolean isUndead(EntityLivingBase entityLivingBase) {
-        return entityLivingBase.isEntityUndead() || UndeadRegistry.getUndeadList().contains(EntityList.getKey(entityLivingBase));
+        return (ConfigHandler.undying.defaultUndead && entityLivingBase.isEntityUndead())
+                || UndeadRegistry.getUndeadList().contains(EntityList.getKey(entityLivingBase));
     }
 
     public static boolean isSmote(@Nonnull EntityLivingBase entitylivingbase, @Nonnull IUndying undying) {
