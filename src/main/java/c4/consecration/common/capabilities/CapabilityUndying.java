@@ -156,7 +156,10 @@ public final class CapabilityUndying {
                         }
                         undying.decrementSmite();
 
-                    } else if (entitylivingbase.ticksExisted % 20 == 0) {
+                    } else if (entitylivingbase.isBurning()) {
+                        undying.setSmite(ConfigHandler.holy.smiteDuration * 20);
+                    } else if (entitylivingbase.ticksExisted % 20 == 0
+                            && entitylivingbase.getHealth() < entitylivingbase.getMaxHealth()) {
                         entitylivingbase.heal(ConfigHandler.undying.healthRegen);
                     }
                 }
