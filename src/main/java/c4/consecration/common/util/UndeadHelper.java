@@ -8,6 +8,7 @@
 
 package c4.consecration.common.util;
 
+import c4.consecration.Consecration;
 import c4.consecration.common.capabilities.CapabilityUndying;
 import c4.consecration.common.capabilities.IUndying;
 import c4.consecration.common.config.ConfigHandler;
@@ -24,10 +25,17 @@ import net.minecraft.item.ItemTool;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.Field;
 
 public class UndeadHelper {
+
+    private static final Field ARMOR_MATERIAL_NAME = ReflectionHelper.findField(ItemArmor.ArmorMaterial.class,
+            "name", "field_179243_f", "f");
 
     public static boolean isUndead(EntityLivingBase entityLivingBase) {
         return (ConfigHandler.undying.defaultUndead && entityLivingBase.isEntityUndead())
@@ -107,7 +115,14 @@ public class UndeadHelper {
     public static boolean isHolyArmor(ItemStack armor) {
         if (armor.getItem() instanceof ItemArmor) {
             ItemArmor armorItem = (ItemArmor)armor.getItem();
-            return isHolyMaterial(armorItem.getArmorMaterial().getName());
+            boolean isHolyArmor = false;
+            try {
+                isHolyArmor = isHolyMaterial((String)ARMOR_MATERIAL_NAME.get(armorItem.getArmorMaterial()));
+            } catch (IllegalAccessException e) {
+                Consecration.logger.log(Level.ERROR, "Error retrieving name for armor material "
+                        + armorItem.getArmorMaterial());
+            }
+            return isHolyArmor;
         }
         return false;
     }
