@@ -55,7 +55,7 @@ public class Consecration {
 
     public static final String MODID = "consecration";
     public static final String MODNAME = "Consecration";
-    public static final String MODVER = "0.0.9";
+    public static final String MODVER = "0.0.10";
 
     @SidedProxy(clientSide = "c4.consecration.proxy.ClientProxy", serverSide = "c4.consecration.proxy.ServerProxy")
     public static IProxy proxy;
