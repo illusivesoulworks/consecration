@@ -1,0 +1,15 @@
+{
+  "result": {
+    "item": "consecration:fire_arrow"
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:coal",
+      "data": 32767
+    },
+    {
+      "item": "minecraft:arrow"
+    }
+  ],
+  "type": "forge:ore_shapeless"
+}
