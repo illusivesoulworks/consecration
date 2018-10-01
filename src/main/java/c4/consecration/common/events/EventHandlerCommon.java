@@ -121,7 +121,7 @@ public class EventHandlerCommon {
                 int level = 0;
 
                 for (ItemStack stack : entityLivingBase.getArmorInventoryList()) {
-                    if (UndeadHelper.isHolyArmor(stack)) {
+                    if (!stack.isEmpty() && UndeadHelper.isHolyArmor(stack)) {
                         level++;
                     }
                 }
