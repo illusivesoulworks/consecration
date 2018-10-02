@@ -59,7 +59,7 @@ public class UndeadHelper {
     public static boolean doSmite(EntityLivingBase target, DamageSource source) {
 
         //Check fire damage/burning
-        if (!target.isImmuneToFire() && (source.isFireDamage() || target.isBurning())) {
+        if (!target.isImmuneToFire() && source.isFireDamage()) {
             return true;
         }
 
