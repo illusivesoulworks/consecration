@@ -47,7 +47,7 @@ public class ConfigHandler {
         @Name("Holy Potions")
         @Comment("A list of potions that will be able to damage and smite undead")
         @RequiresMcRestart
-        public String[] holyPotions = new String[]{"consecration:holy_potion"};
+        public String[] holyPotions = new String[]{"consecration:holy_potion", "minecraft:instant_health"};
 
         @Name("Holy Weapons")
         @Comment("A list of items that will be able to damage and smite undead")

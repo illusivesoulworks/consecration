@@ -21,9 +21,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class ConsecrationPotions {
 
     public static final Potion HOLY_POTION = new HolyPotion().setBeneficial().setPotionName("effect.holy").setRegistryName("holy_potion");
-    public static final PotionType HOLY = new PotionType("holy", new PotionEffect(HOLY_POTION, 1)).setRegistryName("holy");
-    public static final PotionType STRONG_HOLY = new PotionType("holy", new PotionEffect(HOLY_POTION, 1, 1)).setRegistryName("strong_holy");
-    public static final PotionType ULTIMATE_HOLY = new PotionType("holy", new PotionEffect(HOLY_POTION, 1, 2)).setRegistryName("ultimate_holy");
+    public static final PotionType HOLY = new PotionType("holy", new PotionEffect(HOLY_POTION, 800)).setRegistryName
+            ("holy");
+    public static final PotionType STRONG_HOLY = new PotionType("holy", new PotionEffect(HOLY_POTION, 1200, 1))
+            .setRegistryName("strong_holy");
+    public static final PotionType ULTIMATE_HOLY = new PotionType("holy", new PotionEffect(HOLY_POTION, 1600, 2))
+            .setRegistryName("ultimate_holy");
 
     @SubscribeEvent
     public static void initPotionTypes(RegistryEvent.Register<PotionType> evt) {

@@ -13,29 +13,39 @@ import c4.consecration.common.capabilities.CapabilityUndying;
 import c4.consecration.common.capabilities.IUndying;
 import c4.consecration.common.config.ConfigHandler;
 import c4.consecration.integrations.ModuleCompatibility;
+import com.google.common.collect.Lists;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityAreaEffectCloud;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
 import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.potion.PotionType;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.Level;
+import scala.collection.immutable.Stream;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
+import java.util.List;
 
 public class UndeadHelper {
 
     private static final Field ARMOR_MATERIAL_NAME = ReflectionHelper.findField(ItemArmor.ArmorMaterial.class,
             "name", "field_179243_f", "f");
+    private static final Field AOE_CLOUD_POTION = ReflectionHelper.findField(EntityAreaEffectCloud.class, "potion",
+            "field_184502_e", "g");
 
     public static boolean isUndead(EntityLivingBase entityLivingBase) {
         return (ConfigHandler.undying.defaultUndead && entityLivingBase.isEntityUndead())
@@ -104,10 +114,37 @@ public class UndeadHelper {
         return false;
     }
 
+    public static boolean isHolyPotionEntity(Entity entity) {
+        List<PotionEffect> effects = Lists.newArrayList();
+
+        if (entity instanceof EntityPotion) {
+            EntityPotion entitypotion = (EntityPotion)entity;
+            effects.addAll(PotionUtils.getEffectsFromStack(entitypotion.getPotion()));
+        } else if (entity instanceof EntityAreaEffectCloud) {
+            PotionType potion = null;
+            try {
+                potion = (PotionType)AOE_CLOUD_POTION.get(entity);
+            } catch (IllegalAccessException e) {
+                Consecration.logger.log(Level.ERROR, "Error getting potion from AoE cloud " + entity);
+            }
+            if (potion != null) {
+                effects.addAll(potion.getEffects());
+            }
+        }
+
+        for (PotionEffect effect : effects) {
+            Potion potion = effect.getPotion();
+            if (UndeadRegistry.getHolyPotions().contains(potion)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean isHolyEntity(Entity entity) {
         if (entity != null) {
             ResourceLocation rl = EntityList.getKey(entity);
-            return rl != null && UndeadRegistry.getHolyEntities().contains(rl);
+            return rl != null && (isHolyPotionEntity(entity) || UndeadRegistry.getHolyEntities().contains(rl));
         }
         return false;
     }
