@@ -130,9 +130,9 @@ public final class CapabilityUndying {
 
         @SubscribeEvent
         public static void attachCapabilities(final AttachCapabilitiesEvent<Entity> evt) {
-            if (evt.getObject() instanceof EntityLivingBase && UndeadHelper.isUndead((EntityLivingBase) evt.getObject())) {
+            if (evt.getObject() instanceof EntityLivingBase) {
                 EntityLivingBase living = (EntityLivingBase)evt.getObject();
-                if (UndeadHelper.isUndead(living) && isAllowedDimension(living)) {
+                if (isAllowedDimension(living)) {
                     evt.addCapability(ID, createProvider(new Undying()));
                 }
             }
@@ -142,7 +142,7 @@ public final class CapabilityUndying {
         public static void onLivingUpdate(LivingEvent.LivingUpdateEvent evt) {
             EntityLivingBase entitylivingbase = evt.getEntityLiving();
 
-            if (!entitylivingbase.getEntityWorld().isRemote) {
+            if (!entitylivingbase.getEntityWorld().isRemote && UndeadHelper.isUndead(entitylivingbase)) {
                 IUndying undying = CapabilityUndying.getUndying(entitylivingbase);
 
                 if (undying != null) {
@@ -172,7 +172,7 @@ public final class CapabilityUndying {
         public static void onLivingDamage(LivingDamageEvent evt) {
             EntityLivingBase entitylivingbase = evt.getEntityLiving();
 
-            if (!entitylivingbase.getEntityWorld().isRemote) {
+            if (!entitylivingbase.getEntityWorld().isRemote && UndeadHelper.isUndead(entitylivingbase)) {
                 DamageSource source = evt.getSource();
 
                 //Check for "natural" damage
