@@ -10,11 +10,15 @@ package c4.consecration.common.potions;
 
 import c4.consecration.common.init.ConsecrationDamageSources;
 import c4.consecration.common.util.UndeadHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
+import net.minecraft.init.MobEffects;
 import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class HolyPotion extends Potion {
 
@@ -23,39 +27,18 @@ public class HolyPotion extends Potion {
     }
 
     @Override
-    public boolean isReady(int duration, int amplifier) {
-        int k = 50 >> amplifier;
-
-        if (k > 0) {
-            return duration % k == 0;
-        } else {
-            return true;
-        }
+    public boolean isInstant() {
+        return true;
     }
 
-    @Override
-    public void performEffect(@Nonnull EntityLivingBase entityLivingBaseIn, int amplifier) {
+    public void affectEntity(@Nullable Entity source, @Nullable Entity indirectSource,
+                             @Nonnull EntityLivingBase entityLivingBaseIn, int amplifier, double health) {
 
         if (UndeadHelper.isUndead(entityLivingBaseIn)) {
-            entityLivingBaseIn.attackEntityFrom(ConsecrationDamageSources.HOLY, (float)(2 << amplifier));
-        } else if (entityLivingBaseIn.getHealth() < entityLivingBaseIn.getMaxHealth()) {
-            entityLivingBaseIn.heal(1.0F);
+            entityLivingBaseIn.attackEntityFrom(ConsecrationDamageSources.HOLY, (float)(8 << amplifier));
+        } else {
+            entityLivingBaseIn.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 600, amplifier));
+            entityLivingBaseIn.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 600, amplifier));
         }
-    }
-
-    public void removeAttributesModifiersFromEntity(EntityLivingBase entityLivingBaseIn, @Nonnull AbstractAttributeMap
-                                                    attributeMapIn, int amplifier) {
-        if (!UndeadHelper.isUndead(entityLivingBaseIn)) {
-            entityLivingBaseIn.setAbsorptionAmount(entityLivingBaseIn.getAbsorptionAmount() - (float) (4 * (amplifier + 1)));
-        }
-        super.removeAttributesModifiersFromEntity(entityLivingBaseIn, attributeMapIn, amplifier);
-    }
-
-    public void applyAttributesModifiersToEntity(EntityLivingBase entityLivingBaseIn, @Nonnull AbstractAttributeMap
-                                                 attributeMapIn, int amplifier) {
-        if (!UndeadHelper.isUndead(entityLivingBaseIn)) {
-            entityLivingBaseIn.setAbsorptionAmount(entityLivingBaseIn.getAbsorptionAmount() + (float) (4 * (amplifier + 1)));
-        }
-        super.applyAttributesModifiersToEntity(entityLivingBaseIn, attributeMapIn, amplifier);
     }
 }

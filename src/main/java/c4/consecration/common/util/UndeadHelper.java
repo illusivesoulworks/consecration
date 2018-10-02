@@ -52,10 +52,6 @@ public class UndeadHelper {
                 || UndeadRegistry.getUndeadList().contains(EntityList.getKey(entityLivingBase));
     }
 
-    public static boolean isSmote(@Nonnull EntityLivingBase entitylivingbase, @Nonnull IUndying undying) {
-        return undying.isSmote() || hasHolyPotion(entitylivingbase);
-    }
-
     public static boolean doSmite(EntityLivingBase target, DamageSource source) {
 
         //Check fire damage/burning

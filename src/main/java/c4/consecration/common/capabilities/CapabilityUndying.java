@@ -12,11 +12,17 @@ import c4.consecration.Consecration;
 import c4.consecration.common.config.ConfigHandler;
 import c4.consecration.common.init.ConsecrationTriggers;
 import c4.consecration.common.util.UndeadHelper;
+import c4.consecration.common.util.UndeadRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.potion.PotionType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
@@ -25,17 +31,24 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import org.apache.logging.log4j.Level;
 import scala.collection.immutable.Stream;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
 public final class CapabilityUndying {
+
+    private static final Field TIPPED_ARROW_POTION = ReflectionHelper.findField(EntityTippedArrow.class,
+            "potion", "field_184560_g", "g");
 
     @CapabilityInject(IUndying.class)
     public static final Capability<IUndying> UNDYING_CAP = null;
@@ -147,7 +160,7 @@ public final class CapabilityUndying {
 
                 if (undying != null) {
 
-                    if (UndeadHelper.isSmote(entitylivingbase, undying)) {
+                    if (undying.isSmote()) {
 
                         if (entitylivingbase.ticksExisted % 10 == 0) {
                             WorldServer worldIn = (WorldServer) entitylivingbase.getEntityWorld();
@@ -158,11 +171,39 @@ public final class CapabilityUndying {
                         }
                         undying.decrementSmite();
 
-                    } else if (entitylivingbase.isBurning()) {
+                    } else if (UndeadHelper.hasHolyPotion(entitylivingbase)) {
                         undying.setSmite(ConfigHandler.holy.smiteDuration * 20);
+                    } else if (entitylivingbase.isBurning()) {
+                        undying.setSmite(ConfigHandler.holy.fireSmiteDuration * 20);
                     } else if (entitylivingbase.ticksExisted % 20 == 0
                             && entitylivingbase.getHealth() < entitylivingbase.getMaxHealth()) {
                         entitylivingbase.heal(ConfigHandler.undying.healthRegen);
+                    }
+                }
+            }
+        }
+
+        @SubscribeEvent
+        public static void onArrowImpact(ProjectileImpactEvent.Arrow evt) {
+            EntityArrow arrow = evt.getArrow();
+
+            if (arrow.shootingEntity instanceof EntityPlayerMP && arrow instanceof EntityTippedArrow) {
+                PotionType potionType = null;
+
+                try {
+                    potionType = (PotionType)TIPPED_ARROW_POTION.get(arrow);
+                } catch (IllegalAccessException e) {
+                    Consecration.logger.log(Level.ERROR, "Error catching potion from EntityTippedArrow" + arrow);
+                }
+
+                if (potionType != null) {
+
+                    for (PotionEffect effect : potionType.getEffects()) {
+                        Potion potion = effect.getPotion();
+                        if (UndeadRegistry.getHolyPotions().contains(potion)) {
+                            ConsecrationTriggers.SMITE_KILLED.trigger((EntityPlayerMP)arrow.shootingEntity);
+                            return;
+                        }
                     }
                 }
             }
@@ -192,7 +233,7 @@ public final class CapabilityUndying {
                         if (source.getTrueSource() instanceof EntityPlayerMP) {
                             ConsecrationTriggers.SMITE_KILLED.trigger((EntityPlayerMP) source.getTrueSource());
                         }
-                    } else if (!source.isDamageAbsolute() && !UndeadHelper.isSmote(entitylivingbase, undying)) {
+                    } else if (!source.isDamageAbsolute() && !undying.isSmote()) {
                         evt.setAmount(evt.getAmount() * (float) (1 - ConfigHandler.undying.damageReduction));
                     }
                 }
