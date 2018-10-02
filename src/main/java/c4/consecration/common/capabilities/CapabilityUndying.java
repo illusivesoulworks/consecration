@@ -185,7 +185,7 @@ public final class CapabilityUndying {
                 if (undying != null) {
                     if (UndeadHelper.doSmite(entitylivingbase, source)) {
                         if (source.isFireDamage()) {
-                            undying.setSmite(ConfigHandler.holy.smiteDuration * 20 / 2);
+                            undying.setSmite(ConfigHandler.holy.fireSmiteDuration * 20);
                         } else {
                             undying.setSmite(ConfigHandler.holy.smiteDuration * 20);
                         }

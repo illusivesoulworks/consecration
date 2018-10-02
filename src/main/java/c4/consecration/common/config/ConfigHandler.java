@@ -35,8 +35,12 @@ public class ConfigHandler {
 
     public static class Holy {
 
-        @Name("Smite Duration")
-        @Comment("The amount of time, in seconds, that smiting lasts")
+        @Name("Fire Smite Duration")
+        @Comment("The amount of time, in seconds, that smiting from fire lasts")
+        public int fireSmiteDuration = 5;
+
+        @Name("Holy Smite Duration")
+        @Comment("The amount of time, in seconds, that smiting from holy sources lasts")
         public int smiteDuration = 10;
 
         @Name("Holy Entities")

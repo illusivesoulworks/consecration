@@ -21,8 +21,10 @@ consecration.general.dimensionpermission.tooltip=Set whether the dimension confi
 consecration.general.dimensionlist=Dimension List
 consecration.general.dimensionlist.tooltip=Set which dimensions are blacklisted or whitelisted for affected undead, leave blank to disable this option
 
-consecration.general.holy.smiteduration=Smite Duration
-consecration.general.holy.smiteduration.tooltip=The amount of time, in seconds, that smiting lasts
+consecration.general.holy.firesmiteduration=Fire Smite Duration
+consecration.general.holy.firesmiteduration.tooltip=The amount of time, in seconds, that smiting from fire lasts
+consecration.general.holy.smiteduration=Holy Smite Duration
+consecration.general.holy.smiteduration.tooltip=The amount of time, in seconds, that smiting from holy sources lasts
 consecration.general.holy.holyentities=Holy Entities
 consecration.general.holy.holyentities.tooltip=A list of entities that will be able to damage and smite undead
 consecration.general.holy.holypotions=Holy Potions
