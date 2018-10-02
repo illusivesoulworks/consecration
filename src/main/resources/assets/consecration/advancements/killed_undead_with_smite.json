@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:golden_apple"
+    },
+    "title": {
+      "translate": "advancements.consecration.killed_undead_with_smite.title"
+    },
+    "description": {
+      "translate": "advancements.consecration.killed_undead_with_smite.description"
+    }
+  },
+  "parent": "minecraft:adventure/kill_a_mob",
+  "criteria": {
+    "smite_killed": {
+      "trigger": "consecration:smite_killed"
+    }
+  }
+}

@@ -15,6 +15,7 @@ import c4.consecration.common.entities.EntityFireBomb;
 import c4.consecration.common.init.ConsecrationDamageSources;
 import c4.consecration.common.init.ConsecrationItems;
 import c4.consecration.common.init.ConsecrationPotions;
+import c4.consecration.common.init.ConsecrationTriggers;
 import c4.consecration.common.trading.ListPotionForEmeralds;
 import c4.consecration.common.util.ConfigHelper;
 import c4.consecration.common.util.UndeadHelper;
@@ -74,6 +75,7 @@ public class Consecration {
     @Mod.EventHandler
     public void init(FMLInitializationEvent evt) {
         MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
+        ConsecrationTriggers.init();
         CapabilityUndying.register();
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(ConsecrationItems.fireBomb, new BehaviorProjectileDispense()
         {

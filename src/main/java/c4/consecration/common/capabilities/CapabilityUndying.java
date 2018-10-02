@@ -10,9 +10,11 @@ package c4.consecration.common.capabilities;
 
 import c4.consecration.Consecration;
 import c4.consecration.common.config.ConfigHandler;
+import c4.consecration.common.init.ConsecrationTriggers;
 import c4.consecration.common.util.UndeadHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
@@ -186,6 +188,9 @@ public final class CapabilityUndying {
                             undying.setSmite(ConfigHandler.holy.smiteDuration * 20 / 2);
                         } else {
                             undying.setSmite(ConfigHandler.holy.smiteDuration * 20);
+                        }
+                        if (source.getTrueSource() instanceof EntityPlayerMP) {
+                            ConsecrationTriggers.SMITE_KILLED.trigger((EntityPlayerMP) source.getTrueSource());
                         }
                     } else if (!source.isDamageAbsolute() && !UndeadHelper.isSmote(entitylivingbase, undying)) {
                         evt.setAmount(evt.getAmount() * (float) (1 - ConfigHandler.undying.damageReduction));
