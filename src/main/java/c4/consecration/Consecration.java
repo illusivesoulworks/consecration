@@ -12,10 +12,7 @@ import c4.consecration.common.events.EventHandlerCommon;
 import c4.consecration.common.capabilities.CapabilityUndying;
 import c4.consecration.common.config.ConfigHandler;
 import c4.consecration.common.entities.EntityFireBomb;
-import c4.consecration.common.init.ConsecrationDamageSources;
-import c4.consecration.common.init.ConsecrationItems;
-import c4.consecration.common.init.ConsecrationPotions;
-import c4.consecration.common.init.ConsecrationTriggers;
+import c4.consecration.common.init.*;
 import c4.consecration.common.trading.ListPotionForEmeralds;
 import c4.consecration.common.util.ConfigHelper;
 import c4.consecration.common.util.UndeadHelper;
@@ -34,6 +31,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -54,6 +52,10 @@ import java.util.List;
         certificateFingerprint = "5d5b8aee896a4f5ea3f3114784742662a67ad32f")
 public class Consecration {
 
+    static {
+        FluidRegistry.enableUniversalBucket();
+    }
+
     public static final String MODID = "consecration";
     public static final String MODNAME = "Consecration";
     public static final String MODVER = "0.0.11";
@@ -69,6 +71,8 @@ public class Consecration {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent evt) {
         logger = evt.getModLog();
+        FluidRegistry.registerFluid(ConsecrationFluids.HOLY_WATER);
+        FluidRegistry.addBucketForFluid(ConsecrationFluids.HOLY_WATER);
         proxy.preInit(evt);
     }
 

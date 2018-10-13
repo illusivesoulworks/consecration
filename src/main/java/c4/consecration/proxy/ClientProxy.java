@@ -12,8 +12,16 @@ import c4.consecration.client.render.RenderFireArrow;
 import c4.consecration.client.render.RenderFireBomb;
 import c4.consecration.common.entities.EntityFireArrow;
 import c4.consecration.common.entities.EntityFireBomb;
+import c4.consecration.common.init.ConsecrationBlocks;
 import c4.consecration.common.init.ConsecrationItems;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.ItemMeshDefinition;
+import net.minecraft.client.renderer.block.model.ModelBakery;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.statemap.StateMapperBase;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -30,6 +38,19 @@ public class ClientProxy implements IProxy {
         ConsecrationItems.fireStick.initModel();
         ConsecrationItems.fireBomb.initModel();
         ConsecrationItems.fireArrow.initModel();
+
+        ModelLoader.setCustomMeshDefinition(ConsecrationItems.holyWater, new ItemMeshDefinition() {
+            @Override
+            public ModelResourceLocation getModelLocation(ItemStack stack) {
+                return new ModelResourceLocation(ConsecrationItems.holyWater.getRegistryName(), "inventory");
+            }
+        });
+        ModelLoader.setCustomStateMapper(ConsecrationBlocks.holyWater, new StateMapperBase() {
+            @Override
+            protected ModelResourceLocation getModelResourceLocation(IBlockState state) {
+                return new ModelResourceLocation(ConsecrationBlocks.holyWater.getRegistryName(), "inventory");
+            }
+        });
 
         RenderingRegistry.registerEntityRenderingHandler(EntityFireBomb.class, RenderFireBomb.FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityFireArrow.class, RenderFireArrow.FACTORY);

@@ -16,6 +16,10 @@ enchantment.consecration.blessing.desc=Reduces damage from undead attacks.
 advancements.consecration.killed_undead_with_smite.title=Hunt the Night
 advancements.consecration.killed_undead_with_smite.description=Smite the undead
 
+fluid.holy_water=Holy Water
+
+tile.consecration.holy_water.name=Holy Water
+
 consecration.general.dimensionpermission=Dimension Permission Mode
 consecration.general.dimensionpermission.tooltip=Set whether the dimension configuration is blacklisted or whitelisted
 consecration.general.dimensionlist=Dimension List

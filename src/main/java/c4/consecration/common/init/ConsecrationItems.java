@@ -11,6 +11,7 @@ package c4.consecration.common.init;
 import c4.consecration.Consecration;
 import c4.consecration.common.items.*;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -32,12 +33,17 @@ public class ConsecrationItems {
     @ObjectHolder("fire_arrow")
     public static final ItemFireArrow fireArrow = null;
 
+    @ObjectHolder("holy_water")
+    public static final Item holyWater = null;
+
     @SubscribeEvent
     public static void init(RegistryEvent.Register<Item> evt) {
         evt.getRegistry().registerAll(
                 new ItemBlessedDust(),
                 new ItemFireArrow(),
                 new ItemFireBomb(),
-                new ItemFireStick());
+                new ItemFireStick(),
+                new ItemBlock(ConsecrationBlocks.holyWater).setRegistryName("holy_water")
+                        .setTranslationKey(Consecration.MODID + ".holy_water"));
     }
 }
