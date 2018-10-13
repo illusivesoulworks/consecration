@@ -53,14 +53,15 @@ public class EventHandlerCommon {
     @SubscribeEvent
     @SuppressWarnings("ConstantConditions")
     public void onSpawnCheck(LivingSpawnEvent.CheckSpawn evt) {
+        World world = evt.getWorld();
+        BlockPos pos = evt.getEntityLiving().getPosition();
 
-        if (UndeadHelper.isUndead(evt.getEntityLiving())) {
-            World world = evt.getWorld();
-            BlockPos pos = evt.getEntityLiving().getPosition();
+        if (world.getBlockState(pos).getBlock() == ConsecrationBlocks.blessedTrail
+                || world.getBlockState(pos.down(2)).getBlock() == ConsecrationBlocks.blessedTrail) {
 
-            if (world.getBlockState(pos).getBlock() == ConsecrationBlocks.blessedTrail
-                    || world.getBlockState(pos.down(2)).getBlock() == ConsecrationBlocks.blessedTrail)
+            if (UndeadHelper.isUndead(evt.getEntityLiving())) {
                 evt.setResult(Event.Result.DENY);
+            }
         }
     }
 
