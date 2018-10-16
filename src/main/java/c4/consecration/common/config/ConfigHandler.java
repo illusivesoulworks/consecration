@@ -95,6 +95,10 @@ public class ConfigHandler {
         @Comment("Set undead natural health regen, in half-hearts per second")
         @RangeInt(min = 0, max = 1000)
         public int healthRegen = 1;
+
+        @Name("Reduce Damage Against Non-Players")
+        @Comment("Set to true to have undead reduce damage against non-player non-holy entities")
+        public boolean reduceDamageVsMobs = true;
     }
 
     public enum PermissionMode {

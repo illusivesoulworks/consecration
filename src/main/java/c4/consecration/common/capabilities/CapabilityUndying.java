@@ -15,6 +15,7 @@ import c4.consecration.common.util.UndeadHelper;
 import c4.consecration.common.util.UndeadRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityTippedArrow;
@@ -234,7 +235,11 @@ public final class CapabilityUndying {
                             ConsecrationTriggers.SMITE_KILLED.trigger((EntityPlayerMP) source.getTrueSource());
                         }
                     } else if (!source.isDamageAbsolute() && !undying.isSmote()) {
-                        evt.setAmount(evt.getAmount() * (float) (1 - ConfigHandler.undying.damageReduction));
+
+                        if ((source.getTrueSource() != null && (ConfigHandler.undying.reduceDamageVsMobs
+                                || source.getTrueSource() instanceof EntityPlayer))) {
+                            evt.setAmount(evt.getAmount() * (float) (1 - ConfigHandler.undying.damageReduction));
+                        }
                     }
                 }
             }

@@ -54,3 +54,5 @@ consecration.general.undying.damagereduction=Damage Reduction
 consecration.general.undying.damagereduction.tooltip=Set undead natural damage reduction, in percent, against all non-holy damage
 consecration.general.undying.healthregen=Health Regen
 consecration.general.undying.healthregen.tooltip=Set undead natural health regen, in half-hearts per second, when not smote
+consecration.general.undying.reducedamagevsmobs=Reduce Damage Against Non-Players
+consecration.general.undying.reducedamagevsmobs.tooltip=Set to true to have undead reduce damage against non-player non-holy entities
