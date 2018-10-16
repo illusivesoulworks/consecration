@@ -37,7 +37,6 @@ public class BlockHolyWater extends BlockFluidClassic {
         super(ConsecrationFluids.HOLY_WATER, Material.WATER);
         this.setRegistryName("holy_water");
         this.setTranslationKey(Consecration.MODID + ".holy_water");
-        this.setCreativeTab(CreativeTabs.MATERIALS);
     }
 
     @Nullable

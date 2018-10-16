@@ -20,6 +20,10 @@ fluid.holy_water=Holy Water
 
 tile.consecration.holy_water.name=Holy Water
 
+consecration.benediction.water=The water has been blessed by the priest
+consecration.benediction.dust=The dust has been blessed by the priest
+consecration.benediction.power=You do not have enough experience to receive the blessing
+
 consecration.general.dimensionpermission=Dimension Permission Mode
 consecration.general.dimensionpermission.tooltip=Set whether the dimension configuration is blacklisted or whitelisted
 consecration.general.dimensionlist=Dimension List

@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "minecraft:golden_apple"
+      "item": "consecration:blessed_dust"
     },
     "title": {
       "translate": "advancements.consecration.killed_undead_with_smite.title"

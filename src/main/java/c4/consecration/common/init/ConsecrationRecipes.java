@@ -23,9 +23,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class ConsecrationRecipes {
 
     @SubscribeEvent
+    @SuppressWarnings("ConstantConditions")
     public static void init(RegistryEvent.Register<IRecipe> evt) {
-        PotionHelper.addMix(PotionTypes.AWKWARD, Ingredient.fromStacks(new ItemStack(Items.GOLDEN_APPLE, 1, 0)), ConsecrationPotions.HOLY);
-        PotionHelper.addMix(PotionTypes.AWKWARD, Ingredient.fromStacks(new ItemStack(Items.GOLDEN_APPLE, 1, 1)), ConsecrationPotions.ULTIMATE_HOLY);
+        PotionHelper.addMix(PotionTypes.AWKWARD, Ingredient.fromStacks(new ItemStack(ConsecrationItems.blessedDust, 1, 0)),
+                ConsecrationPotions.HOLY);
         PotionHelper.addMix(ConsecrationPotions.HOLY, Items.GLOWSTONE_DUST, ConsecrationPotions.STRONG_HOLY);
     }
 }

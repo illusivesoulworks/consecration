@@ -25,15 +25,12 @@ public class ConsecrationPotions {
             ("holy");
     public static final PotionType STRONG_HOLY = new PotionType("holy", new PotionEffect(HOLY_POTION, 1, 1))
             .setRegistryName("strong_holy");
-    public static final PotionType ULTIMATE_HOLY = new PotionType("holy", new PotionEffect(HOLY_POTION, 1, 2))
-            .setRegistryName("ultimate_holy");
 
     @SubscribeEvent
     public static void initPotionTypes(RegistryEvent.Register<PotionType> evt) {
         evt.getRegistry().registerAll(
                 HOLY,
-                STRONG_HOLY,
-                ULTIMATE_HOLY);
+                STRONG_HOLY);
     }
 
     @SubscribeEvent

@@ -13,30 +13,46 @@ import c4.consecration.common.capabilities.CapabilityUndying;
 import c4.consecration.common.capabilities.IUndying;
 import c4.consecration.common.config.ConfigHandler;
 import c4.consecration.common.init.ConsecrationBlocks;
+import c4.consecration.common.init.ConsecrationFluids;
 import c4.consecration.common.init.ConsecrationItems;
 import c4.consecration.common.init.ConsecrationPotions;
 import c4.consecration.common.util.UndeadHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityZombieVillager;
+import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBucket;
+import net.minecraft.item.ItemRedstone;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fluids.*;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.Level;
 
 import java.lang.reflect.InvocationTargetException;
@@ -67,43 +83,51 @@ public class EventHandlerCommon {
 
     @SubscribeEvent
     @SuppressWarnings("ConstantConditions")
-    public void onThrowable(ProjectileImpactEvent.Throwable evt) {
+    public void onPriestInteract(PlayerInteractEvent.EntityInteract evt) {
+        Entity target = evt.getTarget();
 
-        if (!evt.getThrowable().world.isRemote) {
+        if (!target.world.isRemote && target instanceof EntityVillager) {
+            EntityVillager villager = (EntityVillager)target;
+            VillagerRegistry.VillagerProfession profession = villager.getProfessionForge();
 
-            EntityThrowable entityThrowable = evt.getThrowable();
+            if (profession.getRegistryName().toString().equalsIgnoreCase("minecraft:priest")) {
+                ItemStack stack = evt.getItemStack();
+                Item item = stack.getItem();
+                EntityPlayer player = evt.getEntityPlayer();
+                ItemStack output = ItemStack.EMPTY;
+                String messageKey = "consecration.benediction.";
 
-            if (entityThrowable instanceof EntityPotion) {
-                ItemStack stack = ((EntityPotion) entityThrowable).getPotion();
-                List<PotionEffect> list = PotionUtils.getEffectsFromStack(stack);
-                boolean holyPotion = false;
-                if (list.isEmpty()) {
-                    return;
-                } else {
-                    for (PotionEffect effect : list) {
-                        if (effect.getPotion() == ConsecrationPotions.HOLY_POTION) {
-                            holyPotion = true;
-                            break;
-                        }
+                if (item instanceof ItemBucket) {
+                    FluidStack fluidStack = FluidUtil.getFluidContained(stack);
+
+                    if (fluidStack != null && fluidStack.getFluid() == FluidRegistry.WATER) {
+                        output = FluidUtil.getFilledBucket(new FluidStack(ConsecrationFluids.HOLY_WATER,
+                                Fluid.BUCKET_VOLUME));
+                        messageKey += "water";
                     }
-                }
-                if (!holyPotion) {
-                    return;
-                }
-
-                AxisAlignedBB axisalignedbb = entityThrowable.getEntityBoundingBox().grow(4.0D, 2.0D, 4.0D);
-                List<EntityItem> items = entityThrowable.world.getEntitiesWithinAABB(EntityItem.class, axisalignedbb,
-                        apply -> apply != null && apply.getItem().getItem() == Items.GLOWSTONE_DUST);
-
-                if (items.isEmpty()) {
-                    return;
+                } else if (item == Items.GLOWSTONE_DUST) {
+                    output = new ItemStack(ConsecrationItems.blessedDust, stack.getCount());
+                    messageKey += "dust";
                 }
 
-                for (EntityItem item : items) {
-                    EntityItem newItem = new EntityItem(item.world, item.posX, item.posY, item.posZ, new ItemStack
-                            (ConsecrationItems.blessedDust, item.getItem().getCount()));
-                    item.world.spawnEntity(newItem);
-                    item.setDead();
+                if (!output.isEmpty()) {
+                    if (player.experienceLevel < 1 && !player.capabilities.isCreativeMode) {
+                        messageKey = "consecration.benediction.power";
+                        player.world.playSound(null, player.getPosition(), SoundEvents.ENTITY_VILLAGER_NO,
+                                SoundCategory.NEUTRAL, 1.0F,
+                                (player.world.rand.nextFloat() - player.world.rand.nextFloat()) * 0.2F + 1.0F);
+                    } else {
+                        player.onEnchant(output, 1);
+                        stack.shrink(output.getCount());
+                        ItemHandlerHelper.giveItemToPlayer(player, output, player.inventory.currentItem);
+                        player.world.playSound(null, player.getPosition(), SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE,
+                                SoundCategory.BLOCKS, 2.0F, player.world.rand.nextFloat() * 0.5f + 1.5f);
+                        player.world.playSound(null, player.getPosition(), SoundEvents.ENTITY_VILLAGER_YES,
+                                SoundCategory.NEUTRAL, 1.0F,
+                                (player.world.rand.nextFloat() - player.world.rand.nextFloat()) * 0.2F + 1.0F);
+                    }
+                    player.sendStatusMessage(new TextComponentTranslation(messageKey), true);
+                    evt.setCanceled(true);
                 }
             }
         }
