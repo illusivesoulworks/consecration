@@ -9,6 +9,8 @@
 package c4.consecration.common.events;
 
 import c4.consecration.Consecration;
+import c4.consecration.common.blocks.BlockBlessedTrail;
+import c4.consecration.common.blocks.BlockHolyWater;
 import c4.consecration.common.capabilities.CapabilityUndying;
 import c4.consecration.common.capabilities.IUndying;
 import c4.consecration.common.config.ConfigHandler;
@@ -17,6 +19,7 @@ import c4.consecration.common.init.ConsecrationFluids;
 import c4.consecration.common.init.ConsecrationItems;
 import c4.consecration.common.init.ConsecrationPotions;
 import c4.consecration.common.util.UndeadHelper;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -25,6 +28,7 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
@@ -43,6 +47,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fluids.*;
@@ -55,6 +60,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.Level;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -63,8 +69,75 @@ import java.util.UUID;
 
 public class EventHandlerCommon {
 
-    private static Random rand = new Random();
-    private static final Method START_CONVERTING = ReflectionHelper.findMethod(EntityZombieVillager.class, "startConverting", "func_191991_a", UUID.class, Integer.TYPE);
+    private static final Field CONVERSION_TIME = ReflectionHelper.findField(EntityZombieVillager.class,
+            "conversionTime", "field_82234_d");
+
+    @SubscribeEvent
+    public void onZombieVillagerUpdate(LivingEvent.LivingUpdateEvent evt) {
+        EntityLivingBase living = evt.getEntityLiving();
+
+        if (!living.world.isRemote && living instanceof EntityZombieVillager) {
+            EntityZombieVillager zombieVillager = (EntityZombieVillager)living;
+
+            if (zombieVillager.isConverting()) {
+                int conversionTime = getConversionTime(zombieVillager);
+                conversionTime -= getConversionSpeed(zombieVillager);
+                setConversionTime(zombieVillager, conversionTime);
+            }
+        }
+    }
+
+    private int getConversionSpeed(EntityZombieVillager zombieVillager) {
+        int speed = 0;
+
+        if (zombieVillager.world.rand.nextFloat() < 0.01F)
+        {
+            int j = 0;
+            BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+
+            for (int k = (int)zombieVillager.posX - 4; k < (int)zombieVillager.posX + 4 && j < 14; ++k)
+            {
+                for (int l = (int)zombieVillager.posY - 4; l < (int)zombieVillager.posY + 4 && j < 14; ++l)
+                {
+                    for (int i1 = (int)zombieVillager.posZ - 4; i1 < (int)zombieVillager.posZ + 4 && j < 14; ++i1)
+                    {
+                        Block block = zombieVillager.world.getBlockState(blockpos$mutableblockpos.setPos(k, l, i1)).getBlock();
+
+                        if (block instanceof BlockHolyWater || block instanceof BlockBlessedTrail)
+                        {
+                            if (zombieVillager.world.rand.nextFloat() < 0.3F)
+                            {
+                                speed += 3;
+                            }
+
+                            j++;
+                        }
+                    }
+                }
+            }
+        }
+
+        return speed;
+    }
+
+    private int getConversionTime(EntityZombieVillager zombieVillager) {
+
+        try {
+            return CONVERSION_TIME.getInt(zombieVillager);
+        } catch (IllegalAccessException e) {
+            Consecration.logger.log(Level.ERROR, "Error getting conversionTime for Zombie Villager " + zombieVillager);
+        }
+        return 0;
+    }
+
+    private void setConversionTime(EntityZombieVillager zombieVillager, int conversionTime) {
+
+        try {
+            CONVERSION_TIME.setInt(zombieVillager, conversionTime);
+        } catch (IllegalAccessException e) {
+            Consecration.logger.log(Level.ERROR, "Error setting conversionTime for Zombie Villager " + zombieVillager);
+        }
+    }
 
     @SubscribeEvent
     @SuppressWarnings("ConstantConditions")
@@ -155,37 +228,6 @@ public class EventHandlerCommon {
                     undying.setSmite(ConfigHandler.holy.smiteDuration * 20);
                 }
             }
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onLivingDeath(LivingDeathEvent evt) {
-
-        EntityLivingBase entity = evt.getEntityLiving();
-
-        if (!entity.getEntityWorld().isRemote && entity instanceof EntityZombieVillager && UndeadHelper.isHolyDamage(evt.getSource().getDamageType())) {
-            EntityZombieVillager zombieVillager = (EntityZombieVillager) entity;
-            if (!zombieVillager.isConverting()) {
-                convertZombieVillager(zombieVillager, evt);
-            }
-        }
-    }
-
-    private void convertZombieVillager(EntityZombieVillager zombieVillager, LivingDeathEvent evt) {
-
-        if (zombieVillager.isConverting()) {
-            return;
-        }
-
-        if (evt.getSource().getTrueSource() instanceof EntityLivingBase) {
-            EntityLivingBase entitylivingbase = (EntityLivingBase) evt.getSource().getTrueSource();
-            try {
-                START_CONVERTING.invoke(zombieVillager, entitylivingbase.getUniqueID(), rand.nextInt(2401) + 3600);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                Consecration.logger.log(Level.ERROR, "Error in startConverting for entity " + zombieVillager);
-            }
-            evt.setCanceled(true);
-            zombieVillager.setHealth(1);
         }
     }
 }
