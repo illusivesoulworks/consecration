@@ -10,6 +10,7 @@ package c4.consecration.integrations;
 
 import c4.consecration.common.capabilities.CapabilityUndying;
 import c4.consecration.common.capabilities.IUndying;
+import c4.consecration.common.config.ConfigHandler;
 import c4.consecration.common.util.UndeadRegistry;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
@@ -29,20 +30,10 @@ public class ModuleReliquary extends ModuleCompatibility {
         super("xreliquary", true);
     }
 
-    @Override
-    public void register() {
-
-        Item item = Item.getByNameOrId(modid + ":mercy_cross");
-        if (item != null) {
-            UndeadRegistry.addHolyWeapon(new ItemStack(item));
-        }
-        UndeadRegistry.addHolyEntity(new ResourceLocation(modid, "hand_grenade"));
-    }
-
     @SubscribeEvent
     public void onThrowable(ProjectileImpactEvent.Throwable evt) {
 
-        if (!evt.getThrowable().world.isRemote) {
+        if (ConfigHandler.modSupport.reliquaryGlowingWater && !evt.getThrowable().world.isRemote) {
 
             EntityThrowable entityThrowable = evt.getThrowable();
             ResourceLocation rl = EntityList.getKey(entityThrowable);

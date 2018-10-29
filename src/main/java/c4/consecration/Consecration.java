@@ -113,9 +113,6 @@ public class Consecration {
         }
         ConfigHelper.parseDimensionConfigs();
         ConfigHelper.registerConfigs();
-        for (ModuleCompatibility module : ModuleCompatibility.loadedMods.values()) {
-            module.register();
-        }
         proxy.postInit(evt);
     }
 

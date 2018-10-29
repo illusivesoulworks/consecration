@@ -23,13 +23,9 @@ public abstract class ModuleCompatibility {
     protected String modid;
 
     static {
-        compatDeps.put("aov", ModuleAoV.class);
-        compatDeps.put("immersiveengineering", ModuleImmersiveEngineering.class);
         compatDeps.put("xreliquary", ModuleReliquary.class);
         compatDeps.put("toolbox", ModuleToolbox.class);
         compatDeps.put("tconstruct", ModuleTConstruct.class);
-        compatDeps.put("dcs_climate", ModuleDCS.class);
-        compatDeps.put("somanyenchantments", ModuleSME.class);
         compatDeps.put("spartanweaponry", ModuleSpartanWeaponry.class);
     }
 
@@ -43,10 +39,6 @@ public abstract class ModuleCompatibility {
         if (hasSubscriptions) {
             MinecraftForge.EVENT_BUS.register(this);
         }
-    }
-
-    public void register() {
-        //NO-OP
     }
 
     public boolean process(EntityLivingBase target, DamageSource source) {

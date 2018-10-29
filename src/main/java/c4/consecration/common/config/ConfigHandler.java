@@ -32,6 +32,7 @@ public class ConfigHandler {
 
     public static Holy holy = new Holy();
     public static Undying undying = new Undying();
+    public static ModSupport modSupport = new ModSupport();
 
     public static class Holy {
 
@@ -46,7 +47,8 @@ public class ConfigHandler {
         @Name("Holy Entities")
         @Comment("A list of entities that will be able to damage and smite undead")
         @RequiresMcRestart
-        public String[] holyEntities = new String[]{"minecraft:villager_golem"};
+        public String[] holyEntities = new String[]{"minecraft:villager_golem", "xreliquary:hand_grenade",
+                "dcs_climate:dcs.main.bullet_silver"};
 
         @Name("Holy Potions")
         @Comment("A list of potions that will be able to damage and smite undead")
@@ -56,17 +58,18 @@ public class ConfigHandler {
         @Name("Holy Weapons")
         @Comment("A list of items that will be able to damage and smite undead")
         @RequiresMcRestart
-        public String[] holyWeapons = new String[]{};
+        public String[] holyWeapons = new String[]{"xreliquary:mercy_cross", "dcs_climate:dcs_dagger_silver"};
 
         @Name("Holy Enchantments")
         @Comment("A list of enchantments that will be able to damage and smite undead")
         @RequiresMcRestart
-        public String[] holyEnchantments = new String[]{"minecraft:smite"};
+        public String[] holyEnchantments = new String[]{"minecraft:smite", "somanyenchantments:BlessedEdge",
+                "somanyenchantments:ExtremeSmite"};
 
         @Name("Holy Damage")
         @Comment("A list of damage types that will be able to damage and smite undead")
         @RequiresMcRestart
-        public String[] holyDamage = new String[]{"holy"};
+        public String[] holyDamage = new String[]{"holy", "ieRevolver_silver", "aov.nimbusray"};
 
         @Name("Holy Material")
         @Comment("A list of material names that will be able to damage and smite undead")
@@ -99,6 +102,13 @@ public class ConfigHandler {
         @Name("Reduce Damage Against Non-Players")
         @Comment("Set to true to have undead reduce damage against non-player non-holy entities")
         public boolean reduceDamageVsMobs = true;
+    }
+
+    public static class ModSupport {
+
+        @Name("Reliquary Glowing Water")
+        @Comment("Set to true to give Reliquary's Glowing Water smiting")
+        public boolean reliquaryGlowingWater = true;
     }
 
     public enum PermissionMode {
