@@ -89,6 +89,11 @@ public class ConfigHandler {
         @RequiresMcRestart
         public String[] undeadMobs = new String[]{};
 
+        @Name("Include as Unholy Mob")
+        @Comment("A list of mobs that will be classified as unholy, acting like undead except they cannot be smited " +
+                "by fire")
+        public String[] unholyMobs = new String[]{};
+
         @Name("Damage Reduction")
         @Comment("Set undead natural damage reduction, in percent, against all non-holy damage")
         @RangeDouble(min = 0.0D, max = 1.0D)

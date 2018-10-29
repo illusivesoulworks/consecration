@@ -14,6 +14,7 @@ import c4.consecration.common.capabilities.IUndying;
 import c4.consecration.common.config.ConfigHandler;
 import c4.consecration.integrations.ModuleCompatibility;
 import com.google.common.collect.Lists;
+import com.sun.org.apache.regexp.internal.RE;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -48,14 +49,16 @@ public class UndeadHelper {
             "field_184502_e", "g");
 
     public static boolean isUndead(EntityLivingBase entityLivingBase) {
+        ResourceLocation key = EntityList.getKey(entityLivingBase);
         return (ConfigHandler.undying.defaultUndead && entityLivingBase.isEntityUndead())
-                || UndeadRegistry.getUndeadList().contains(EntityList.getKey(entityLivingBase));
+                || UndeadRegistry.getUndeadList().contains(key) || UndeadRegistry.getUnholyList().contains(key);
     }
 
     public static boolean doSmite(EntityLivingBase target, DamageSource source) {
 
         //Check fire damage/burning
-        if (!target.isImmuneToFire() && source.isFireDamage()) {
+        if (!target.isImmuneToFire() && source.isFireDamage()
+                && !UndeadRegistry.getUnholyList().contains(EntityList.getKey(target))) {
             return true;
         }
 

@@ -12,6 +12,7 @@ import c4.consecration.Consecration;
 import c4.consecration.common.init.ConsecrationDamageSources;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityList;
 import net.minecraft.item.Item;
@@ -23,10 +24,7 @@ import net.minecraftforge.fml.common.event.FMLInterModComms;
 import org.apache.logging.log4j.Level;
 import scala.collection.immutable.Stream;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class UndeadRegistry {
 
@@ -37,6 +35,7 @@ public class UndeadRegistry {
     private static List<Enchantment> holyEnchantments = new ArrayList<>();
     private static Set<String> holyDamage = new HashSet<>();
     private static Set<String> holyMaterials = new HashSet<>();
+    private static List<ResourceLocation> unholyList = new ArrayList<>();
 
     public static void processIMC(FMLInterModComms.IMCEvent evt) {
 
@@ -76,6 +75,16 @@ public class UndeadRegistry {
             undeadList.add(resource);
         } else {
             Consecration.logger.log(Level.ERROR, "Tried to add undead entity that is not registered!" + " [" + resource.toString() + "]");
+        }
+    }
+
+    public static void addUnholy(ResourceLocation resource) {
+
+        if (EntityList.isRegistered(resource)) {
+            unholyList.add(resource);
+        } else {
+            Consecration.logger.log(Level.ERROR, "Tried to add unholy entity that is not registered!" + " ["
+                    + resource.toString() + "]");
         }
     }
 
@@ -151,6 +160,11 @@ public class UndeadRegistry {
         return ImmutableList.copyOf(undeadList);
     }
 
+    public static ImmutableList<ResourceLocation> getUnholyList() {
+        return ImmutableList.copyOf(unholyList);
+    }
+
     public static ImmutableList<ResourceLocation> getHolyEntities() {
-        return ImmutableList.copyOf(holyEntities); }
+        return ImmutableList.copyOf(holyEntities);
+    }
 }
