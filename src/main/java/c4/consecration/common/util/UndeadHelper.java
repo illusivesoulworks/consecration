@@ -15,6 +15,10 @@ import c4.consecration.common.config.ConfigHandler;
 import c4.consecration.integrations.ModuleCompatibility;
 import com.google.common.collect.Lists;
 import com.sun.org.apache.regexp.internal.RE;
+import mchorse.metamorph.api.EntityUtils;
+import mchorse.metamorph.api.MorphAPI;
+import mchorse.metamorph.api.morphs.AbstractMorph;
+import mchorse.metamorph.api.morphs.EntityMorph;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -32,6 +36,7 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.Level;
@@ -50,7 +55,21 @@ public class UndeadHelper {
 
     public static boolean isUndead(EntityLivingBase entityLivingBase) {
         ResourceLocation key = EntityList.getKey(entityLivingBase);
-        return (ConfigHandler.undying.defaultUndead && entityLivingBase.isEntityUndead())
+        boolean isEntityUndead;
+
+        if (Loader.isModLoaded("metamorph")) {
+            AbstractMorph morph = EntityUtils.getMorph(entityLivingBase);
+
+            if (morph instanceof EntityMorph) {
+                isEntityUndead = ((EntityMorph) morph).getEntity().isEntityUndead();
+            } else {
+                isEntityUndead = entityLivingBase.isEntityUndead();
+            }
+        } else {
+            isEntityUndead = entityLivingBase.isEntityUndead();
+        }
+
+        return (ConfigHandler.undying.defaultUndead && isEntityUndead)
                 || UndeadRegistry.getUndeadList().contains(key) || UndeadRegistry.getUnholyList().contains(key);
     }
 
