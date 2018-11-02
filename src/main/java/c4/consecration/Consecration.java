@@ -113,6 +113,11 @@ public class Consecration {
         }
         ConfigHelper.parseDimensionConfigs();
         ConfigHelper.registerConfigs();
+
+        if (Loader.isModLoaded("metamorph")) {
+            UndeadHelper.isMetamorphLoaded = true;
+        }
+
         proxy.postInit(evt);
     }
 

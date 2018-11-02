@@ -48,6 +48,8 @@ import java.util.List;
 
 public class UndeadHelper {
 
+    public static boolean isMetamorphLoaded = false;
+
     private static final Field ARMOR_MATERIAL_NAME = ReflectionHelper.findField(ItemArmor.ArmorMaterial.class,
             "name", "field_179243_f", "f");
     private static final Field AOE_CLOUD_POTION = ReflectionHelper.findField(EntityAreaEffectCloud.class, "potion",
@@ -57,7 +59,7 @@ public class UndeadHelper {
         ResourceLocation key = EntityList.getKey(entityLivingBase);
         boolean isEntityUndead;
 
-        if (Loader.isModLoaded("metamorph")) {
+        if (isMetamorphLoaded) {
             AbstractMorph morph = EntityUtils.getMorph(entityLivingBase);
 
             if (morph instanceof EntityMorph) {
