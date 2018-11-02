@@ -19,11 +19,16 @@ import c4.consecration.common.init.ConsecrationFluids;
 import c4.consecration.common.init.ConsecrationItems;
 import c4.consecration.common.init.ConsecrationPotions;
 import c4.consecration.common.util.UndeadHelper;
+import com.google.common.base.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIAvoidEntity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityZombieVillager;
+import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityPotion;
@@ -39,11 +44,13 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -51,6 +58,8 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fluids.*;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -60,6 +69,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.Level;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -170,17 +180,26 @@ public class EventHandlerCommon {
                 ItemStack output = ItemStack.EMPTY;
                 String messageKey = "consecration.benediction.";
 
-                if (item instanceof ItemBucket) {
+                if (item == Items.GLOWSTONE_DUST) {
+                    output = new ItemStack(ConsecrationItems.blessedDust, stack.getCount());
+                    messageKey += "dust";
+                } else if (stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
+                    IFluidHandlerItem fluidHandler = stack.getCapability(CapabilityFluidHandler
+                            .FLUID_HANDLER_ITEM_CAPABILITY, null);
                     FluidStack fluidStack = FluidUtil.getFluidContained(stack);
 
                     if (fluidStack != null && fluidStack.getFluid() == FluidRegistry.WATER) {
-                        output = FluidUtil.getFilledBucket(new FluidStack(ConsecrationFluids.HOLY_WATER,
-                                Fluid.BUCKET_VOLUME));
+
+                        if (item == Items.WATER_BUCKET) {
+                            output = FluidUtil.getFilledBucket(new FluidStack(ConsecrationFluids.HOLY_WATER,
+                                    Fluid.BUCKET_VOLUME));
+                        } else {
+                            fluidStack = fluidHandler.drain(fluidStack, true);
+                            fluidHandler.fill(new FluidStack(ConsecrationFluids.HOLY_WATER, fluidStack.amount), true);
+                            output = stack.copy();
+                        }
                         messageKey += "water";
                     }
-                } else if (item == Items.GLOWSTONE_DUST) {
-                    output = new ItemStack(ConsecrationItems.blessedDust, stack.getCount());
-                    messageKey += "dust";
                 }
 
                 if (!output.isEmpty()) {
