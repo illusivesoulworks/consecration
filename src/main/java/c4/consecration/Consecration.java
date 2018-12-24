@@ -8,11 +8,13 @@
 
 package c4.consecration;
 
-import c4.consecration.common.events.EventHandlerCommon;
 import c4.consecration.common.capabilities.CapabilityUndying;
-import c4.consecration.common.config.ConfigHandler;
 import c4.consecration.common.entities.EntityFireBomb;
-import c4.consecration.common.init.*;
+import c4.consecration.common.events.EventHandlerCommon;
+import c4.consecration.common.init.ConsecrationFluids;
+import c4.consecration.common.init.ConsecrationItems;
+import c4.consecration.common.init.ConsecrationPotions;
+import c4.consecration.common.init.ConsecrationTriggers;
 import c4.consecration.common.trading.ListPotionForEmeralds;
 import c4.consecration.common.util.ConfigHelper;
 import c4.consecration.common.util.UndeadHelper;
@@ -22,12 +24,9 @@ import c4.consecration.proxy.IProxy;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.dispenser.BehaviorProjectileDispense;
 import net.minecraft.dispenser.IPosition;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -41,8 +40,6 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
-
-import java.util.List;
 
 @Mod(	modid = Consecration.MODID,
 		name = Consecration.MODNAME,
@@ -58,7 +55,7 @@ public class Consecration {
 
     public static final String MODID = "consecration";
     public static final String MODNAME = "Consecration";
-    public static final String MODVER = "0.0.13";
+    public static final String MODVER = "0.0.14";
 
     @SidedProxy(clientSide = "c4.consecration.proxy.ClientProxy", serverSide = "c4.consecration.proxy.ServerProxy")
     public static IProxy proxy;

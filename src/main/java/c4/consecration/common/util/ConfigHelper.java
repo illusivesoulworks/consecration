@@ -10,8 +10,6 @@ package c4.consecration.common.util;
 
 import c4.consecration.common.capabilities.CapabilityUndying;
 import c4.consecration.common.config.ConfigHandler;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 public class ConfigHelper {

@@ -39,7 +39,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.Level;
-import scala.collection.immutable.Stream;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;

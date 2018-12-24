@@ -16,11 +16,7 @@ import net.minecraft.enchantment.EnchantmentProtection;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
-
-import javax.annotation.Nonnull;
 
 public class EnchantmentBlessing extends Enchantment {
 

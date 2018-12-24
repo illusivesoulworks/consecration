@@ -9,14 +9,10 @@
 package c4.consecration.common.util;
 
 import c4.consecration.Consecration;
-import c4.consecration.common.capabilities.CapabilityUndying;
-import c4.consecration.common.capabilities.IUndying;
 import c4.consecration.common.config.ConfigHandler;
 import c4.consecration.integrations.ModuleCompatibility;
 import com.google.common.collect.Lists;
-import com.sun.org.apache.regexp.internal.RE;
 import mchorse.metamorph.api.EntityUtils;
-import mchorse.metamorph.api.MorphAPI;
 import mchorse.metamorph.api.morphs.AbstractMorph;
 import mchorse.metamorph.api.morphs.EntityMorph;
 import net.minecraft.enchantment.Enchantment;
@@ -36,13 +32,9 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.Level;
-import scala.collection.immutable.Stream;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.util.List;
 

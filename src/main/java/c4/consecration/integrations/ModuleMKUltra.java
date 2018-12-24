@@ -9,11 +9,8 @@
 package c4.consecration.integrations;
 
 import c4.consecration.common.config.ConfigHandler;
-import c4.consecration.common.util.UndeadHelper;
 import com.chaosbuffalo.mkultra.core.MKDamageSource;
-import com.oblivioussp.spartanweaponry.api.IWeaponPropertyContainer;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 
 public class ModuleMKUltra extends ModuleCompatibility {

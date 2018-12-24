@@ -12,9 +12,6 @@ import c4.consecration.Consecration;
 import c4.consecration.common.advancements.SmiteKilledTrigger;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
-
-import java.lang.reflect.Method;
 
 public class ConsecrationTriggers {
 

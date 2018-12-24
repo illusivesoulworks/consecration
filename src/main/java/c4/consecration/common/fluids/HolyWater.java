@@ -9,13 +9,10 @@
 package c4.consecration.common.fluids;
 
 import c4.consecration.Consecration;
-import net.minecraft.block.material.Material;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
 
 public class HolyWater extends Fluid {
 
