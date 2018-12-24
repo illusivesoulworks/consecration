@@ -56,3 +56,8 @@ consecration.general.undying.healthregen=Health Regen
 consecration.general.undying.healthregen.tooltip=Set undead natural health regen, in half-hearts per second, when not smote
 consecration.general.undying.reducedamagevsmobs=Reduce Damage Against Non-Players
 consecration.general.undying.reducedamagevsmobs.tooltip=Set to true to have undead reduce damage against non-player non-holy entities
+
+consecration.general.modsupport.reliquaryglowingwater=Reliquary Glowing Water
+consecration.general.modsupport.reliquaryglowingwater.tooltip=Set to true to give Reliquary's Glowing Water smiting
+consecration.general.modsupport.mkultrasources=MK-Ultra Holy Damage
+consecration.general.modsupport.reliquaryglowingwater.tooltip=List of abilities from MK-Ultra that will deal holy damage

@@ -114,6 +114,10 @@ public class ConfigHandler {
         @Name("Reliquary Glowing Water")
         @Comment("Set to true to give Reliquary's Glowing Water smiting")
         public boolean reliquaryGlowingWater = true;
+
+        @Name("MK-Ultra Holy Damage")
+        @Comment("List of abilities from MK-Ultra that will deal holy damage")
+        public String[] mkultraSources = new String[]{"ability.smite", "ability.heal"};
     }
 
     public enum PermissionMode {

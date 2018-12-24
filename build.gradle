@@ -43,6 +43,8 @@ dependencies {
     deobfCompile "spartan-weaponry:SpartanWeaponry-1.12.2:beta:1.2.3"
     deobfCompile "metamorph:metamorph:1.1.6:1.12.2"
     deobfCompile "constructs-armory:conarm:1.12.2:1.2.1"
+    deobfCompile "mk-ultra:MKUltra:0.80"
+    deobfCompile "targetingapi:targeting_api:0.12"
 }
 
 processResources {
