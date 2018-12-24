@@ -9,6 +9,7 @@
 package c4.consecration.integrations;
 
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -27,6 +28,7 @@ public abstract class ModuleCompatibility {
         compatDeps.put("toolbox", ModuleToolbox.class);
         compatDeps.put("tconstruct", ModuleTConstruct.class);
         compatDeps.put("spartanweaponry", ModuleSpartanWeaponry.class);
+        compatDeps.put("conarm", ModuleConArm.class);
     }
 
     public ModuleCompatibility(String modid) {
@@ -44,6 +46,8 @@ public abstract class ModuleCompatibility {
     public boolean process(EntityLivingBase target, DamageSource source) {
         return false;
     }
+
+    public boolean processArmor(EntityLivingBase wearer, ItemStack stack, DamageSource source) { return false; }
 
     public static Map<String, ModuleCompatibility> getLoadedMods() {
         return loadedMods;

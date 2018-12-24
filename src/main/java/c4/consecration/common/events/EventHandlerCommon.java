@@ -19,6 +19,7 @@ import c4.consecration.common.init.ConsecrationFluids;
 import c4.consecration.common.init.ConsecrationItems;
 import c4.consecration.common.init.ConsecrationPotions;
 import c4.consecration.common.util.UndeadHelper;
+import c4.consecration.integrations.ModuleCompatibility;
 import com.google.common.base.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -238,8 +239,23 @@ public class EventHandlerCommon {
                 int level = 0;
 
                 for (ItemStack stack : entityLivingBase.getArmorInventoryList()) {
-                    if (!stack.isEmpty() && UndeadHelper.isHolyArmor(stack)) {
-                        level++;
+                    if (!stack.isEmpty()) {
+                        boolean flag = UndeadHelper.isHolyArmor(stack);
+
+                        if (!flag) {
+
+                            for (ModuleCompatibility module : ModuleCompatibility.getLoadedMods().values()) {
+
+                                if (module.processArmor(entityLivingBase, stack, source)) {
+                                    flag = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (flag) {
+                            level++;
+                        }
                     }
                 }
 

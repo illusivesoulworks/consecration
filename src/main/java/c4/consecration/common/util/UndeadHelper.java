@@ -179,6 +179,10 @@ public class UndeadHelper {
                 Consecration.logger.log(Level.ERROR, "Error retrieving name for armor material "
                         + armorItem.getArmorMaterial());
             }
+
+            if (!isHolyArmor) {
+
+            }
             return isHolyArmor;
         }
         return false;
