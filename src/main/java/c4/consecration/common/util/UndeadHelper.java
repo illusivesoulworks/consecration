@@ -69,6 +69,10 @@ public class UndeadHelper {
 
     public static boolean doSmite(EntityLivingBase target, DamageSource source) {
 
+        if (UndeadRegistry.getSmiteProofList().contains(EntityList.getKey(target))) {
+            return false;
+        }
+
         //Check fire damage/burning
         if (!target.isImmuneToFire() && source.isFireDamage()
                 && !UndeadRegistry.getUnholyList().contains(EntityList.getKey(target))) {

@@ -89,6 +89,11 @@ public class ConfigHandler {
         @RequiresMcRestart
         public String[] undeadMobs = new String[]{};
 
+        @Name("Smite-Proof Mobs")
+        @Comment("A list of mobs that cannot lose their undying abilities")
+        @RequiresMcRestart
+        public String[] smiteProofMobs = new String[]{};
+
         @Name("Include as Unholy Mob")
         @Comment("A list of mobs that will be classified as unholy, acting like undead except they cannot be smited " +
                 "by fire")

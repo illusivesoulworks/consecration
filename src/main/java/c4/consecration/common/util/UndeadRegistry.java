@@ -35,6 +35,7 @@ public class UndeadRegistry {
     private static Set<String> holyDamage = new HashSet<>();
     private static Set<String> holyMaterials = new HashSet<>();
     private static List<ResourceLocation> unholyList = new ArrayList<>();
+    private static List<ResourceLocation> smiteProofList = new ArrayList<>();
 
     public static void processIMC(FMLInterModComms.IMCEvent evt) {
 
@@ -84,6 +85,16 @@ public class UndeadRegistry {
         } else {
             Consecration.logger.log(Level.ERROR, "Tried to add unholy entity that is not registered!" + " ["
                     + resource.toString() + "]");
+        }
+    }
+
+    public static void addSmiteProof(ResourceLocation resourceLocation) {
+
+        if (EntityList.isRegistered(resourceLocation)) {
+            smiteProofList.add(resourceLocation);
+        } else {
+            Consecration.logger.log(Level.ERROR, "Tried to add smite-proof entity that is not registered!" + " ["
+                    + resourceLocation.toString() + "]");
         }
     }
 
@@ -161,6 +172,10 @@ public class UndeadRegistry {
 
     public static ImmutableList<ResourceLocation> getUnholyList() {
         return ImmutableList.copyOf(unholyList);
+    }
+
+    public static ImmutableList<ResourceLocation> getSmiteProofList() {
+        return ImmutableList.copyOf(smiteProofList);
     }
 
     public static ImmutableList<ResourceLocation> getHolyEntities() {

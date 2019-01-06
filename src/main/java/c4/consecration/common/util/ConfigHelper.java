@@ -46,6 +46,9 @@ public class ConfigHelper {
         for (String s : ConfigHandler.undying.undeadMobs) {
             UndeadRegistry.addUndead(new ResourceLocation(s));
         }
+        for (String s : ConfigHandler.undying.smiteProofMobs) {
+            UndeadRegistry.addSmiteProof(new ResourceLocation(s));
+        }
         for (String s : ConfigHandler.undying.unholyMobs) {
             UndeadRegistry.addUnholy(new ResourceLocation(s));
         }
