@@ -28,6 +28,8 @@ consecration.general.dimensionpermission=Dimension Permission Mode
 consecration.general.dimensionpermission.tooltip=Set whether the dimension configuration is blacklisted or whitelisted
 consecration.general.dimensionlist=Dimension List
 consecration.general.dimensionlist.tooltip=Set which dimensions are blacklisted or whitelisted for affected undead, leave blank to disable this option
+consecration.general.blessingcost=Blessing XP Level Cost
+consecration.general.blessingcost.tooltip=Set how many levels a blessing from a villager priest costs
 
 consecration.general.holy.firesmiteduration=Fire Smite Duration
 consecration.general.holy.firesmiteduration.tooltip=The amount of time, in seconds, that smiting from fire lasts

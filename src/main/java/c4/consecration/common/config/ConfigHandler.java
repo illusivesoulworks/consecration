@@ -30,6 +30,10 @@ public class ConfigHandler {
     @RequiresMcRestart
     public static String[] dimensionList = new String[]{};
 
+    @Name("Blessing XP Level Cost")
+    @Comment("Set how many levels a blessing from a villager priest costs")
+    public static int blessingCost = 1;
+
     public static Holy holy = new Holy();
     public static Undying undying = new Undying();
     public static ModSupport modSupport = new ModSupport();

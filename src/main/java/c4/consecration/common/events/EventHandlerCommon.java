@@ -185,7 +185,7 @@ public class EventHandlerCommon {
                                 SoundCategory.NEUTRAL, 1.0F,
                                 (player.world.rand.nextFloat() - player.world.rand.nextFloat()) * 0.2F + 1.0F);
                     } else {
-                        player.onEnchant(output, 1);
+                        player.onEnchant(output, ConfigHandler.blessingCost);
                         stack.shrink(output.getCount());
                         ItemHandlerHelper.giveItemToPlayer(player, output, player.inventory.currentItem);
                         player.world.playSound(null, player.getPosition(), SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE,
