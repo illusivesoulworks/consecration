@@ -49,13 +49,17 @@ public class UndeadHelper {
 
     public static boolean isUndead(EntityLivingBase entityLivingBase) {
         ResourceLocation key = EntityList.getKey(entityLivingBase);
-        boolean isEntityUndead;
+        boolean isEntityUndead = false;
 
         if (isMetamorphLoaded) {
             AbstractMorph morph = EntityUtils.getMorph(entityLivingBase);
 
             if (morph instanceof EntityMorph) {
-                isEntityUndead = ((EntityMorph) morph).getEntity().isEntityUndead();
+                EntityLivingBase entity = ((EntityMorph) morph).getEntity();
+
+                if (entity != null) {
+                    isEntityUndead = entity.isEntityUndead();
+                }
             } else {
                 isEntityUndead = entityLivingBase.isEntityUndead();
             }
