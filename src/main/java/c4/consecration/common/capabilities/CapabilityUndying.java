@@ -190,7 +190,7 @@ public final class CapabilityUndying {
                             entitylivingbase.heal(ConfigHandler.undying.healthRegen);
                         }
 
-                        if (speedAttribute.getModifier(SPEED_MOD) == null) {
+                        if (ConfigHandler.undying.speedModifier > 0 && speedAttribute.getModifier(SPEED_MOD) == null) {
                             speedAttribute.applyModifier(new AttributeModifier(SPEED_MOD, "Undead speed", ConfigHandler.undying.speedModifier, 2));
                         }
                     }
