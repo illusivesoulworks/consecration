@@ -113,6 +113,11 @@ public class ConfigHandler {
         @RangeInt(min = 0, max = 1000)
         public int healthRegen = 1;
 
+        @Name("Bonus Speed Modifier")
+        @Comment("Set undead natural bonus speed modifier")
+        @RangeDouble(min = 0.0D)
+        public double speedModifier = 0.0D;
+
         @Name("Reduce Damage Against Non-Players")
         @Comment("Set to true to have undead reduce damage against non-player non-holy entities")
         public boolean reduceDamageVsMobs = true;

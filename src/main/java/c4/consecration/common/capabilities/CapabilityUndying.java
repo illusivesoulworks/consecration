@@ -15,6 +15,9 @@ import c4.consecration.common.util.UndeadHelper;
 import c4.consecration.common.util.UndeadRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -32,6 +35,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -44,11 +48,14 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 public final class CapabilityUndying {
 
     private static final Field TIPPED_ARROW_POTION = ReflectionHelper.findField(EntityTippedArrow.class,
             "potion", "field_184560_g", "g");
+
+    private static final UUID SPEED_MOD = UUID.fromString("b812ef3d-0ef9-4368-845b-fad7003a1f4f");
 
     @CapabilityInject(IUndying.class)
     public static final Capability<IUndying> UNDYING_CAP = null;
@@ -159,6 +166,8 @@ public final class CapabilityUndying {
                 IUndying undying = CapabilityUndying.getUndying(entitylivingbase);
 
                 if (undying != null) {
+                    IAttributeInstance speedAttribute = entitylivingbase.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+                    speedAttribute.removeModifier(SPEED_MOD);
 
                     if (undying.isSmote()) {
 
@@ -175,9 +184,15 @@ public final class CapabilityUndying {
                         undying.setSmite(ConfigHandler.holy.smiteDuration * 20);
                     } else if (entitylivingbase.isBurning()) {
                         undying.setSmite(ConfigHandler.holy.fireSmiteDuration * 20);
-                    } else if (entitylivingbase.ticksExisted % 20 == 0
-                            && entitylivingbase.getHealth() < entitylivingbase.getMaxHealth()) {
-                        entitylivingbase.heal(ConfigHandler.undying.healthRegen);
+                    } else {
+
+                        if (entitylivingbase.ticksExisted % 20 == 0 && entitylivingbase.getHealth() < entitylivingbase.getMaxHealth()) {
+                            entitylivingbase.heal(ConfigHandler.undying.healthRegen);
+                        }
+
+                        if (speedAttribute.getModifier(SPEED_MOD) == null) {
+                            speedAttribute.applyModifier(new AttributeModifier(SPEED_MOD, "Undead speed", ConfigHandler.undying.speedModifier, 2));
+                        }
                     }
                 }
             }
