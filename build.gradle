@@ -45,6 +45,7 @@ dependencies {
     deobfCompile "constructs-armory:conarm:1.12.2:1.2.1"
     deobfCompile "mk-ultra:MKUltra:0.80"
     deobfCompile "targetingapi:targeting_api:0.12"
+    deobfCompile "tetra:tetra:1.12.2:0.26.0"
 }
 
 processResources {

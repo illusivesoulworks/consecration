@@ -37,8 +37,8 @@ public class ModuleTConstruct extends ModuleCompatibility {
 
         if (source.getImmediateSource() instanceof EntityProjectileBase) {
             stack = ((EntityProjectileBase) source.getImmediateSource()).tinkerProjectile.getItemStack();
-        } else if (source.getTrueSource() instanceof EntityLivingBase) {
-            stack = ((EntityLivingBase) source.getTrueSource()).getHeldItemMainhand();
+        } else if (source.getImmediateSource() instanceof EntityLivingBase) {
+            stack = ((EntityLivingBase) source.getImmediateSource()).getHeldItemMainhand();
         }
 
         if (!stack.isEmpty()) {
