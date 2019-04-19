@@ -132,6 +132,10 @@ public class ConfigHandler {
         @Name("MK-Ultra Holy Damage")
         @Comment("List of abilities from MK-Ultra that will deal holy damage")
         public String[] mkultraSources = new String[]{"ability.smite", "ability.heal"};
+
+        @Name("Tinkers' Holy Modifiers")
+        @Comment("List of modifiers from Tinkers' Construct that will smite")
+        public String[] tinkersHolyModifiers = new String[]{"smite"};
     }
 
     public enum PermissionMode {

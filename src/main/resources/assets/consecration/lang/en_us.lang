@@ -64,4 +64,6 @@ consecration.general.undying.speedmodifier.tooltip=Set undead natural bonus spee
 consecration.general.modsupport.reliquaryglowingwater=Reliquary Glowing Water
 consecration.general.modsupport.reliquaryglowingwater.tooltip=Set to true to give Reliquary's Glowing Water smiting
 consecration.general.modsupport.mkultrasources=MK-Ultra Holy Damage
-consecration.general.modsupport.reliquaryglowingwater.tooltip=List of abilities from MK-Ultra that will deal holy damage
+consecration.general.modsupport.mkultrasources.tooltip=List of abilities from MK-Ultra that will deal holy damage
+consecration.general.modsupport.tinkersholymodifiers=Tinkers' Holy Modifiers
+consecration.general.modsupport.tinkersholymodifiers.tooltip=List of modifiers from Tinkers' Construct that will smite

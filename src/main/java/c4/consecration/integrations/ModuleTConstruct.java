@@ -8,7 +8,9 @@
 
 package c4.consecration.integrations;
 
+import c4.consecration.common.config.ConfigHandler;
 import c4.consecration.common.util.UndeadHelper;
+import c4.consecration.common.util.UndeadRegistry;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
@@ -29,20 +31,21 @@ public class ModuleTConstruct extends ModuleCompatibility {
     @Override
     public boolean process(EntityLivingBase target, DamageSource source) {
 
-        ItemStack stack;
+        ItemStack stack = ItemStack.EMPTY;
+        NBTTagList materials;
+        NBTTagList modifiers;
 
         if (source.getImmediateSource() instanceof EntityProjectileBase) {
             stack = ((EntityProjectileBase) source.getImmediateSource()).tinkerProjectile.getItemStack();
-
-            if (hasHolyMaterial(TagUtil.getBaseMaterialsTagList(stack))) {
-                return true;
-            }
+        } else if (source.getTrueSource() instanceof EntityLivingBase) {
+            stack = ((EntityLivingBase) source.getTrueSource()).getHeldItemMainhand();
         }
 
-        if (source.getTrueSource() instanceof EntityLivingBase) {
-            stack = ((EntityLivingBase) source.getTrueSource()).getHeldItemMainhand();
+        if (!stack.isEmpty()) {
+            materials = TagUtil.getBaseMaterialsTagList(stack);
+            modifiers = TagUtil.getModifiersTagList(stack);
 
-            if (hasHolyMaterial(TagUtil.getBaseMaterialsTagList(stack))) {
+            if (hasHolyMaterial(materials, modifiers)) {
                 return true;
             }
         }
@@ -55,12 +58,31 @@ public class ModuleTConstruct extends ModuleCompatibility {
         return false;
     }
 
-    private boolean hasHolyMaterial(NBTTagList materialTag) {
+    private boolean hasHolyMaterial(NBTTagList materialTag, NBTTagList modifierTag) {
 
         for (int i = 0; i < materialTag.tagCount(); i++) {
 
             if (UndeadHelper.isHolyMaterial(materialTag.getStringTagAt(i))) {
                 return true;
+            }
+        }
+
+        for (int j = 0; j < modifierTag.tagCount(); j++) {
+            String name = modifierTag.getCompoundTagAt(j).getString("identifier");
+
+            for (String materials : UndeadRegistry.getHolyMaterials()) {
+                String pattern = "extratrait" + materials + "(.*|\\b)";
+
+                if (name.matches(pattern)) {
+                    return true;
+                }
+            }
+
+            for (String s : ConfigHandler.modSupport.tinkersHolyModifiers) {
+
+                if (name.equals(s)) {
+                    return true;
+                }
             }
         }
         return false;
