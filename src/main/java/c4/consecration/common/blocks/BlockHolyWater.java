@@ -43,14 +43,15 @@ public class BlockHolyWater extends BlockFluidClassic {
     }
 
     @Override
-    public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity)
-    {
-        if (entity instanceof EntityLivingBase) {
+    public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
 
-            if (UndeadHelper.isUndead((EntityLivingBase)entity)) {
+        if (entity instanceof EntityLivingBase && !world.isRemote) {
+            EntityLivingBase livingBase = (EntityLivingBase)entity;
+
+            if (UndeadHelper.isUndead(livingBase)) {
                 entity.attackEntityFrom(ConsecrationDamageSources.HOLY, 1.0f);
-            } else {
-                ((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 100));
+            } else if (!livingBase.isPotionActive(MobEffects.REGENERATION) || livingBase.getActivePotionEffect(MobEffects.REGENERATION).getDuration() < 50){
+                livingBase.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 100));
             }
         }
     }
