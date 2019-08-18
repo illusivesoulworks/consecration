@@ -38,6 +38,8 @@ public class ModuleTetra extends ModuleCompatibility {
                         if (UndeadHelper.isHolyMaterial(value)) {
                             return true;
                         }
+                    } else if (key.contains("enchantment/smite")) {
+                        return true;
                     }
                 }
             }
