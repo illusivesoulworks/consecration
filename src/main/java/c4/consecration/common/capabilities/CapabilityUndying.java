@@ -14,6 +14,7 @@ import c4.consecration.common.init.ConsecrationTriggers;
 import c4.consecration.common.util.UndeadHelper;
 import c4.consecration.common.util.UndeadRegistry;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -182,7 +183,7 @@ public final class CapabilityUndying {
 
                     } else if (UndeadHelper.hasHolyPotion(entitylivingbase)) {
                         undying.setSmite(ConfigHandler.holy.smiteDuration * 20);
-                    } else if (entitylivingbase.isBurning()) {
+                    } else if (entitylivingbase.isBurning() && !UndeadRegistry.getUnholyList().contains(EntityList.getKey(entitylivingbase))) {
                         undying.setSmite(ConfigHandler.holy.fireSmiteDuration * 20);
                     } else {
 
