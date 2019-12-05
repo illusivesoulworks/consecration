@@ -31,6 +31,7 @@ public abstract class ModuleCompatibility {
         compatDeps.put("conarm", ModuleConArm.class);
         compatDeps.put("mkultra", ModuleMKUltra.class);
         compatDeps.put("tetra", ModuleTetra.class);
+        compatDeps.put("silentgear", ModuleSilents.class);
     }
 
     public ModuleCompatibility(String modid) {
