@@ -14,6 +14,8 @@ import c4.consecration.common.entities.EntityFireArrow;
 import c4.consecration.common.entities.EntityFireBomb;
 import c4.consecration.common.init.ConsecrationBlocks;
 import c4.consecration.common.init.ConsecrationItems;
+import c4.consecration.common.items.ItemBase;
+import c4.consecration.common.items.ItemFireArrow;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -33,10 +35,10 @@ public class ClientProxy implements IProxy {
     @SuppressWarnings("ConstantConditions")
     public static void registerModels(ModelRegistryEvent evt) {
 
-        ConsecrationItems.blessedDust.initModel();
-        ConsecrationItems.fireStick.initModel();
-        ConsecrationItems.fireBomb.initModel();
-        ConsecrationItems.fireArrow.initModel();
+        ((ItemBase)ConsecrationItems.blessedDust).initModel();
+        ((ItemBase)ConsecrationItems.fireStick).initModel();
+        ((ItemBase)ConsecrationItems.fireBomb).initModel();
+        ((ItemFireArrow)ConsecrationItems.fireArrow).initModel();
 
         ModelLoader.setCustomMeshDefinition(ConsecrationItems.holyWater, new ItemMeshDefinition() {
             @Override

@@ -9,7 +9,10 @@
 package c4.consecration.common.init;
 
 import c4.consecration.Consecration;
-import c4.consecration.common.items.*;
+import c4.consecration.common.items.ItemBlessedDust;
+import c4.consecration.common.items.ItemFireArrow;
+import c4.consecration.common.items.ItemFireBomb;
+import c4.consecration.common.items.ItemFireStick;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.event.RegistryEvent;
@@ -22,16 +25,16 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 public class ConsecrationItems {
 
     @ObjectHolder("fire_stick")
-    public static final ItemBase fireStick = null;
+    public static final Item fireStick = null;
 
     @ObjectHolder("fire_bomb")
-    public static final ItemBase fireBomb = null;
+    public static final Item fireBomb = null;
 
     @ObjectHolder("blessed_dust")
-    public static final ItemBase blessedDust = null;
+    public static final Item blessedDust = null;
 
     @ObjectHolder("fire_arrow")
-    public static final ItemFireArrow fireArrow = null;
+    public static final Item fireArrow = null;
 
     @ObjectHolder("holy_water")
     public static final Item holyWater = null;
