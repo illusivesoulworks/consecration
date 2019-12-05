@@ -125,9 +125,11 @@ public class UndeadRegistry {
     }
 
     public static void addHolyWeapon(String weapon) {
-        Item item = Item.getByNameOrId(weapon);
+        String[] parsed = weapon.split(";");
+        Item item = Item.getByNameOrId(parsed[0]);
+        int metadata = parsed.length > 1 ? Integer.parseInt(parsed[1]) : 0;
         if (item != null) {
-            addHolyWeapon(new ItemStack(item));
+            addHolyWeapon(new ItemStack(item, 1, metadata));
         } else {
             Consecration.logger.log(Level.ERROR, "Tried to add holy weapon that is not registered!" + " [" + weapon
                     + "]");
