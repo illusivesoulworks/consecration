@@ -21,7 +21,7 @@ public class CapabilityEventsHandler {
   @SubscribeEvent
   public void attachCapabilities(final AttachCapabilitiesEvent<Entity> evt) {
     if (evt.getObject() instanceof LivingEntity && UndeadHelper
-        .isUndead((LivingEntity) evt.getObject())) {
+        .isValidSmiteTarget((LivingEntity) evt.getObject())) {
       evt.addCapability(UndyingCapability.ID, new UndyingCapability.Provider());
     }
   }
