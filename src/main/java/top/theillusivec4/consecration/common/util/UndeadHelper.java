@@ -3,10 +3,15 @@ package top.theillusivec4.consecration.common.util;
 import java.util.List;
 import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.DamageSource;
 import top.theillusivec4.consecration.common.ConsecrationConfig;
 import top.theillusivec4.consecration.common.ConsecrationConfig.PermissionMode;
 
 public class UndeadHelper {
+
+  public static boolean smite(LivingEntity target, DamageSource source) {
+
+  }
 
   public static boolean isValidSmiteTarget(final LivingEntity livingEntity) {
     return livingEntity.getCreatureAttribute() == CreatureAttribute.UNDEAD && isValidDimension(
