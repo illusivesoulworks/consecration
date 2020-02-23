@@ -1,10 +1,9 @@
 package top.theillusivec4.consecration.common.capability;
 
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.server.ServerWorld;
@@ -13,7 +12,9 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import top.theillusivec4.consecration.common.ConsecrationConfig;
 import top.theillusivec4.consecration.common.capability.UndyingCapability.IUndying;
+import top.theillusivec4.consecration.common.util.HolyResources.DamageType;
 import top.theillusivec4.consecration.common.util.UndeadHelper;
 
 public class CapabilityEventsHandler {
@@ -21,7 +22,7 @@ public class CapabilityEventsHandler {
   @SubscribeEvent
   public void attachCapabilities(final AttachCapabilitiesEvent<Entity> evt) {
     if (evt.getObject() instanceof LivingEntity && UndeadHelper
-        .isValidSmiteTarget((LivingEntity) evt.getObject())) {
+        .isUndying((LivingEntity) evt.getObject())) {
       evt.addCapability(UndyingCapability.ID, new UndyingCapability.Provider());
     }
   }
@@ -57,14 +58,31 @@ public class CapabilityEventsHandler {
 
       undyingOpt.ifPresent(undying -> {
         DamageSource source = evt.getSource();
-        Entity entity = source.getImmediateSource();
-        if (source.isFireDamage()) {
-          undying.setSmiteDuration(200);
-        } else if (entity instanceof LivingEntity) {
-          ItemStack stack = ((LivingEntity) entity).getHeldItemMainhand();
 
-          if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SMITE, stack) > 0) {
-            undying.setSmiteDuration(200);
+        if (source == DamageSource.OUT_OF_WORLD || source == DamageSource.CRAMMING
+            || source == DamageSource.IN_WALL) {
+          return;
+        }
+        DamageType type = UndeadHelper.smite(livingEntity, source);
+
+        if (type != DamageType.NONE) {
+
+          if (type == DamageType.FIRE) {
+            undying.setSmiteDuration(ConsecrationConfig.SERVER.fireSmiteDuration.get() * 20);
+          } else {
+            undying.setSmiteDuration(ConsecrationConfig.SERVER.holySmiteDuration.get() * 20);
+          }
+
+          if (source.getTrueSource() instanceof ServerPlayerEntity) {
+            // ConsecrationTriggers.SMITE_KILLED.trigger( source.getTrueSource());
+          }
+        } else if (!source.isDamageAbsolute() && !undying.hasSmite()) {
+          Entity trueSource = source.getTrueSource();
+
+          if ((trueSource != null && (trueSource instanceof PlayerEntity
+              || ConsecrationConfig.SERVER.bystanderNerf.get()))) {
+            evt.setAmount(
+                evt.getAmount() * (float) (1 - ConsecrationConfig.SERVER.damageReduction.get()));
           }
         }
       });

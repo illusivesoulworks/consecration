@@ -1,6 +1,8 @@
 package top.theillusivec4.consecration.common;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
@@ -31,7 +33,7 @@ public class ConsecrationConfig {
     public final ForgeConfigSpec.ConfigValue<List<String>> holyWeapons;
     public final ForgeConfigSpec.ConfigValue<List<String>> holyEnchantments;
     public final ForgeConfigSpec.ConfigValue<List<String>> holyDamage;
-    public final ForgeConfigSpec.ConfigValue<List<String>> holyMaterial;
+    public final ForgeConfigSpec.ConfigValue<List<String>> holyMaterials;
 
     public final ForgeConfigSpec.BooleanValue defaultUndead;
     public final ForgeConfigSpec.ConfigValue<List<String>> undeadList;
@@ -79,16 +81,17 @@ public class ConsecrationConfig {
 
       holyEnchantments = builder
           .comment("A list of enchantments that will be able to damage and smite undead")
-          .translation(CONFIG_PREFIX + "holyEnchantments")
-          .define("holyEnchantments", new ArrayList<>());
+          .translation(CONFIG_PREFIX + "holyEnchantments").define("holyEnchantments",
+              new ArrayList<>(Collections.singletonList("minecraft:smite")));
 
       holyDamage = builder
           .comment("A list of damage types that will be able to damage and smite undead")
           .translation(CONFIG_PREFIX + "holyDamage").define("holyDamage", new ArrayList<>());
 
-      holyMaterial = builder
+      holyMaterials = builder
           .comment("A list of materials that will be able to damage and smite undead")
-          .translation(CONFIG_PREFIX + "holyMaterial").define("holyMaterial", new ArrayList<>());
+          .translation(CONFIG_PREFIX + "holyMaterial")
+          .define("holyMaterial", new ArrayList<>(Arrays.asList("gold", "diamond")));
 
       builder.pop();
 
