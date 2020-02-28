@@ -25,7 +25,7 @@ import top.theillusivec4.consecration.common.ConsecrationConfig.Server;
 
 public class HolyResources {
 
-  private static Map<ResourceLocation, UndeadType> undeadList = new HashMap<>();
+  private static Map<EntityType<?>, UndeadType> undeadList = new HashMap<>();
   private static List<BiFunction<LivingEntity, DamageSource, Boolean>> holyFunctions = new ArrayList<>();
 
   private static Set<EntityType<?>> holyEntities = new HashSet<>();
@@ -38,6 +38,21 @@ public class HolyResources {
   public static void seedConfigs() {
     Server config = ConsecrationConfig.SERVER;
 
+    config.undeadList.get().forEach(entity -> {
+      String[] parsed = entity.split(";");
+      EntityType.byKey(entity).ifPresent(type -> {
+        UndeadType undeadType = UndeadType.NORMAL;
+
+        if (parsed.length > 1) {
+          if (parsed[1].equals("unholy")) {
+            undeadType = UndeadType.UNHOLY;
+          } else if (parsed[1].equals("absolute")) {
+            undeadType = UndeadType.ABSOLUTE;
+          }
+        }
+        undeadList.put(type, undeadType);
+      });
+    });
     config.holyEntities.get().forEach(entity -> {
       EntityType.byKey(entity).ifPresent(type -> holyEntities.add(type));
     });
@@ -90,7 +105,7 @@ public class HolyResources {
   }
 
   public static boolean isHolyEntity(@Nullable Entity entity) {
-    return entity != null && holyEntities.contains(entity.getType().getRegistryName());
+    return entity != null && holyEntities.contains(entity.getType());
   }
 
   public static boolean isHolyDamage(DamageSource source) {

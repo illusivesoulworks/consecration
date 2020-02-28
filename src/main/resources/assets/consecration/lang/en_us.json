@@ -1,0 +1,6 @@
+{
+  "item.minecraft.potion.effect.holy": "Potion of Consecration",
+  "item.minecraft.splash_potion.effect.holy": "Splash Potion of Consecration",
+  "item.minecraft.lingering_potion.effect.holy": "Lingering Potion of Consecration",
+  "effect.consecration.holy": "Consecration"
+}

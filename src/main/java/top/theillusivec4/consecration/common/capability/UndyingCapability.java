@@ -78,7 +78,7 @@ public class UndyingCapability {
     }
   }
 
-  interface IUndying {
+  public interface IUndying {
 
     boolean hasSmite();
 

@@ -1,7 +1,6 @@
 package top.theillusivec4.consecration.common;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -86,12 +85,13 @@ public class ConsecrationConfig {
 
       holyDamage = builder
           .comment("A list of damage types that will be able to damage and smite undead")
-          .translation(CONFIG_PREFIX + "holyDamage").define("holyDamage", new ArrayList<>());
+          .translation(CONFIG_PREFIX + "holyDamage")
+          .define("holyDamage", new ArrayList<>(Collections.singletonList("holy")));
 
       holyMaterials = builder
           .comment("A list of materials that will be able to damage and smite undead")
           .translation(CONFIG_PREFIX + "holyMaterial")
-          .define("holyMaterial", new ArrayList<>(Arrays.asList("gold", "diamond")));
+          .define("holyMaterial", new ArrayList<>(Collections.singletonList("silver")));
 
       builder.pop();
 
