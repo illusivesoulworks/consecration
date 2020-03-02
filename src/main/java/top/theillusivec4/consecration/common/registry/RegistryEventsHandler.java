@@ -1,5 +1,6 @@
 package top.theillusivec4.consecration.common.registry;
 
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
@@ -10,6 +11,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import top.theillusivec4.consecration.api.ConsecrationAPI;
+import top.theillusivec4.consecration.common.enchantment.ShadowProtection;
 import top.theillusivec4.consecration.common.potion.HolyEffect;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -27,5 +29,10 @@ public class RegistryEventsHandler {
   @SubscribeEvent
   public static void registerEffects(final RegistryEvent.Register<Effect> evt) {
     evt.getRegistry().register(new HolyEffect());
+  }
+
+  @SubscribeEvent
+  public static void registerEnchantments(final RegistryEvent.Register<Enchantment> evt) {
+    evt.getRegistry().register(new ShadowProtection());
   }
 }

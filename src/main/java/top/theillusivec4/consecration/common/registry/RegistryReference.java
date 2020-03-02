@@ -8,4 +8,5 @@ public class RegistryReference {
   public static final String HOLY = Consecration.MODID + ":" + ConsecrationAPI.HOLY_ID;
   public static final String STRONG_HOLY =
       Consecration.MODID + ":strong_" + ConsecrationAPI.HOLY_ID;
+  public static final String SHADOW_PROTECTION = Consecration.MODID + ":shadow_protection";
 }
