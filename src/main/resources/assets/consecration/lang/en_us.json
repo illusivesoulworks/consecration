@@ -3,5 +3,6 @@
   "item.minecraft.splash_potion.effect.holy": "Splash Potion of Consecration",
   "item.minecraft.lingering_potion.effect.holy": "Lingering Potion of Consecration",
   "effect.consecration.holy": "Consecration",
-  "enchantment.consecration.shadow_protection": "Shadow Protection"
+  "enchantment.consecration.shadow_protection": "Shadow Protection",
+  "enchantment.consecration.shadow_protection.desc": "Reduces damage from undead mobs such as zombies and skeletons."
 }
