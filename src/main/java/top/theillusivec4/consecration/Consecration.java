@@ -8,6 +8,7 @@
 
 package top.theillusivec4.consecration;
 
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
@@ -25,6 +26,7 @@ import org.apache.logging.log4j.Logger;
 import top.theillusivec4.consecration.common.ConsecrationConfig;
 import top.theillusivec4.consecration.common.capability.UndyingCapability;
 import top.theillusivec4.consecration.common.registry.ConsecrationRegistry;
+import top.theillusivec4.consecration.common.trigger.SmiteTrigger;
 import top.theillusivec4.consecration.common.util.HolyResources;
 
 @Mod(Consecration.MODID)
@@ -41,7 +43,7 @@ public class Consecration {
 
   private void setup(final FMLCommonSetupEvent evt) {
     UndyingCapability.register();
-    HolyResources.seedConfigs();
+    CriteriaTriggers.register(SmiteTrigger.INSTANCE);
     BrewingRecipeRegistry.addRecipe(Ingredient
             .fromStacks(PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), Potions.AWKWARD)),
         Ingredient.fromItems(Items.GOLDEN_APPLE), PotionUtils
@@ -51,5 +53,6 @@ public class Consecration {
         Ingredient.fromItems(Items.REDSTONE), PotionUtils
             .addPotionToItemStack(new ItemStack(Items.POTION),
                 ConsecrationRegistry.STRONG_HOLY_POTION));
+    HolyResources.seedConfigs();
   }
 }

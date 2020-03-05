@@ -4,5 +4,7 @@
   "item.minecraft.lingering_potion.effect.holy": "Lingering Potion of Consecration",
   "effect.consecration.holy": "Consecration",
   "enchantment.consecration.shadow_protection": "Shadow Protection",
-  "enchantment.consecration.shadow_protection.desc": "Reduces damage from undead mobs such as zombies and skeletons."
+  "enchantment.consecration.shadow_protection.desc": "Reduces damage from undead mobs such as zombies and skeletons.",
+  "advancements.consecration.smite.title": "Hunt the Night",
+  "advancements.consecration.smite.description": "Smite an undead"
 }

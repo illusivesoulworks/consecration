@@ -3,6 +3,7 @@ package top.theillusivec4.consecration.common.potion;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.UUID;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -33,14 +34,21 @@ public class HolyEffect extends Effect {
 
   @Override
   public void affectEntity(@Nullable Entity source, @Nullable Entity indirectSource,
-      LivingEntity livingEntity, int amplifier, double health) {
+      @Nonnull LivingEntity livingEntity, int amplifier, double health) {
 
     if (livingEntity instanceof ZombieVillagerEntity) {
       convertZombieVillager((ZombieVillagerEntity) livingEntity, indirectSource, 1800 >> amplifier);
     } else {
       LazyOptional<IUndying> undyingOpt = UndyingCapability.getCapability(livingEntity);
       undyingOpt.ifPresent(undying -> {
-        livingEntity.attackEntityFrom(ConsecrationAPI.HOLY_DAMAGE, (float) (8 << amplifier));
+        if (source == null) {
+          livingEntity
+              .attackEntityFrom(ConsecrationAPI.causeHolyDamage(), (float) (8 << amplifier));
+        } else {
+          livingEntity
+              .attackEntityFrom(ConsecrationAPI.causeIndirectHolyDamage(source, indirectSource),
+                  (float) (8 << amplifier));
+        }
       });
 
       if (!undyingOpt.isPresent()) {

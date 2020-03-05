@@ -13,7 +13,9 @@ import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import top.theillusivec4.consecration.common.ConsecrationConfig;
+import top.theillusivec4.consecration.common.ConsecrationConfig.Server;
 import top.theillusivec4.consecration.common.capability.UndyingCapability.IUndying;
+import top.theillusivec4.consecration.common.trigger.SmiteTrigger;
 import top.theillusivec4.consecration.common.util.HolyResources.DamageType;
 import top.theillusivec4.consecration.common.util.UndeadHelper;
 
@@ -21,6 +23,7 @@ public class CapabilityEventsHandler {
 
   @SubscribeEvent
   public void attachCapabilities(final AttachCapabilitiesEvent<Entity> evt) {
+
     if (evt.getObject() instanceof LivingEntity && UndeadHelper
         .isUndying((LivingEntity) evt.getObject())) {
       evt.addCapability(UndyingCapability.ID, new UndyingCapability.Provider());
@@ -74,7 +77,7 @@ public class CapabilityEventsHandler {
           }
 
           if (source.getTrueSource() instanceof ServerPlayerEntity) {
-            // ConsecrationTriggers.SMITE_KILLED.trigger( source.getTrueSource());
+            SmiteTrigger.INSTANCE.trigger((ServerPlayerEntity) source.getTrueSource());
           }
         } else if (!source.isDamageAbsolute() && !undying.hasSmite()) {
           Entity trueSource = source.getTrueSource();

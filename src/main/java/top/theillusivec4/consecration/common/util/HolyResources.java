@@ -44,6 +44,7 @@ public class HolyResources {
         UndeadType undeadType = UndeadType.NORMAL;
 
         if (parsed.length > 1) {
+
           if (parsed[1].equals("unholy")) {
             undeadType = UndeadType.UNHOLY;
           } else if (parsed[1].equals("absolute")) {
@@ -58,18 +59,21 @@ public class HolyResources {
     });
     config.holyPotions.get().forEach(potion -> {
       Potion type = Potion.getPotionTypeForName(potion);
+
       if (type != Potions.EMPTY) {
         holyPotions.add(type);
       }
     });
     config.holyWeapons.get().forEach(item -> {
       Item type = ForgeRegistries.ITEMS.getValue(new ResourceLocation(item));
+
       if (type != null) {
         holyWeapons.add(type);
       }
     });
     config.holyEnchantments.get().forEach(enchant -> {
       Enchantment type = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(enchant));
+
       if (type != null) {
         holyEnchantments.add(type);
       }
@@ -87,7 +91,9 @@ public class HolyResources {
   }
 
   public static boolean hasHolyEnchantment(ItemStack stack) {
+
     for (Enchantment enchantment : EnchantmentHelper.getEnchantments(stack).keySet()) {
+
       if (holyEnchantments.contains(enchantment)) {
         return true;
       }
@@ -96,6 +102,7 @@ public class HolyResources {
   }
 
   public static DamageType processHolyFunctions(LivingEntity target, DamageSource source) {
+
     for (BiFunction<LivingEntity, DamageSource, Boolean> func : holyFunctions) {
       if (func.apply(target, source)) {
         return DamageType.HOLY;
@@ -117,6 +124,7 @@ public class HolyResources {
   }
 
   public static boolean containsHolyMaterial(ResourceLocation resourceLocation) {
+
     for (String mat : holyMaterials) {
       String pattern = "^" + mat + "(\\b|[_-]\\w*)";
       if (resourceLocation.getPath().matches(pattern)) {

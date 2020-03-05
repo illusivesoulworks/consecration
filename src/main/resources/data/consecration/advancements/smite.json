@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:golden_apple"
+    },
+    "title": {
+      "translate": "advancements.consecration.smite.title"
+    },
+    "description": {
+      "translate": "advancements.consecration.smite.description"
+    }
+  },
+  "parent": "minecraft:adventure/kill_a_mob",
+  "criteria": {
+    "smite": {
+      "trigger": "consecration:smite"
+    }
+  }
+}
