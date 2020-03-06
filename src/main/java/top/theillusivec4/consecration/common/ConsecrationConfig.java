@@ -104,8 +104,7 @@ public class ConsecrationConfig {
           "A list of mobs that to classify as undead." + "\nFormat: 'modid:name'"
               + "\nOptionally, add ';unholy' or ';absolute' to the end."
               + "\nUnholy mobs will not be smote by fire and absolute mobs will not be smote by anything.")
-          .translation(CONFIG_PREFIX + "undeadList").define("undeadList",
-              new ArrayList<>(Collections.singletonList("minecraft:witch;unholy")));
+          .translation(CONFIG_PREFIX + "undeadList").define("undeadList", new ArrayList<>());
 
       damageReduction = builder
           .comment("Set undead natural damage reduction, in percent, against all non-holy damage")

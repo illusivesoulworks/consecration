@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "fire_arrow",
+  "pattern": [
+    " a ",
+    "aca",
+    " a "
+  ],
+  "key": {
+    "c": {
+      "item": "minecraft:charcoal"
+    },
+    "a": {
+      "tag": "forge:arrows"
+    }
+  },
+  "result": {
+    "item": "consecration:fire_arrow",
+    "count": 4
+  }
+}
