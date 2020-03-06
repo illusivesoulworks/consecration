@@ -50,6 +50,17 @@ public class UndyingCapability {
     return entity.getCapability(UNDYING_CAP);
   }
 
+  public interface IUndying {
+
+    boolean hasSmite();
+
+    int getSmiteDuration();
+
+    void setSmiteDuration(int duration);
+
+    void tickSmite();
+  }
+
   public static class Undying implements IUndying {
 
     private int smiteDuration = 0;
@@ -76,17 +87,6 @@ public class UndyingCapability {
         this.smiteDuration--;
       }
     }
-  }
-
-  public interface IUndying {
-
-    boolean hasSmite();
-
-    int getSmiteDuration();
-
-    void setSmiteDuration(int duration);
-
-    void tickSmite();
   }
 
   public static class Provider implements ICapabilitySerializable<INBT> {

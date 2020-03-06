@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.server.ServerWorld;
@@ -13,18 +14,17 @@ import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import top.theillusivec4.consecration.common.ConsecrationConfig;
-import top.theillusivec4.consecration.common.ConsecrationConfig.Server;
+import top.theillusivec4.consecration.common.ConsecrationUtils.DamageType;
 import top.theillusivec4.consecration.common.capability.UndyingCapability.IUndying;
 import top.theillusivec4.consecration.common.trigger.SmiteTrigger;
-import top.theillusivec4.consecration.common.util.HolyResources.DamageType;
-import top.theillusivec4.consecration.common.util.UndeadHelper;
+import top.theillusivec4.consecration.common.ConsecrationUtils;
 
 public class CapabilityEventsHandler {
 
   @SubscribeEvent
   public void attachCapabilities(final AttachCapabilitiesEvent<Entity> evt) {
 
-    if (evt.getObject() instanceof LivingEntity && UndeadHelper
+    if (evt.getObject() instanceof LivingEntity && ConsecrationUtils
         .isUndying((LivingEntity) evt.getObject())) {
       evt.addCapability(UndyingCapability.ID, new UndyingCapability.Provider());
     }
@@ -59,6 +59,19 @@ public class CapabilityEventsHandler {
     if (!livingEntity.getEntityWorld().isRemote) {
       LazyOptional<IUndying> undyingOpt = UndyingCapability.getCapability(livingEntity);
 
+      if (!undyingOpt.isPresent() && evt.getSource().getImmediateSource() instanceof LivingEntity) {
+        LivingEntity attacker = (LivingEntity) evt.getSource().getImmediateSource();
+        LazyOptional<IUndying> undyingOpt2 = UndyingCapability.getCapability(attacker);
+
+        undyingOpt2.ifPresent(undying -> {
+          int level = ConsecrationUtils.protect(attacker, livingEntity, evt.getSource());
+
+          if (level > 0 && livingEntity.getEntityWorld().rand.nextFloat() < 0.15F * (float)level ) {
+            undying.setSmiteDuration(ConsecrationConfig.SERVER.holySmiteDuration.get() * 20);
+          }
+        });
+      }
+
       undyingOpt.ifPresent(undying -> {
         DamageSource source = evt.getSource();
 
@@ -66,7 +79,7 @@ public class CapabilityEventsHandler {
             || source == DamageSource.IN_WALL) {
           return;
         }
-        DamageType type = UndeadHelper.smite(livingEntity, source);
+        DamageType type = ConsecrationUtils.smite(livingEntity, source);
 
         if (type != DamageType.NONE) {
 

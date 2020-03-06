@@ -26,10 +26,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import top.theillusivec4.consecration.client.ConsecrationRenderingRegistry;
 import top.theillusivec4.consecration.common.ConsecrationConfig;
+import top.theillusivec4.consecration.common.ConsecrationUtils;
 import top.theillusivec4.consecration.common.capability.UndyingCapability;
 import top.theillusivec4.consecration.common.registry.ConsecrationRegistry;
 import top.theillusivec4.consecration.common.trigger.SmiteTrigger;
-import top.theillusivec4.consecration.common.util.HolyResources;
 
 @Mod(Consecration.MODID)
 public class Consecration {
@@ -55,7 +55,7 @@ public class Consecration {
         Ingredient.fromItems(Items.REDSTONE), PotionUtils
             .addPotionToItemStack(new ItemStack(Items.POTION),
                 ConsecrationRegistry.STRONG_HOLY_POTION));
-    HolyResources.seedConfigs();
+    ConsecrationUtils.seedConfigs();
   }
 
   private void clientSetup(final FMLClientSetupEvent evt) {

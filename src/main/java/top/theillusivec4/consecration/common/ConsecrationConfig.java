@@ -20,6 +20,10 @@ public class ConsecrationConfig {
     SERVER = specPair.getLeft();
   }
 
+  public enum PermissionMode {
+    BLACKLIST, WHITELIST
+  }
+
   public static class Server {
 
     public final ForgeConfigSpec.ConfigValue<List<Integer>> dimensions;
@@ -29,7 +33,7 @@ public class ConsecrationConfig {
     public final ForgeConfigSpec.IntValue holySmiteDuration;
     public final ForgeConfigSpec.ConfigValue<List<String>> holyEntities;
     public final ForgeConfigSpec.ConfigValue<List<String>> holyPotions;
-    public final ForgeConfigSpec.ConfigValue<List<String>> holyWeapons;
+    public final ForgeConfigSpec.ConfigValue<List<String>> holyItems;
     public final ForgeConfigSpec.ConfigValue<List<String>> holyEnchantments;
     public final ForgeConfigSpec.ConfigValue<List<String>> holyDamage;
     public final ForgeConfigSpec.ConfigValue<List<String>> holyMaterials;
@@ -75,8 +79,8 @@ public class ConsecrationConfig {
           .comment("A list of potions that will be able to damage and smite undead")
           .translation(CONFIG_PREFIX + "holyPotions").define("holyPotions", new ArrayList<>());
 
-      holyWeapons = builder.comment("A list of items that will be able to damage and smite undead")
-          .translation(CONFIG_PREFIX + "holyWeapons").define("holyWeapons", new ArrayList<>());
+      holyItems = builder.comment("A list of items that will be able to damage and smite undead")
+          .translation(CONFIG_PREFIX + "holyItems").define("holyItems", new ArrayList<>());
 
       holyEnchantments = builder
           .comment("A list of enchantments that will be able to damage and smite undead")
@@ -91,7 +95,7 @@ public class ConsecrationConfig {
       holyMaterials = builder
           .comment("A list of materials that will be able to damage and smite undead")
           .translation(CONFIG_PREFIX + "holyMaterial")
-          .define("holyMaterial", new ArrayList<>(Collections.singletonList("silver")));
+          .define("holyMaterial", new ArrayList<>(Collections.singletonList("diamond")));
 
       builder.pop();
 
@@ -124,9 +128,5 @@ public class ConsecrationConfig {
 
       builder.pop();
     }
-  }
-
-  public enum PermissionMode {
-    BLACKLIST, WHITELIST
   }
 }

@@ -18,8 +18,8 @@ import top.theillusivec4.consecration.Consecration;
 
 public class SmiteTrigger implements ICriterionTrigger<CriterionInstance> {
 
-  public static final SmiteTrigger INSTANCE = new SmiteTrigger(new ResourceLocation
-      (Consecration.MODID, "smite"));
+  public static final SmiteTrigger INSTANCE = new SmiteTrigger(
+      new ResourceLocation(Consecration.MODID, "smite"));
 
   private final Map<PlayerAdvancements, Listeners> listeners = Maps.newHashMap();
   private final ResourceLocation id;
@@ -74,8 +74,7 @@ public class SmiteTrigger implements ICriterionTrigger<CriterionInstance> {
   }
 
   public void trigger(ServerPlayerEntity playerMP) {
-    SmiteTrigger.Listeners killedtrigger$listeners = this.listeners
-        .get(playerMP.getAdvancements());
+    SmiteTrigger.Listeners killedtrigger$listeners = this.listeners.get(playerMP.getAdvancements());
 
     if (killedtrigger$listeners != null) {
       killedtrigger$listeners.trigger();
