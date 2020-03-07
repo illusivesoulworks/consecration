@@ -26,64 +26,16 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Level;
 import top.theillusivec4.consecration.Consecration;
 import top.theillusivec4.consecration.api.ConsecrationAPI;
 import top.theillusivec4.consecration.api.ConsecrationAPI.UndeadType;
 import top.theillusivec4.consecration.common.ConsecrationConfig.PermissionMode;
-import top.theillusivec4.consecration.common.ConsecrationConfig.Server;
 
 public class ConsecrationUtils {
 
   private static final Field AOE_CLOUD_POTION = ObfuscationReflectionHelper
       .findField(AreaEffectCloudEntity.class, "field_184502_e");
-
-  public static void seedConfigs() {
-    Server config = ConsecrationConfig.SERVER;
-
-    config.undeadList.get().forEach(entity -> {
-      String[] parsed = entity.split(";");
-      EntityType.byKey(entity).ifPresent(type -> {
-        UndeadType undeadType = UndeadType.NORMAL;
-
-        if (parsed.length > 1) {
-
-          if (parsed[1].equals("unholy")) {
-            undeadType = UndeadType.UNHOLY;
-          } else if (parsed[1].equals("absolute")) {
-            undeadType = UndeadType.ABSOLUTE;
-          }
-        }
-        ConsecrationAPI.addUndead(type, undeadType);
-      });
-    });
-    config.holyEntities.get()
-        .forEach(entity -> EntityType.byKey(entity).ifPresent(ConsecrationAPI::addHolyEntity));
-    config.holyEffects.get().forEach(potion -> {
-      Effect type = ForgeRegistries.POTIONS.getValue(new ResourceLocation(potion));
-
-      if (type != null) {
-        ConsecrationAPI.addHolyEffect(type);
-      }
-    });
-    config.holyItems.get().forEach(item -> {
-      Item type = ForgeRegistries.ITEMS.getValue(new ResourceLocation(item));
-
-      if (type != null) {
-        ConsecrationAPI.addHolyItem(type);
-      }
-    });
-    config.holyEnchantments.get().forEach(enchant -> {
-      Enchantment type = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(enchant));
-
-      if (type != null) {
-        ConsecrationAPI.addHolyEnchantment(type);
-      }
-    });
-    config.holyDamage.get().forEach(ConsecrationAPI::addHolyDamage);
-    config.holyMaterials.get().forEach(ConsecrationAPI::addHolyMaterial);
-  }
 
   public static int protect(LivingEntity attacker, LivingEntity protect, DamageSource source) {
 
