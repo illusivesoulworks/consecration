@@ -62,14 +62,15 @@ public class ConsecrationSeed {
             break;
         }
       } else if (message instanceof BiFunction) {
-        BiFunction<LivingEntity, DamageSource, Boolean> content = (BiFunction<LivingEntity, DamageSource, Boolean>) message;
 
         switch (method) {
           case IMC.HOLY_ATTACK:
-            ConsecrationAPI.addHolyAttack(content);
+            ConsecrationAPI
+                .addHolyAttack((BiFunction<LivingEntity, DamageSource, Boolean>) message);
             break;
           case IMC.HOLY_PROTECTION:
-            ConsecrationAPI.addHolyProtection(content);
+            ConsecrationAPI
+                .addHolyProtection((BiFunction<LivingEntity, DamageSource, Integer>) message);
             break;
         }
       }

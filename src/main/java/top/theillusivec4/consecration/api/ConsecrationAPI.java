@@ -52,8 +52,8 @@ public class ConsecrationAPI {
   private static Map<EntityType<?>, UndeadType> undeadMap = new HashMap<>();
   // List of BiFunction taking the attacker and damage source and returning true if holy
   private static List<BiFunction<LivingEntity, DamageSource, Boolean>> holyAttacks = new ArrayList<>();
-  // List of BiFunction taking the target and damage source and returning true if holy
-  private static List<BiFunction<LivingEntity, DamageSource, Boolean>> holyProtection = new ArrayList<>();
+  // List of BiFunction taking the target and damage source and returning level of holiness
+  private static List<BiFunction<LivingEntity, DamageSource, Integer>> holyProtection = new ArrayList<>();
   // Set of entities that can smite undead
   private static Set<EntityType<?>> holyEntities = new HashSet<>();
   // Set of potion effects that can smite undead
@@ -67,11 +67,11 @@ public class ConsecrationAPI {
   // Set of materials on items or armor that can smite undead
   private static Set<String> holyMaterials = new HashSet<>();
 
-  public static void addHolyProtection(BiFunction<LivingEntity, DamageSource, Boolean> func) {
+  public static void addHolyProtection(BiFunction<LivingEntity, DamageSource, Integer> func) {
     holyProtection.add(func);
   }
 
-  public static List<BiFunction<LivingEntity, DamageSource, Boolean>> getHolyProtection() {
+  public static List<BiFunction<LivingEntity, DamageSource, Integer>> getHolyProtection() {
     return ImmutableList.copyOf(holyProtection);
   }
 

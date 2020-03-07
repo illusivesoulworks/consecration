@@ -84,12 +84,9 @@ public class ConsecrationUtils {
       }
     }
 
-    for (BiFunction<LivingEntity, DamageSource, Boolean> func : ConsecrationAPI
+    for (BiFunction<LivingEntity, DamageSource, Integer> func : ConsecrationAPI
         .getHolyProtection()) {
-      if (func.apply(protect, source)) {
-        level[0]++;
-        break;
-      }
+      level[0] += func.apply(protect, source);
     }
     return level[0];
   }
