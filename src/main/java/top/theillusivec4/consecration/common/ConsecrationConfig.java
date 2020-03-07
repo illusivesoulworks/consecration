@@ -32,7 +32,7 @@ public class ConsecrationConfig {
     public final ForgeConfigSpec.IntValue fireSmiteDuration;
     public final ForgeConfigSpec.IntValue holySmiteDuration;
     public final ForgeConfigSpec.ConfigValue<List<String>> holyEntities;
-    public final ForgeConfigSpec.ConfigValue<List<String>> holyPotions;
+    public final ForgeConfigSpec.ConfigValue<List<String>> holyEffects;
     public final ForgeConfigSpec.ConfigValue<List<String>> holyItems;
     public final ForgeConfigSpec.ConfigValue<List<String>> holyEnchantments;
     public final ForgeConfigSpec.ConfigValue<List<String>> holyDamage;
@@ -75,9 +75,10 @@ public class ConsecrationConfig {
           .comment("A list of entities that will be able to damage and smite undead")
           .translation(CONFIG_PREFIX + "holyEntities").define("holyEntities", new ArrayList<>());
 
-      holyPotions = builder
-          .comment("A list of potions that will be able to damage and smite undead")
-          .translation(CONFIG_PREFIX + "holyPotions").define("holyPotions", new ArrayList<>());
+      holyEffects = builder
+          .comment("A list of potion effects that will be able to damage and smite undead")
+          .translation(CONFIG_PREFIX + "holyEffects")
+          .define("holyEffects", Collections.singletonList("minecraft:instant_health"));
 
       holyItems = builder.comment("A list of items that will be able to damage and smite undead")
           .translation(CONFIG_PREFIX + "holyItems").define("holyItems", new ArrayList<>());
@@ -95,7 +96,7 @@ public class ConsecrationConfig {
       holyMaterials = builder
           .comment("A list of materials that will be able to damage and smite undead")
           .translation(CONFIG_PREFIX + "holyMaterial")
-          .define("holyMaterial", new ArrayList<>(Collections.singletonList("diamond")));
+          .define("holyMaterial", new ArrayList<>(Collections.singletonList("silver")));
 
       builder.pop();
 

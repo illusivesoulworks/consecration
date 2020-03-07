@@ -1,31 +1,44 @@
 package top.theillusivec4.consecration.common;
 
+import com.google.common.collect.Lists;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.function.BiFunction;
 import javax.annotation.Nullable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.projectile.PotionEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.IArmorMaterial;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.TieredItem;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.logging.log4j.Level;
+import top.theillusivec4.consecration.Consecration;
 import top.theillusivec4.consecration.api.ConsecrationAPI;
 import top.theillusivec4.consecration.api.ConsecrationAPI.UndeadType;
 import top.theillusivec4.consecration.common.ConsecrationConfig.PermissionMode;
 import top.theillusivec4.consecration.common.ConsecrationConfig.Server;
 
 public class ConsecrationUtils {
+
+  private static final Field AOE_CLOUD_POTION = ObfuscationReflectionHelper
+      .findField(AreaEffectCloudEntity.class, "field_184502_e");
 
   public static void seedConfigs() {
     Server config = ConsecrationConfig.SERVER;
@@ -48,11 +61,11 @@ public class ConsecrationUtils {
     });
     config.holyEntities.get()
         .forEach(entity -> EntityType.byKey(entity).ifPresent(ConsecrationAPI::addHolyEntity));
-    config.holyPotions.get().forEach(potion -> {
-      Potion type = Potion.getPotionTypeForName(potion);
+    config.holyEffects.get().forEach(potion -> {
+      Effect type = ForgeRegistries.POTIONS.getValue(new ResourceLocation(potion));
 
-      if (type != Potions.EMPTY) {
-        ConsecrationAPI.addHolyPotion(type);
+      if (type != null) {
+        ConsecrationAPI.addHolyEffect(type);
       }
     });
     config.holyItems.get().forEach(item -> {
@@ -101,7 +114,8 @@ public class ConsecrationUtils {
       }
     }
 
-    for (BiFunction<LivingEntity, DamageSource, Boolean> func : ConsecrationAPI.getHolyProtection()) {
+    for (BiFunction<LivingEntity, DamageSource, Boolean> func : ConsecrationAPI
+        .getHolyProtection()) {
       if (func.apply(protect, source)) {
         level[0]++;
         break;
@@ -146,7 +160,8 @@ public class ConsecrationUtils {
       }
     }
 
-    if (isHolyDamage(source) || isHolyEntity(source.getImmediateSource())) {
+    if (isHolyDamage(source) || isHolyEntity(source.getImmediateSource()) || isHolyPotion(
+        source.getImmediateSource())) {
       return DamageType.HOLY;
     }
     return processHolyFunctions(target, source);
@@ -184,6 +199,37 @@ public class ConsecrationUtils {
     return ConsecrationAPI.getUndead().getOrDefault(entityType, UndeadType.NORMAL);
   }
 
+  public static boolean isHolyEffect(Effect effect) {
+    return ConsecrationAPI.getHolyEffects().contains(effect);
+  }
+
+  public static boolean isHolyPotion(Entity entity) {
+    List<EffectInstance> effects = Lists.newArrayList();
+
+    if (entity instanceof PotionEntity) {
+      effects.addAll(PotionUtils.getEffectsFromStack(((PotionEntity) entity).getItem()));
+    } else if (entity instanceof AreaEffectCloudEntity) {
+      Potion potion = null;
+      try {
+        potion = (Potion) AOE_CLOUD_POTION.get(entity);
+      } catch (IllegalAccessException e) {
+        Consecration.LOGGER.log(Level.ERROR, "Error getting potion from AoE cloud " + entity);
+      }
+      if (potion != null) {
+        effects.addAll(potion.getEffects());
+      }
+    }
+
+    for (EffectInstance effect : effects) {
+      Effect potion = effect.getPotion();
+
+      if (ConsecrationAPI.getHolyEffects().contains(potion)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public static boolean hasHolyEnchantment(ItemStack stack) {
 
     for (Enchantment enchantment : EnchantmentHelper.getEnchantments(stack).keySet()) {
@@ -197,8 +243,8 @@ public class ConsecrationUtils {
 
   public static DamageType processHolyFunctions(LivingEntity target, DamageSource source) {
 
-    for (BiFunction<LivingEntity, DamageSource, Boolean> func : ConsecrationAPI
-        .getHolyAttacks()) {
+    for (BiFunction<LivingEntity, DamageSource, Boolean> func : ConsecrationAPI.getHolyAttacks()) {
+
       if (func.apply(target, source)) {
         return DamageType.HOLY;
       }

@@ -1,18 +1,27 @@
 package top.theillusivec4.consecration.common.capability;
 
+import java.util.Map;
+import java.util.Set;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.PotionEvent.PotionAddedEvent;
+import net.minecraftforge.event.entity.living.PotionEvent.PotionRemoveEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import top.theillusivec4.consecration.Consecration;
+import top.theillusivec4.consecration.api.ConsecrationAPI;
 import top.theillusivec4.consecration.common.ConsecrationConfig;
 import top.theillusivec4.consecration.common.ConsecrationUtils.DamageType;
 import top.theillusivec4.consecration.common.capability.UndyingCapability.IUndying;
@@ -47,6 +56,24 @@ public class CapabilityEventsHandler {
                 livingEntity.getWidth() / 2.0D, 0.0D);
           }
           undying.tickSmite();
+        }
+      });
+    }
+  }
+
+  @SubscribeEvent
+  public void onPotionAdded(PotionAddedEvent evt) {
+    LivingEntity livingEntity = evt.getEntityLiving();
+
+    if (!livingEntity.getEntityWorld().isRemote) {
+      LazyOptional<IUndying> undyingOpt = UndyingCapability.getCapability(livingEntity);
+
+      undyingOpt.ifPresent(undying -> {
+        EffectInstance effectInstance = evt.getPotionEffect();
+        Set<Effect> effect = ConsecrationAPI.getHolyEffects();
+        Effect effect1 = effectInstance.getPotion();
+        if (effect.contains(effect1)) {
+          undying.setSmiteDuration(effectInstance.getDuration());
         }
       });
     }

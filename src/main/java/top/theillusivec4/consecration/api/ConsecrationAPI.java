@@ -17,6 +17,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
+import net.minecraft.potion.Effect;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
@@ -30,7 +31,7 @@ public class ConsecrationAPI {
   private static List<BiFunction<LivingEntity, DamageSource, Boolean>> holyAttacks = new ArrayList<>();
   private static List<BiFunction<LivingEntity, DamageSource, Boolean>> holyProtection = new ArrayList<>();
   private static Set<EntityType<?>> holyEntities = new HashSet<>();
-  private static Set<Potion> holyPotions = new HashSet<>();
+  private static Set<Effect> holyEffects = new HashSet<>();
   private static Set<Item> holyItems = new HashSet<>();
   private static Set<Enchantment> holyEnchantments = new HashSet<>();
   private static Set<String> holyDamage = new HashSet<>();
@@ -76,12 +77,12 @@ public class ConsecrationAPI {
     return ImmutableSet.copyOf(holyItems);
   }
 
-  public static void addHolyPotion(Potion potion) {
-    holyPotions.add(potion);
+  public static void addHolyEffect(Effect potion) {
+    holyEffects.add(potion);
   }
 
-  public static Set<Potion> getHolyPotions() {
-    return ImmutableSet.copyOf(holyPotions);
+  public static Set<Effect> getHolyEffects() {
+    return ImmutableSet.copyOf(holyEffects);
   }
 
   public static void addHolyEntity(EntityType<?> entityType) {

@@ -24,7 +24,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import top.theillusivec4.consecration.client.ConsecrationRenderingRegistry;
 import top.theillusivec4.consecration.common.ConsecrationConfig;
 import top.theillusivec4.consecration.common.ConsecrationUtils;
 import top.theillusivec4.consecration.common.capability.UndyingCapability;
@@ -56,9 +55,5 @@ public class Consecration {
             .addPotionToItemStack(new ItemStack(Items.POTION),
                 ConsecrationRegistry.STRONG_HOLY_POTION));
     ConsecrationUtils.seedConfigs();
-  }
-
-  private void clientSetup(final FMLClientSetupEvent evt) {
-    ConsecrationRenderingRegistry.register();
   }
 }
