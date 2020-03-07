@@ -23,7 +23,6 @@ import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
-import net.minecraft.potion.Potions;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
@@ -179,7 +178,7 @@ public class ConsecrationUtils {
   }
 
   public static boolean isValidDimension(final int id) {
-    List<Integer> dimensions = ConsecrationConfig.SERVER.dimensions.get();
+    List<? extends Integer> dimensions = ConsecrationConfig.SERVER.dimensions.get();
     PermissionMode permissionMode = ConsecrationConfig.SERVER.dimensionPermission.get();
 
     if (dimensions.isEmpty()) {
