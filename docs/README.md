@@ -11,11 +11,13 @@ Undead mobs will be more resilient against most forms of damage. Undead mobs inc
 ### Items
 
 #### Fire Stick
-[![](https://i.ibb.co/QrVGdM3/2020-03-07-10-32-44.png)]
+![](https://i.ibb.co/QrVGdM3/2020-03-07-10-32-44.png)
+
 The Fire Stick is a simple early-game tool that deals no additional damage to enemies but has the ability to set them on fire for 2 seconds, which is enough to depower the undead for a short time. Note that this tool is limited to 13 uses, so use it wisely.
 
 #### Fire Arrow
-[![](https://i.ibb.co/pfrd894/2020-03-07-10-32-30.png)]
+![](https://i.ibb.co/pfrd894/2020-03-07-10-32-30.png)
+
 The Fire Arrow is a simple early-game weapon that acts exactly the same as a normal arrow when shot except that it will set enemies on fire.
 
 #### Potion of Consecration
