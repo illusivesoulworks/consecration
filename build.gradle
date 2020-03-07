@@ -7,11 +7,12 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.2.0'
+        classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.4.0'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'com.matthewprenger.cursegradle'
+apply plugin: 'maven-publish'
 
 version = "${version_minecraft}-${mod_version}"
 group = "${mod_group}"
@@ -75,12 +76,30 @@ jar {
     }
 }
 
+def reobfFile = file("build/reobfJar/output.jar")
+def reobfArtifact = artifacts.add('default', reobfFile) {
+    type 'jar'
+    builtBy 'reobfJar'
+}
+
+task apiJar(type: Jar) {
+    classifier = 'api'
+    include 'top/theillusivec4/curios/api/**/*'
+    from sourceSets.main.allSource
+    from sourceSets.main.output
+}
+
 task sourcesJar(type: Jar) {
     classifier = 'sources'
     from sourceSets.main.allJava
 }
 
-tasks.build.dependsOn sourcesJar
+task deobfJar(type: Jar) {
+    classifier = 'deobf'
+    from sourceSets.main.output
+}
+
+tasks.build.dependsOn apiJar, sourcesJar, deobfJar
 
 processResources {
 
@@ -104,5 +123,39 @@ curseforge {
         changelogType = 'markdown'
         changelog = file('docs/CHANGELOG.md')
         addArtifact(sourcesJar)
+        addArtifact(apiJar)
+        addArtifact(deobfJar)
+    }
+}
+
+publishing {
+    tasks.publish.dependsOn 'build'
+    publications {
+
+        mavenJava(MavenPublication) {
+            artifactId project.archivesBaseName
+
+            artifact reobfArtifact
+            artifact deobfJar
+            artifact sourcesJar
+            artifact apiJar
+        }
+    }
+
+    repositories {
+
+        if (project.hasProperty('urlMaven')) {
+
+            if (project.hasProperty('userMaven') && project.hasProperty('passMaven')) {
+
+                maven {
+                    url urlMaven
+                    credentials {
+                        username userMaven
+                        password passMaven
+                    }
+                }
+            }
+        }
     }
 }
