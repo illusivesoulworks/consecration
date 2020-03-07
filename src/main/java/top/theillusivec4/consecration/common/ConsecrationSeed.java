@@ -6,6 +6,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.fml.InterModComms.IMCMessage;
 import top.theillusivec4.consecration.api.ConsecrationAPI;
+import top.theillusivec4.consecration.api.ConsecrationAPI.IMC;
 import top.theillusivec4.consecration.common.ConsecrationConfig.Server;
 
 public class ConsecrationSeed {
@@ -19,25 +20,25 @@ public class ConsecrationSeed {
         String content = (String) message;
 
         switch (method) {
-          case "undead":
+          case IMC.UNDEAD:
             ConsecrationAPI.addUndead(content);
             break;
-          case "holy_entity":
+          case IMC.HOLY_ENTITY:
             ConsecrationAPI.addHolyEntity(content);
             break;
-          case "holy_effect":
+          case IMC.HOLY_EFFECT:
             ConsecrationAPI.addHolyEffect(content);
             break;
-          case "holy_item":
+          case IMC.HOLY_ITEM:
             ConsecrationAPI.addHolyItem(content);
             break;
-          case "holy_enchantment":
+          case IMC.HOLY_ENCHANTMENT:
             ConsecrationAPI.addHolyEnchantment(content);
             break;
-          case "holy_material":
+          case IMC.HOLY_MATERIAL:
             ConsecrationAPI.addHolyMaterial(content);
             break;
-          case "holy_damage":
+          case IMC.HOLY_DAMAGE:
             ConsecrationAPI.addHolyDamage(content);
             break;
         }
@@ -45,10 +46,10 @@ public class ConsecrationSeed {
         BiFunction<LivingEntity, DamageSource, Boolean> content = (BiFunction<LivingEntity, DamageSource, Boolean>) message;
 
         switch (method) {
-          case "holy_attack":
+          case IMC.HOLY_ATTACK:
             ConsecrationAPI.addHolyAttack(content);
             break;
-          case "holy_protection":
+          case IMC.HOLY_PROTECTION:
             ConsecrationAPI.addHolyProtection(content);
             break;
         }

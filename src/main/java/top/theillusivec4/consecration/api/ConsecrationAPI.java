@@ -26,16 +26,26 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class ConsecrationAPI {
 
+  // The identifier for the holy damage type
   public static final String HOLY_ID = "holy";
 
+  // Map of entity types to undead types (normal, unholy, absolute)
   private static Map<EntityType<?>, UndeadType> undeadMap = new HashMap<>();
+  // List of BiFunction taking the attacker and damage source and returning true if holy
   private static List<BiFunction<LivingEntity, DamageSource, Boolean>> holyAttacks = new ArrayList<>();
+  // List of BiFunction taking the target and damage source and returning true if holy
   private static List<BiFunction<LivingEntity, DamageSource, Boolean>> holyProtection = new ArrayList<>();
+  // Set of entities that can smite undead
   private static Set<EntityType<?>> holyEntities = new HashSet<>();
+  // Set of potion effects that can smite undead
   private static Set<Effect> holyEffects = new HashSet<>();
+  // Set of items that can smite undead either wearing or using it
   private static Set<Item> holyItems = new HashSet<>();
+  // Set of weapon enchantments that can smite undead
   private static Set<Enchantment> holyEnchantments = new HashSet<>();
+  // Set of damage types that can smite undead
   private static Set<String> holyDamage = new HashSet<>();
+  // Set of materials on items or armor that can smite undead
   private static Set<String> holyMaterials = new HashSet<>();
 
   public static void addHolyProtection(BiFunction<LivingEntity, DamageSource, Boolean> func) {
@@ -184,5 +194,18 @@ public class ConsecrationAPI {
 
   public enum UndeadType {
     NORMAL, UNHOLY, ABSOLUTE
+  }
+
+  public static class IMC {
+
+    public static final String UNDEAD = "undead";
+    public static final String HOLY_ENTITY = "holy_entity";
+    public static final String HOLY_EFFECT = "holy_effect";
+    public static final String HOLY_ITEM = "holy_item";
+    public static final String HOLY_ENCHANTMENT = "holy_enchantment";
+    public static final String HOLY_MATERIAL = "holy_material";
+    public static final String HOLY_DAMAGE = "holy_damage";
+    public static final String HOLY_ATTACK = "holy_attack";
+    public static final String HOLY_PROTECTION = "holy_protection";
   }
 }
