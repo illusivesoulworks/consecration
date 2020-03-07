@@ -1,6 +1,7 @@
 package top.theillusivec4.consecration.common;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -81,7 +82,7 @@ public class ConsecrationConfig {
       holyEffects = builder
           .comment("A list of potion effects that will be able to damage and smite undead")
           .translation(CONFIG_PREFIX + "holyEffects")
-          .defineList("holyEffects", Collections.singletonList("minecraft:instant_health"),
+          .defineList("holyEffects", Arrays.asList("minecraft:instant_health", "consecration:holy"),
               x -> x instanceof String);
 
       holyItems = builder.comment("A list of items that will be able to damage and smite undead")
