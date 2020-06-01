@@ -20,6 +20,7 @@
 package top.theillusivec4.consecration.common.registry;
 
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.item.Item;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.Potion;
@@ -42,7 +43,7 @@ public class ConsecrationRegistry {
   public static final Item FIRE_ARROW;
 
   @ObjectHolder(RegistryReference.FIRE_ARROW)
-  public static final EntityType<?> FIRE_ARROW_TYPE;
+  public static final EntityType<? extends ArrowEntity> FIRE_ARROW_TYPE;
 
   static {
     HOLY_EFFECT = null;
