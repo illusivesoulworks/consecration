@@ -22,6 +22,7 @@ package top.theillusivec4.consecration.common;
 import com.google.common.collect.Lists;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiFunction;
 import javax.annotation.Nullable;
 import net.minecraft.enchantment.Enchantment;
@@ -84,7 +85,7 @@ public class ConsecrationUtils {
       }
     }
 
-    for (BiFunction<LivingEntity, DamageSource, Integer> func : ConsecrationApi
+    for (BiFunction<LivingEntity, DamageSource, Integer> func : ConsecrationApi.getHolyRegistry()
         .getHolyProtection()) {
       level[0] += func.apply(protect, source);
     }
@@ -141,34 +142,35 @@ public class ConsecrationUtils {
   }
 
   public static boolean isValidCreature(final LivingEntity livingEntity) {
-    return (ConsecrationConfig.CONFIG.defaultUndead.get()
+    return (ConsecrationConfig.defaultUndead
         && livingEntity.getCreatureAttribute() == CreatureAttribute.UNDEAD) || ConsecrationApi
-        .getUndead().containsKey(livingEntity.getType());
+        .getHolyRegistry().getUndead().containsKey(livingEntity.getType());
   }
 
   public static boolean isValidDimension(final ResourceLocation resourceLocation) {
-    List<? extends String> dimensions = ConsecrationConfig.CONFIG.dimensions.get();
-    PermissionMode permissionMode = ConsecrationConfig.CONFIG.dimensionPermission.get();
+    Set<ResourceLocation> dimensions = ConsecrationConfig.dimensions;
+    PermissionMode permissionMode = ConsecrationConfig.dimensionPermission;
 
     if (dimensions.isEmpty()) {
       return true;
     } else if (permissionMode == PermissionMode.BLACKLIST) {
-      return !dimensions.contains(resourceLocation.toString());
+      return !dimensions.contains(resourceLocation);
     } else {
-      return dimensions.contains(resourceLocation.toString());
+      return dimensions.contains(resourceLocation);
     }
   }
 
   public static boolean containsUndead(EntityType<?> entityType) {
-    return ConsecrationApi.getUndead().containsKey(entityType);
+    return ConsecrationApi.getHolyRegistry().getUndead().containsKey(entityType);
   }
 
   public static UndeadType getUndeadType(EntityType<?> entityType) {
-    return ConsecrationApi.getUndead().getOrDefault(entityType, UndeadType.NORMAL);
+    return ConsecrationApi.getHolyRegistry().getUndead()
+        .getOrDefault(entityType, UndeadType.NORMAL);
   }
 
   public static boolean isHolyEffect(Effect effect) {
-    return ConsecrationApi.getHolyEffects().contains(effect);
+    return ConsecrationApi.getHolyRegistry().getHolyEffects().contains(effect);
   }
 
   public static boolean isHolyPotion(Entity entity) {
@@ -187,11 +189,12 @@ public class ConsecrationUtils {
         effects.addAll(potion.getEffects());
       }
     }
+    Set<Effect> holyEffects = ConsecrationApi.getHolyRegistry().getHolyEffects();
 
     for (EffectInstance effect : effects) {
       Effect potion = effect.getPotion();
 
-      if (ConsecrationApi.getHolyEffects().contains(potion)) {
+      if (holyEffects.contains(potion)) {
         return true;
       }
     }
@@ -199,10 +202,11 @@ public class ConsecrationUtils {
   }
 
   public static boolean hasHolyEnchantment(ItemStack stack) {
+    Set<Enchantment> enchantments = ConsecrationApi.getHolyRegistry().getHolyEnchantments();
 
     for (Enchantment enchantment : EnchantmentHelper.getEnchantments(stack).keySet()) {
 
-      if (ConsecrationApi.getHolyEnchantments().contains(enchantment)) {
+      if (enchantments.contains(enchantment)) {
         return true;
       }
     }
@@ -211,7 +215,8 @@ public class ConsecrationUtils {
 
   public static DamageType processHolyFunctions(LivingEntity target, DamageSource source) {
 
-    for (BiFunction<LivingEntity, DamageSource, Boolean> func : ConsecrationApi.getHolyAttacks()) {
+    for (BiFunction<LivingEntity, DamageSource, Boolean> func : ConsecrationApi.getHolyRegistry()
+        .getHolyAttacks()) {
 
       if (func.apply(target, source)) {
         return DamageType.HOLY;
@@ -221,21 +226,23 @@ public class ConsecrationUtils {
   }
 
   public static boolean isHolyEntity(@Nullable Entity entity) {
-    return entity != null && ConsecrationApi.getHolyEntities().contains(entity.getType());
+    return entity != null && ConsecrationApi.getHolyRegistry().getHolyEntities()
+        .contains(entity.getType());
   }
 
   public static boolean isHolyDamage(DamageSource source) {
-    return ConsecrationApi.getHolyDamage().contains(source.getDamageType());
+    return ConsecrationApi.getHolyRegistry().getHolyDamage().contains(source.getDamageType());
   }
 
   public static boolean isHolyItem(Item item) {
-    return ConsecrationApi.getHolyItems().contains(item);
+    return ConsecrationApi.getHolyRegistry().getHolyItems().contains(item);
   }
 
   public static boolean containsHolyMaterial(ResourceLocation resourceLocation) {
 
-    for (String mat : ConsecrationApi.getHolyMaterials()) {
+    for (String mat : ConsecrationApi.getHolyRegistry().getHolyMaterials()) {
       String pattern = "^" + mat + "(\\b|[_-]\\w*)";
+
       if (resourceLocation.getPath().matches(pattern)) {
         return true;
       }

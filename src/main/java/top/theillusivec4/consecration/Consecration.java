@@ -32,16 +32,20 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.config.ModConfig.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import top.theillusivec4.consecration.api.ConsecrationApi;
 import top.theillusivec4.consecration.client.ConsecrationRenderer;
 import top.theillusivec4.consecration.common.ConsecrationConfig;
 import top.theillusivec4.consecration.common.ConsecrationSeed;
+import top.theillusivec4.consecration.common.HolyRegistry;
 import top.theillusivec4.consecration.common.capability.UndyingCapability;
 import top.theillusivec4.consecration.common.registry.ConsecrationRegistry;
 import top.theillusivec4.consecration.common.trigger.SmiteTrigger;
@@ -57,6 +61,7 @@ public class Consecration {
     eventBus.addListener(this::setup);
     eventBus.addListener(this::clientSetup);
     eventBus.addListener(this::imcProcess);
+    eventBus.addListener(this::config);
     ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ConsecrationConfig.CONFIG_SPEC);
   }
 
@@ -80,11 +85,24 @@ public class Consecration {
   }
 
   private void imcProcess(final InterModProcessEvent evt) {
-    ConsecrationSeed.imc(evt.getIMCStream());
+    ConsecrationSeed.setStream(evt.getIMCStream());
+  }
+
+  private void config(final ModConfigEvent evt) {
+
+    if (evt.getConfig().getModId().equals(MODID)) {
+      ConsecrationConfig.bake();
+    }
   }
 
   @SubscribeEvent
-  public void serverStart(final FMLServerStartedEvent evt) {
-    ConsecrationSeed.config();
+  public void serverStart(final FMLServerAboutToStartEvent evt) {
+    ConsecrationApi.setHolyRegistry(new HolyRegistry());
+    ConsecrationSeed.fillRegistry();
+  }
+
+  @SubscribeEvent
+  public void serverStopped(final FMLServerStoppedEvent evt) {
+    ConsecrationApi.setHolyRegistry(null);
   }
 }

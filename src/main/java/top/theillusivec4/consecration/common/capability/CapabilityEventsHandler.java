@@ -89,9 +89,9 @@ public class CapabilityEventsHandler {
 
           if (livingEntity.ticksExisted % 20 == 0 && livingEntity.getHealth() < livingEntity
               .getMaxHealth()) {
-            livingEntity.heal(ConsecrationConfig.CONFIG.healthRegen.get());
+            livingEntity.heal((float) ConsecrationConfig.healthRegen);
           }
-          double speedMod = ConsecrationConfig.CONFIG.speedModifier.get();
+          double speedMod = ConsecrationConfig.speedModifier;
 
           if (speedMod > 0 && speedAttribute != null
               && speedAttribute.getModifier(SPEED_MOD) == null) {
@@ -112,7 +112,7 @@ public class CapabilityEventsHandler {
 
       undyingOpt.ifPresent(undying -> {
         EffectInstance effectInstance = evt.getPotionEffect();
-        Set<Effect> effect = ConsecrationApi.getHolyEffects();
+        Set<Effect> effect = ConsecrationApi.getHolyRegistry().getHolyEffects();
         Effect effect1 = effectInstance.getPotion();
         if (effect.contains(effect1)) {
           int duration = effect1.isInstant() ? ConsecrationConfig.CONFIG.holySmiteDuration.get()
@@ -155,9 +155,9 @@ public class CapabilityEventsHandler {
         if (type != DamageType.NONE) {
 
           if (type == DamageType.FIRE) {
-            undying.setSmiteDuration(ConsecrationConfig.CONFIG.fireSmiteDuration.get() * 20);
+            undying.setSmiteDuration(ConsecrationConfig.fireSmiteDuration * 20);
           } else {
-            undying.setSmiteDuration(ConsecrationConfig.CONFIG.holySmiteDuration.get() * 20);
+            undying.setSmiteDuration(ConsecrationConfig.holySmiteDuration * 20);
           }
 
           if (source.getTrueSource() instanceof ServerPlayerEntity) {
@@ -167,9 +167,8 @@ public class CapabilityEventsHandler {
           Entity trueSource = source.getTrueSource();
 
           if ((trueSource != null && (trueSource instanceof PlayerEntity
-              || ConsecrationConfig.CONFIG.bystanderNerf.get()))) {
-            evt.setAmount(
-                evt.getAmount() * (float) (1 - ConsecrationConfig.CONFIG.damageReduction.get()));
+              || ConsecrationConfig.bystanderNerf))) {
+            evt.setAmount(evt.getAmount() * (float) (1 - ConsecrationConfig.damageReduction));
           }
         }
       });

@@ -38,11 +38,15 @@ import top.theillusivec4.consecration.Consecration;
 public class UndyingCapability {
 
   @CapabilityInject(IUndying.class)
-  public static final Capability<IUndying> UNDYING_CAP = null;
+  public static final Capability<IUndying> UNDYING_CAP;
 
   public static final ResourceLocation ID = new ResourceLocation(Consecration.MODID, "undying");
 
   private static final String SMITE_TAG = "smite";
+
+  static {
+    UNDYING_CAP = null;
+  }
 
   public static void register() {
     CapabilityManager.INSTANCE.register(IUndying.class, new IStorage<IUndying>() {
@@ -64,7 +68,6 @@ public class UndyingCapability {
     MinecraftForge.EVENT_BUS.register(new CapabilityEventsHandler());
   }
 
-  @SuppressWarnings("ConstantConditions")
   public static LazyOptional<IUndying> getCapability(final LivingEntity entity) {
     return entity.getCapability(UNDYING_CAP);
   }
@@ -118,20 +121,17 @@ public class UndyingCapability {
       this.optional = LazyOptional.of(() -> data);
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nullable Capability<T> capability, Direction side) {
       return UNDYING_CAP.orEmpty(capability, optional);
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     public INBT serializeNBT() {
       return UNDYING_CAP.writeNBT(data, null);
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     public void deserializeNBT(INBT nbt) {
       UNDYING_CAP.readNBT(data, null, nbt);

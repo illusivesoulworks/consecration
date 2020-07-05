@@ -22,7 +22,10 @@ package top.theillusivec4.consecration.common;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
@@ -47,6 +50,49 @@ public class ConsecrationConfig {
 
   public enum PermissionMode {
     BLACKLIST, WHITELIST
+  }
+
+  public static Set<ResourceLocation> dimensions;
+  public static PermissionMode dimensionPermission;
+
+  public static int fireSmiteDuration;
+  public static int holySmiteDuration;
+
+  public static List<? extends String> holyEntities;
+  public static List<? extends String> holyEffects;
+  public static List<? extends String> holyItems;
+  public static List<? extends String> holyEnchantments;
+  public static List<? extends String> holyDamage;
+  public static List<? extends String> holyMaterials;
+
+  public static boolean defaultUndead;
+  public static List<? extends String> undeadList;
+  public static double damageReduction;
+  public static double healthRegen;
+  public static double speedModifier;
+  public static boolean bystanderNerf;
+
+  public static void bake() {
+    dimensions = new HashSet<>();
+    CONFIG.dimensions.get().forEach(dimension -> dimensions.add(new ResourceLocation(dimension)));
+    dimensionPermission = CONFIG.dimensionPermission.get();
+
+    fireSmiteDuration = CONFIG.fireSmiteDuration.get();
+    holySmiteDuration = CONFIG.holySmiteDuration.get();
+
+    holyEntities = CONFIG.holyEntities.get();
+    holyEffects = CONFIG.holyEffects.get();
+    holyItems = CONFIG.holyItems.get();
+    holyEnchantments = CONFIG.holyEnchantments.get();
+    holyDamage = CONFIG.holyDamage.get();
+    holyMaterials = CONFIG.holyMaterials.get();
+
+    defaultUndead = CONFIG.defaultUndead.get();
+    undeadList = CONFIG.undeadList.get();
+    damageReduction = CONFIG.damageReduction.get();
+    healthRegen = CONFIG.healthRegen.get();
+    speedModifier = CONFIG.speedModifier.get();
+    bystanderNerf = CONFIG.bystanderNerf.get();
   }
 
   public static class Config {
