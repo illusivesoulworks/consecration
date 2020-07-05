@@ -61,12 +61,12 @@ public class HolyEffect extends Effect {
       LazyOptional<IUndying> undyingOpt = UndyingCapability.getCapability(livingEntity);
       undyingOpt.ifPresent(undying -> {
         if (source == null) {
-          livingEntity
-              .attackEntityFrom(ConsecrationApi.causeHolyDamage(), (float) (8 << amplifier));
+          livingEntity.attackEntityFrom(ConsecrationApi.getHolyRegistry().causeHolyDamage(),
+              (float) (8 << amplifier));
         } else {
-          livingEntity
-              .attackEntityFrom(ConsecrationApi.causeIndirectHolyDamage(source, indirectSource),
-                  (float) (8 << amplifier));
+          livingEntity.attackEntityFrom(
+              ConsecrationApi.getHolyRegistry().causeIndirectHolyDamage(source, indirectSource),
+              (float) (8 << amplifier));
         }
       });
 
