@@ -29,7 +29,7 @@ import net.minecraft.potion.Potion;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import top.theillusivec4.consecration.api.ConsecrationAPI;
+import top.theillusivec4.consecration.api.ConsecrationApi;
 import top.theillusivec4.consecration.common.enchantment.ShadowProtection;
 import top.theillusivec4.consecration.common.entity.FireArrowEntity;
 import top.theillusivec4.consecration.common.item.FireArrowItem;
@@ -56,9 +56,9 @@ public class RegistryEventsHandler {
 
   @SubscribeEvent
   public static void registerPotions(final RegistryEvent.Register<Potion> evt) {
-    evt.getRegistry().registerAll(new Potion(ConsecrationAPI.HOLY_ID,
+    evt.getRegistry().registerAll(new Potion(ConsecrationApi.HOLY_ID,
         new EffectInstance(ConsecrationRegistry.HOLY_EFFECT, 1, 0))
-        .setRegistryName(RegistryReference.HOLY), new Potion(ConsecrationAPI.HOLY_ID,
+        .setRegistryName(RegistryReference.HOLY), new Potion(ConsecrationApi.HOLY_ID,
         new EffectInstance(ConsecrationRegistry.HOLY_EFFECT, 1, 1))
         .setRegistryName(RegistryReference.STRONG_HOLY));
   }

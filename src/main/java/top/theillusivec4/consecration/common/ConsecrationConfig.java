@@ -24,55 +24,59 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
+import net.minecraftforge.common.ForgeConfigSpec.DoubleValue;
+import net.minecraftforge.common.ForgeConfigSpec.EnumValue;
+import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.consecration.Consecration;
 
 public class ConsecrationConfig {
 
-  public static final ForgeConfigSpec serverSpec;
-  public static final Server SERVER;
+  public static final ForgeConfigSpec CONFIG_SPEC;
+  public static final Config CONFIG;
   private static final String CONFIG_PREFIX = "gui." + Consecration.MODID + ".config.";
 
   static {
-    final Pair<Server, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
-        .configure(Server::new);
-    serverSpec = specPair.getRight();
-    SERVER = specPair.getLeft();
+    final Pair<Config, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
+        .configure(Config::new);
+    CONFIG_SPEC = specPair.getRight();
+    CONFIG = specPair.getLeft();
   }
 
   public enum PermissionMode {
     BLACKLIST, WHITELIST
   }
 
-  public static class Server {
+  public static class Config {
 
-    public final ConfigValue<List<? extends Integer>> dimensions;
-    public final ForgeConfigSpec.EnumValue<PermissionMode> dimensionPermission;
+    public final ConfigValue<List<? extends String>> dimensions;
+    public final EnumValue<PermissionMode> dimensionPermission;
 
-    public final ForgeConfigSpec.IntValue fireSmiteDuration;
-    public final ForgeConfigSpec.IntValue holySmiteDuration;
-    public final ForgeConfigSpec.ConfigValue<List<? extends String>> holyEntities;
-    public final ForgeConfigSpec.ConfigValue<List<? extends String>> holyEffects;
-    public final ForgeConfigSpec.ConfigValue<List<? extends String>> holyItems;
-    public final ForgeConfigSpec.ConfigValue<List<? extends String>> holyEnchantments;
-    public final ForgeConfigSpec.ConfigValue<List<? extends String>> holyDamage;
-    public final ForgeConfigSpec.ConfigValue<List<? extends String>> holyMaterials;
+    public final IntValue fireSmiteDuration;
+    public final IntValue holySmiteDuration;
+    public final ConfigValue<List<? extends String>> holyEntities;
+    public final ConfigValue<List<? extends String>> holyEffects;
+    public final ConfigValue<List<? extends String>> holyItems;
+    public final ConfigValue<List<? extends String>> holyEnchantments;
+    public final ConfigValue<List<? extends String>> holyDamage;
+    public final ConfigValue<List<? extends String>> holyMaterials;
 
-    public final ForgeConfigSpec.BooleanValue defaultUndead;
-    public final ForgeConfigSpec.ConfigValue<List<? extends String>> undeadList;
-    public final ForgeConfigSpec.DoubleValue damageReduction;
-    public final ForgeConfigSpec.IntValue healthRegen;
-    public final ForgeConfigSpec.DoubleValue speedModifier;
-    public final ForgeConfigSpec.BooleanValue bystanderNerf;
+    public final BooleanValue defaultUndead;
+    public final ConfigValue<List<? extends String>> undeadList;
+    public final DoubleValue damageReduction;
+    public final IntValue healthRegen;
+    public final DoubleValue speedModifier;
+    public final BooleanValue bystanderNerf;
 
-    public Server(ForgeConfigSpec.Builder builder) {
+    public Config(ForgeConfigSpec.Builder builder) {
       builder.push("dimension");
 
       dimensions = builder
           .comment("Set which dimensions are blacklisted or whitelisted for affected undead")
           .translation(CONFIG_PREFIX + "dimensions")
-          .defineList("dimensions", ArrayList::new, x -> x instanceof Integer);
+          .defineList("dimensions", ArrayList::new, s -> s instanceof String);
 
       dimensionPermission = builder
           .comment("Set whether the dimension configuration is blacklisted or whitelisted")
@@ -96,34 +100,34 @@ public class ConsecrationConfig {
       holyEntities = builder
           .comment("A list of entities that will be able to damage and smite undead")
           .translation(CONFIG_PREFIX + "holyEntities")
-          .defineList("holyEntities", ArrayList::new, x -> x instanceof String);
+          .defineList("holyEntities", ArrayList::new, s -> s instanceof String);
 
       holyEffects = builder
           .comment("A list of potion effects that will be able to damage and smite undead")
           .translation(CONFIG_PREFIX + "holyEffects")
           .defineList("holyEffects", Arrays.asList("minecraft:instant_health", "consecration:holy"),
-              x -> x instanceof String);
+              s -> s instanceof String);
 
       holyItems = builder.comment("A list of items that will be able to damage and smite undead")
           .translation(CONFIG_PREFIX + "holyItems")
-          .defineList("holyItems", ArrayList::new, x -> x instanceof String);
+          .defineList("holyItems", ArrayList::new, s -> s instanceof String);
 
       holyEnchantments = builder
           .comment("A list of enchantments that will be able to damage and smite undead")
           .translation(CONFIG_PREFIX + "holyEnchantments")
           .defineList("holyEnchantments", Collections.singletonList("minecraft:smite"),
-              x -> x instanceof String);
+              s -> s instanceof String);
 
       holyDamage = builder
           .comment("A list of damage types that will be able to damage and smite undead")
           .translation(CONFIG_PREFIX + "holyDamage")
-          .defineList("holyDamage", Collections.singletonList("holy"), x -> x instanceof String);
+          .defineList("holyDamage", Collections.singletonList("holy"), s -> s instanceof String);
 
       holyMaterials = builder
           .comment("A list of materials that will be able to damage and smite undead")
           .translation(CONFIG_PREFIX + "holyMaterial")
           .defineList("holyMaterial", Collections.singletonList("silver"),
-              x -> x instanceof String);
+              s -> s instanceof String);
 
       builder.pop();
 
@@ -137,7 +141,7 @@ public class ConsecrationConfig {
               + "\nOptionally, add ';unholy' or ';absolute' to the end."
               + "\nUnholy mobs will not be smote by fire and absolute mobs will not be smote by anything.")
           .translation(CONFIG_PREFIX + "undeadList")
-          .defineList("undeadList", ArrayList::new, x -> x instanceof String);
+          .defineList("undeadList", ArrayList::new, s -> s instanceof String);
 
       damageReduction = builder
           .comment("Set undead natural damage reduction, in percent, against all non-holy damage")

@@ -36,7 +36,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.apache.logging.log4j.Level;
 import top.theillusivec4.consecration.Consecration;
-import top.theillusivec4.consecration.api.ConsecrationAPI;
+import top.theillusivec4.consecration.api.ConsecrationApi;
 import top.theillusivec4.consecration.common.capability.UndyingCapability;
 import top.theillusivec4.consecration.common.capability.UndyingCapability.IUndying;
 import top.theillusivec4.consecration.common.registry.RegistryReference;
@@ -62,10 +62,10 @@ public class HolyEffect extends Effect {
       undyingOpt.ifPresent(undying -> {
         if (source == null) {
           livingEntity
-              .attackEntityFrom(ConsecrationAPI.causeHolyDamage(), (float) (8 << amplifier));
+              .attackEntityFrom(ConsecrationApi.causeHolyDamage(), (float) (8 << amplifier));
         } else {
           livingEntity
-              .attackEntityFrom(ConsecrationAPI.causeIndirectHolyDamage(source, indirectSource),
+              .attackEntityFrom(ConsecrationApi.causeIndirectHolyDamage(source, indirectSource),
                   (float) (8 << amplifier));
         }
       });

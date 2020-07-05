@@ -24,9 +24,9 @@ import java.util.stream.Stream;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.fml.InterModComms.IMCMessage;
-import top.theillusivec4.consecration.api.ConsecrationAPI;
-import top.theillusivec4.consecration.api.ConsecrationAPI.IMC;
-import top.theillusivec4.consecration.common.ConsecrationConfig.Server;
+import top.theillusivec4.consecration.api.ConsecrationApi;
+import top.theillusivec4.consecration.api.ConsecrationApi.IMC;
+import top.theillusivec4.consecration.common.ConsecrationConfig.Config;
 
 public class ConsecrationSeed {
 
@@ -40,36 +40,36 @@ public class ConsecrationSeed {
 
         switch (method) {
           case IMC.UNDEAD:
-            ConsecrationAPI.addUndead(content);
+            ConsecrationApi.addUndead(content);
             break;
           case IMC.HOLY_ENTITY:
-            ConsecrationAPI.addHolyEntity(content);
+            ConsecrationApi.addHolyEntity(content);
             break;
           case IMC.HOLY_EFFECT:
-            ConsecrationAPI.addHolyEffect(content);
+            ConsecrationApi.addHolyEffect(content);
             break;
           case IMC.HOLY_ITEM:
-            ConsecrationAPI.addHolyItem(content);
+            ConsecrationApi.addHolyItem(content);
             break;
           case IMC.HOLY_ENCHANTMENT:
-            ConsecrationAPI.addHolyEnchantment(content);
+            ConsecrationApi.addHolyEnchantment(content);
             break;
           case IMC.HOLY_MATERIAL:
-            ConsecrationAPI.addHolyMaterial(content);
+            ConsecrationApi.addHolyMaterial(content);
             break;
           case IMC.HOLY_DAMAGE:
-            ConsecrationAPI.addHolyDamage(content);
+            ConsecrationApi.addHolyDamage(content);
             break;
         }
       } else if (message instanceof BiFunction) {
 
         switch (method) {
           case IMC.HOLY_ATTACK:
-            ConsecrationAPI
+            ConsecrationApi
                 .addHolyAttack((BiFunction<LivingEntity, DamageSource, Boolean>) message);
             break;
           case IMC.HOLY_PROTECTION:
-            ConsecrationAPI
+            ConsecrationApi
                 .addHolyProtection((BiFunction<LivingEntity, DamageSource, Integer>) message);
             break;
         }
@@ -78,13 +78,13 @@ public class ConsecrationSeed {
   }
 
   public static void config() {
-    Server config = ConsecrationConfig.SERVER;
-    config.undeadList.get().forEach(ConsecrationAPI::addUndead);
-    config.holyEntities.get().forEach(ConsecrationAPI::addHolyEntity);
-    config.holyEffects.get().forEach(ConsecrationAPI::addHolyEffect);
-    config.holyItems.get().forEach(ConsecrationAPI::addHolyItem);
-    config.holyEnchantments.get().forEach(ConsecrationAPI::addHolyEnchantment);
-    config.holyDamage.get().forEach(ConsecrationAPI::addHolyDamage);
-    config.holyMaterials.get().forEach(ConsecrationAPI::addHolyMaterial);
+    Config config = ConsecrationConfig.CONFIG;
+    config.undeadList.get().forEach(ConsecrationApi::addUndead);
+    config.holyEntities.get().forEach(ConsecrationApi::addHolyEntity);
+    config.holyEffects.get().forEach(ConsecrationApi::addHolyEffect);
+    config.holyItems.get().forEach(ConsecrationApi::addHolyItem);
+    config.holyEnchantments.get().forEach(ConsecrationApi::addHolyEnchantment);
+    config.holyDamage.get().forEach(ConsecrationApi::addHolyDamage);
+    config.holyMaterials.get().forEach(ConsecrationApi::addHolyMaterial);
   }
 }

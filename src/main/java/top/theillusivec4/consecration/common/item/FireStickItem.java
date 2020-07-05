@@ -37,7 +37,7 @@ public class FireStickItem extends Item {
   @Override
   public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity) {
 
-    if (!player.world.isRemote && !entity.isImmuneToFire()) {
+    if (!player.world.isRemote && !entity.getType().isImmuneToFire()) {
       stack.damageItem(1, player, damager -> damager.sendBreakAnimation(Hand.MAIN_HAND));
       entity.setFire(2);
     }

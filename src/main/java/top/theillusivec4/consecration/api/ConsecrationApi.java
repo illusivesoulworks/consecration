@@ -43,7 +43,7 @@ import net.minecraft.util.IndirectEntityDamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class ConsecrationAPI {
+public class ConsecrationApi {
 
   // The identifier for the holy damage type
   public static final String HOLY_ID = "holy";
@@ -140,7 +140,7 @@ public class ConsecrationAPI {
   }
 
   public static void addHolyEntity(String entity) {
-    EntityType.byKey(entity).ifPresent(ConsecrationAPI::addHolyEntity);
+    EntityType.byKey(entity).ifPresent(ConsecrationApi::addHolyEntity);
   }
 
   public static void addHolyEntity(EntityType<?> entityType) {

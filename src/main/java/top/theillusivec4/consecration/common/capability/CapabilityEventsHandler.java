@@ -23,10 +23,10 @@ import java.util.Set;
 import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.AttributeModifier.Operation;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.particles.ParticleTypes;
@@ -40,7 +40,7 @@ import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.PotionEvent.PotionAddedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import top.theillusivec4.consecration.api.ConsecrationAPI;
+import top.theillusivec4.consecration.api.ConsecrationApi;
 import top.theillusivec4.consecration.common.ConsecrationConfig;
 import top.theillusivec4.consecration.common.ConsecrationUtils;
 import top.theillusivec4.consecration.common.ConsecrationUtils.DamageType;
@@ -68,9 +68,12 @@ public class CapabilityEventsHandler {
       LazyOptional<IUndying> undyingOpt = UndyingCapability.getCapability(livingEntity);
 
       undyingOpt.ifPresent(undying -> {
-        IAttributeInstance speedAttribute = livingEntity
-            .getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-        speedAttribute.removeModifier(SPEED_MOD);
+        ModifiableAttributeInstance speedAttribute = livingEntity
+            .getAttribute(Attributes.field_233821_d_);
+
+        if (speedAttribute != null) {
+          speedAttribute.removeModifier(SPEED_MOD);
+        }
 
         if (undying.hasSmite()) {
 
@@ -86,12 +89,13 @@ public class CapabilityEventsHandler {
 
           if (livingEntity.ticksExisted % 20 == 0 && livingEntity.getHealth() < livingEntity
               .getMaxHealth()) {
-            livingEntity.heal(ConsecrationConfig.SERVER.healthRegen.get());
+            livingEntity.heal(ConsecrationConfig.CONFIG.healthRegen.get());
           }
-          double speedMod = ConsecrationConfig.SERVER.speedModifier.get();
+          double speedMod = ConsecrationConfig.CONFIG.speedModifier.get();
 
-          if (speedMod > 0 && speedAttribute.getModifier(SPEED_MOD) == null) {
-            speedAttribute.applyModifier(new AttributeModifier(SPEED_MOD, "Undead speed", speedMod,
+          if (speedMod > 0 && speedAttribute != null
+              && speedAttribute.getModifier(SPEED_MOD) == null) {
+            speedAttribute.func_233767_b_(new AttributeModifier(SPEED_MOD, "Undead speed", speedMod,
                 Operation.MULTIPLY_TOTAL));
           }
         }
@@ -108,10 +112,10 @@ public class CapabilityEventsHandler {
 
       undyingOpt.ifPresent(undying -> {
         EffectInstance effectInstance = evt.getPotionEffect();
-        Set<Effect> effect = ConsecrationAPI.getHolyEffects();
+        Set<Effect> effect = ConsecrationApi.getHolyEffects();
         Effect effect1 = effectInstance.getPotion();
         if (effect.contains(effect1)) {
-          int duration = effect1.isInstant() ? ConsecrationConfig.SERVER.holySmiteDuration.get()
+          int duration = effect1.isInstant() ? ConsecrationConfig.CONFIG.holySmiteDuration.get()
               : effectInstance.getDuration();
           undying.setSmiteDuration(duration * 20);
         }
@@ -134,7 +138,7 @@ public class CapabilityEventsHandler {
           int level = ConsecrationUtils.protect(attacker, livingEntity, evt.getSource());
 
           if (level > 0 && livingEntity.getEntityWorld().rand.nextFloat() < 0.15F * (float) level) {
-            undying.setSmiteDuration(ConsecrationConfig.SERVER.holySmiteDuration.get() * 20);
+            undying.setSmiteDuration(ConsecrationConfig.CONFIG.holySmiteDuration.get() * 20);
           }
         });
       }
@@ -151,9 +155,9 @@ public class CapabilityEventsHandler {
         if (type != DamageType.NONE) {
 
           if (type == DamageType.FIRE) {
-            undying.setSmiteDuration(ConsecrationConfig.SERVER.fireSmiteDuration.get() * 20);
+            undying.setSmiteDuration(ConsecrationConfig.CONFIG.fireSmiteDuration.get() * 20);
           } else {
-            undying.setSmiteDuration(ConsecrationConfig.SERVER.holySmiteDuration.get() * 20);
+            undying.setSmiteDuration(ConsecrationConfig.CONFIG.holySmiteDuration.get() * 20);
           }
 
           if (source.getTrueSource() instanceof ServerPlayerEntity) {
@@ -163,9 +167,9 @@ public class CapabilityEventsHandler {
           Entity trueSource = source.getTrueSource();
 
           if ((trueSource != null && (trueSource instanceof PlayerEntity
-              || ConsecrationConfig.SERVER.bystanderNerf.get()))) {
+              || ConsecrationConfig.CONFIG.bystanderNerf.get()))) {
             evt.setAmount(
-                evt.getAmount() * (float) (1 - ConsecrationConfig.SERVER.damageReduction.get()));
+                evt.getAmount() * (float) (1 - ConsecrationConfig.CONFIG.damageReduction.get()));
           }
         }
       });

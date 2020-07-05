@@ -57,7 +57,7 @@ public class Consecration {
     eventBus.addListener(this::setup);
     eventBus.addListener(this::clientSetup);
     eventBus.addListener(this::imcProcess);
-    ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ConsecrationConfig.serverSpec);
+    ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ConsecrationConfig.CONFIG_SPEC);
   }
 
   private void setup(final FMLCommonSetupEvent evt) {
