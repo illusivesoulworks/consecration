@@ -20,21 +20,20 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 @Mod.EventBusSubscriber(modid = Consecration.MODID)
 public class ConsecrationPotions {
 
-    public static final Potion HOLY_POTION = new HolyPotion().setBeneficial().setPotionName("effect.holy").setRegistryName("holy_potion");
-    public static final PotionType HOLY = new PotionType("holy", new PotionEffect(HOLY_POTION, 1, 0)).setRegistryName
-            ("holy");
-    public static final PotionType STRONG_HOLY = new PotionType("holy", new PotionEffect(HOLY_POTION, 1, 1))
-            .setRegistryName("strong_holy");
+  public static final Potion HOLY_POTION = new HolyPotion().setBeneficial()
+      .setPotionName("effect.holy").setRegistryName(Consecration.MODID, "holy_potion");
+  public static final PotionType HOLY = new PotionType("holy", new PotionEffect(HOLY_POTION, 1, 0))
+      .setRegistryName(Consecration.MODID, "holy");
+  public static final PotionType STRONG_HOLY = new PotionType("holy",
+      new PotionEffect(HOLY_POTION, 1, 1)).setRegistryName(Consecration.MODID, "strong_holy");
 
-    @SubscribeEvent
-    public static void initPotionTypes(RegistryEvent.Register<PotionType> evt) {
-        evt.getRegistry().registerAll(
-                HOLY,
-                STRONG_HOLY);
-    }
+  @SubscribeEvent
+  public static void initPotionTypes(RegistryEvent.Register<PotionType> evt) {
+    evt.getRegistry().registerAll(HOLY, STRONG_HOLY);
+  }
 
-    @SubscribeEvent
-    public static void initPotions(RegistryEvent.Register<Potion> evt) {
-        evt.getRegistry().register(HOLY_POTION);
-    }
+  @SubscribeEvent
+  public static void initPotions(RegistryEvent.Register<Potion> evt) {
+    evt.getRegistry().register(HOLY_POTION);
+  }
 }
