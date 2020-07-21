@@ -72,4 +72,6 @@ public interface IHolyRegistry {
   DamageSource causeIndirectHolyDamage(@Nonnull Entity source, @Nullable Entity indirect);
 
   DamageSource causeHolyDamage();
+
+  void clear();
 }

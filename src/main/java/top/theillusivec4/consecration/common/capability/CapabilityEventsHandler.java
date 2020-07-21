@@ -45,6 +45,7 @@ import top.theillusivec4.consecration.common.ConsecrationConfig;
 import top.theillusivec4.consecration.common.ConsecrationUtils;
 import top.theillusivec4.consecration.common.ConsecrationUtils.DamageType;
 import top.theillusivec4.consecration.common.capability.UndyingCapability.IUndying;
+import top.theillusivec4.consecration.common.capability.UndyingCapability.Provider;
 import top.theillusivec4.consecration.common.trigger.SmiteTrigger;
 
 public class CapabilityEventsHandler {
@@ -54,9 +55,8 @@ public class CapabilityEventsHandler {
   @SubscribeEvent
   public void attachCapabilities(final AttachCapabilitiesEvent<Entity> evt) {
 
-    if (evt.getObject() instanceof LivingEntity && ConsecrationUtils
-        .isUndying((LivingEntity) evt.getObject())) {
-      evt.addCapability(UndyingCapability.ID, new UndyingCapability.Provider());
+    if (evt.getObject() instanceof LivingEntity) {
+      evt.addCapability(UndyingCapability.ID, new Provider());
     }
   }
 
@@ -64,7 +64,7 @@ public class CapabilityEventsHandler {
   public void onLivingUpdate(LivingEvent.LivingUpdateEvent evt) {
     LivingEntity livingEntity = evt.getEntityLiving();
 
-    if (!livingEntity.getEntityWorld().isRemote) {
+    if (!livingEntity.getEntityWorld().isRemote && ConsecrationUtils.isUndying(livingEntity)) {
       LazyOptional<IUndying> undyingOpt = UndyingCapability.getCapability(livingEntity);
 
       undyingOpt.ifPresent(undying -> {
@@ -107,7 +107,7 @@ public class CapabilityEventsHandler {
   public void onPotionAdded(PotionAddedEvent evt) {
     LivingEntity livingEntity = evt.getEntityLiving();
 
-    if (!livingEntity.getEntityWorld().isRemote) {
+    if (!livingEntity.getEntityWorld().isRemote && ConsecrationUtils.isUndying(livingEntity)) {
       LazyOptional<IUndying> undyingOpt = UndyingCapability.getCapability(livingEntity);
 
       undyingOpt.ifPresent(undying -> {
@@ -127,7 +127,7 @@ public class CapabilityEventsHandler {
   public void onLivingDamage(LivingDamageEvent evt) {
     LivingEntity livingEntity = evt.getEntityLiving();
 
-    if (!livingEntity.getEntityWorld().isRemote) {
+    if (!livingEntity.getEntityWorld().isRemote && ConsecrationUtils.isUndying(livingEntity)) {
       LazyOptional<IUndying> undyingOpt = UndyingCapability.getCapability(livingEntity);
 
       if (!undyingOpt.isPresent() && evt.getSource().getImmediateSource() instanceof LivingEntity) {

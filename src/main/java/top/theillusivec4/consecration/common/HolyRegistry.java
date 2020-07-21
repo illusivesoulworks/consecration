@@ -207,4 +207,17 @@ public class HolyRegistry implements IHolyRegistry {
   public DamageSource causeHolyDamage() {
     return new DamageSource(ConsecrationApi.HOLY_ID).setMagicDamage();
   }
+
+  @Override
+  public void clear() {
+    undeadMap.clear();
+    holyAttacks.clear();
+    holyProtection.clear();
+    holyEntities.clear();
+    holyEffects.clear();
+    holyItems.clear();
+    holyEnchantments.clear();
+    holyDamage.clear();
+    holyMaterials.clear();
+  }
 }

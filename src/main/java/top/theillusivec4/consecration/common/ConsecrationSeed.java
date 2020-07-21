@@ -43,11 +43,17 @@ import top.theillusivec4.consecration.api.IHolyRegistry;
 
 public class ConsecrationSeed {
 
-  private static Stream<IMCMessage> imcStream;
+  private static Map<EntityType<?>, UndeadType> undeadMapImc = new HashMap<>();
+  private static List<BiFunction<LivingEntity, DamageSource, Boolean>> holyAttacksImc = new ArrayList<>();
+  private static List<BiFunction<LivingEntity, DamageSource, Integer>> holyProtectionImc = new ArrayList<>();
+  private static Set<EntityType<?>> holyEntitiesImc = new HashSet<>();
+  private static Set<Effect> holyEffectsImc = new HashSet<>();
+  private static Set<Item> holyItemsImc = new HashSet<>();
+  private static Set<Enchantment> holyEnchantmentsImc = new HashSet<>();
+  private static Set<String> holyDamageImc = new HashSet<>();
+  private static Set<String> holyMaterialsImc = new HashSet<>();
 
   private static Map<EntityType<?>, UndeadType> undeadMap = new HashMap<>();
-  private static List<BiFunction<LivingEntity, DamageSource, Boolean>> holyAttacks = new ArrayList<>();
-  private static List<BiFunction<LivingEntity, DamageSource, Integer>> holyProtection = new ArrayList<>();
   private static Set<EntityType<?>> holyEntities = new HashSet<>();
   private static Set<Effect> holyEffects = new HashSet<>();
   private static Set<Item> holyItems = new HashSet<>();
@@ -55,18 +61,22 @@ public class ConsecrationSeed {
   private static Set<String> holyDamage = new HashSet<>();
   private static Set<String> holyMaterials = new HashSet<>();
 
-  public static void setStream(Stream<IMCMessage> stream) {
-    imcStream = stream;
-  }
-
   public static void fillRegistry() {
-    registerImc();
     registerConfig();
     IHolyRegistry registry = ConsecrationApi.getHolyRegistry();
+    registry.clear();
+
+    undeadMapImc.forEach((registry::addUndead));
+    holyAttacksImc.forEach(registry::addHolyAttack);
+    holyProtectionImc.forEach(registry::addHolyProtection);
+    holyEnchantmentsImc.forEach(registry::addHolyEnchantment);
+    holyEntitiesImc.forEach(registry::addHolyEntity);
+    holyEffectsImc.forEach(registry::addHolyEffect);
+    holyItemsImc.forEach(registry::addHolyItem);
+    holyDamageImc.forEach(registry::addHolyDamage);
+    holyMaterialsImc.forEach(registry::addHolyMaterial);
 
     undeadMap.forEach((registry::addUndead));
-    holyAttacks.forEach(registry::addHolyAttack);
-    holyProtection.forEach(registry::addHolyProtection);
     holyEnchantments.forEach(registry::addHolyEnchantment);
     holyEntities.forEach(registry::addHolyEntity);
     holyEffects.forEach(registry::addHolyEffect);
@@ -76,7 +86,7 @@ public class ConsecrationSeed {
   }
 
   @SuppressWarnings("unchecked")
-  public static void registerImc() {
+  public static void registerImc(Stream<IMCMessage> imcStream) {
 
     if (imcStream != null) {
       imcStream.forEach(imcMessage -> {
@@ -89,23 +99,23 @@ public class ConsecrationSeed {
           switch (method) {
             case IMC.UNDEAD:
               ConsecrationParser.getUndeadType(content)
-                  .ifPresent(tuple -> undeadMap.putIfAbsent(tuple.getA(), tuple.getB()));
+                  .ifPresent(tuple -> undeadMapImc.putIfAbsent(tuple.getA(), tuple.getB()));
               break;
             case IMC.HOLY_ENTITY:
-              EntityType.byKey(content).ifPresent(type -> holyEntities.add(type));
+              EntityType.byKey(content).ifPresent(type -> holyEntitiesImc.add(type));
               break;
             case IMC.HOLY_EFFECT:
               Effect effect = ForgeRegistries.POTIONS.getValue(new ResourceLocation(content));
 
               if (effect != null) {
-                holyEffects.add(effect);
+                holyEffectsImc.add(effect);
               }
               break;
             case IMC.HOLY_ITEM:
               Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(content));
 
               if (item != null) {
-                holyItems.add(item);
+                holyItemsImc.add(item);
               }
               break;
             case IMC.HOLY_ENCHANTMENT:
@@ -113,24 +123,24 @@ public class ConsecrationSeed {
                   .getValue(new ResourceLocation(content));
 
               if (enchantment != null) {
-                holyEnchantments.add(enchantment);
+                holyEnchantmentsImc.add(enchantment);
               }
               break;
             case IMC.HOLY_MATERIAL:
-              holyMaterials.add(content);
+              holyMaterialsImc.add(content);
               break;
             case IMC.HOLY_DAMAGE:
-              holyDamage.add(content);
+              holyDamageImc.add(content);
               break;
           }
         } else if (message instanceof BiFunction) {
 
           switch (method) {
             case IMC.HOLY_ATTACK:
-              holyAttacks.add((BiFunction<LivingEntity, DamageSource, Boolean>) message);
+              holyAttacksImc.add((BiFunction<LivingEntity, DamageSource, Boolean>) message);
               break;
             case IMC.HOLY_PROTECTION:
-              holyProtection.add((BiFunction<LivingEntity, DamageSource, Integer>) message);
+              holyProtectionImc.add((BiFunction<LivingEntity, DamageSource, Integer>) message);
               break;
           }
         }
@@ -139,6 +149,13 @@ public class ConsecrationSeed {
   }
 
   public static void registerConfig() {
+    undeadMap.clear();
+    holyEntities.clear();
+    holyEffects.clear();
+    holyItems.clear();
+    holyEnchantments.clear();
+    holyDamage.clear();
+    holyMaterials.clear();
 
     ConsecrationConfig.undeadList.forEach(undead -> ConsecrationParser.getUndeadType(undead)
         .ifPresent(tuple -> undeadMap.putIfAbsent(tuple.getA(), tuple.getB())));

@@ -37,6 +37,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
@@ -85,7 +86,7 @@ public class Consecration {
   }
 
   private void imcProcess(final InterModProcessEvent evt) {
-    ConsecrationSeed.setStream(evt.getIMCStream());
+    ConsecrationSeed.registerImc(evt.getIMCStream());
   }
 
   private void config(final ModConfigEvent evt) {
