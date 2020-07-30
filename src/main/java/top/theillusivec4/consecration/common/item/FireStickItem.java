@@ -19,11 +19,14 @@
 
 package top.theillusivec4.consecration.common.item;
 
+import javax.annotation.Nonnull;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import top.theillusivec4.consecration.common.registry.RegistryReference;
 
@@ -42,5 +45,18 @@ public class FireStickItem extends Item {
       entity.setFire(2);
     }
     return false;
+  }
+
+  @Nonnull
+  @Override
+  public ActionResultType itemInteractionForEntity(ItemStack stack, PlayerEntity playerIn,
+      LivingEntity target, Hand hand) {
+
+    if (!playerIn.world.isRemote && !target.getType().isImmuneToFire()) {
+      stack.damageItem(1, playerIn, damager -> damager.sendBreakAnimation(hand));
+      target.setFire(2);
+      return ActionResultType.SUCCESS;
+    }
+    return super.itemInteractionForEntity(stack, playerIn, target, hand);
   }
 }
