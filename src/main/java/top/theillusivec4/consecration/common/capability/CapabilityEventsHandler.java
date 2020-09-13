@@ -69,7 +69,7 @@ public class CapabilityEventsHandler {
 
       undyingOpt.ifPresent(undying -> {
         ModifiableAttributeInstance speedAttribute = livingEntity
-            .getAttribute(Attributes.field_233821_d_);
+            .getAttribute(Attributes.MOVEMENT_SPEED);
 
         if (speedAttribute != null) {
           speedAttribute.removeModifier(SPEED_MOD);
@@ -95,7 +95,7 @@ public class CapabilityEventsHandler {
 
           if (speedMod > 0 && speedAttribute != null
               && speedAttribute.getModifier(SPEED_MOD) == null) {
-            speedAttribute.func_233767_b_(new AttributeModifier(SPEED_MOD, "Undead speed", speedMod,
+            speedAttribute.applyNonPersistentModifier(new AttributeModifier(SPEED_MOD, "Undead speed", speedMod,
                 Operation.MULTIPLY_TOTAL));
           }
         }
