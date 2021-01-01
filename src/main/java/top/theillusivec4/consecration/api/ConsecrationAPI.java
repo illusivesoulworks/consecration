@@ -161,7 +161,7 @@ public class ConsecrationAPI {
 
   public static void addUndead(String string) {
     String[] parsed = string.split(";");
-    EntityType.byKey(string).ifPresent(type -> {
+    EntityType.byKey(parsed[0]).ifPresent(type -> {
       UndeadType undeadType = UndeadType.NORMAL;
 
       if (parsed.length > 1) {
