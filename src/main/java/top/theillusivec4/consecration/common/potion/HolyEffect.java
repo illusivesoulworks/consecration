@@ -37,6 +37,7 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.apache.logging.log4j.Level;
 import top.theillusivec4.consecration.Consecration;
 import top.theillusivec4.consecration.api.ConsecrationApi;
+import top.theillusivec4.consecration.common.ConsecrationUtils;
 import top.theillusivec4.consecration.common.capability.UndyingCapability;
 import top.theillusivec4.consecration.common.capability.UndyingCapability.IUndying;
 import top.theillusivec4.consecration.common.registry.RegistryReference;
@@ -58,19 +59,20 @@ public class HolyEffect extends Effect {
     if (livingEntity instanceof ZombieVillagerEntity) {
       convertZombieVillager((ZombieVillagerEntity) livingEntity, indirectSource, 1800 >> amplifier);
     } else {
-      LazyOptional<IUndying> undyingOpt = UndyingCapability.getCapability(livingEntity);
-      undyingOpt.ifPresent(undying -> {
-        if (source == null) {
-          livingEntity.attackEntityFrom(ConsecrationApi.getHolyRegistry().causeHolyDamage(),
-              (float) (8 << amplifier));
-        } else {
-          livingEntity.attackEntityFrom(
-              ConsecrationApi.getHolyRegistry().causeIndirectHolyDamage(source, indirectSource),
-              (float) (8 << amplifier));
-        }
-      });
 
-      if (!undyingOpt.isPresent()) {
+      if (ConsecrationUtils.isUndying(livingEntity)) {
+        LazyOptional<IUndying> undyingOpt = UndyingCapability.getCapability(livingEntity);
+        undyingOpt.ifPresent(undying -> {
+          if (source == null) {
+            livingEntity.attackEntityFrom(ConsecrationApi.getHolyRegistry().causeHolyDamage(),
+                (float) (8 << amplifier));
+          } else {
+            livingEntity.attackEntityFrom(
+                ConsecrationApi.getHolyRegistry().causeIndirectHolyDamage(source, indirectSource),
+                (float) (8 << amplifier));
+          }
+        });
+      } else {
         livingEntity.addPotionEffect(new EffectInstance(Effects.REGENERATION, 600, amplifier));
         livingEntity.addPotionEffect(new EffectInstance(Effects.RESISTANCE, 600, amplifier));
       }
