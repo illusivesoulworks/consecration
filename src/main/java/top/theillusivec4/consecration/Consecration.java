@@ -19,6 +19,10 @@
 
 package top.theillusivec4.consecration;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -29,12 +33,14 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.config.ModConfig.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
@@ -48,6 +54,10 @@ import top.theillusivec4.consecration.common.ConsecrationConfig;
 import top.theillusivec4.consecration.common.ConsecrationSeed;
 import top.theillusivec4.consecration.common.HolyRegistry;
 import top.theillusivec4.consecration.common.capability.UndyingCapability;
+import top.theillusivec4.consecration.common.integration.AbstractModule;
+import top.theillusivec4.consecration.common.integration.SilentGearModule;
+import top.theillusivec4.consecration.common.integration.SpartanWeaponryModule;
+import top.theillusivec4.consecration.common.integration.TetraModule;
 import top.theillusivec4.consecration.common.registry.ConsecrationRegistry;
 import top.theillusivec4.consecration.common.trigger.SmiteTrigger;
 
@@ -57,13 +67,32 @@ public class Consecration {
   public static final String MODID = "consecration";
   public static final Logger LOGGER = LogManager.getLogger();
 
+  public static final Map<String, Class<? extends AbstractModule>> MODULES = new HashMap<>();
+  public static final List<AbstractModule> ACTIVE_MODULES = new ArrayList<>();
+
+  static {
+    MODULES.put("tetra", TetraModule.class);
+    MODULES.put("spartanweaponry", SpartanWeaponryModule.class);
+    MODULES.put("silentgear", SilentGearModule.class);
+  }
+
   public Consecration() {
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     eventBus.addListener(this::setup);
     eventBus.addListener(this::clientSetup);
+    eventBus.addListener(this::imcEnqueue);
     eventBus.addListener(this::imcProcess);
     eventBus.addListener(this::config);
     ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ConsecrationConfig.CONFIG_SPEC);
+    MODULES.forEach((id, module) -> {
+      if (ModList.get().isLoaded(id)) {
+        try {
+          ACTIVE_MODULES.add(module.newInstance());
+        } catch (InstantiationException | IllegalAccessException e) {
+          LOGGER.error("Error adding module for mod " + id);
+        }
+      }
+    });
   }
 
   private void setup(final FMLCommonSetupEvent evt) {
@@ -83,6 +112,10 @@ public class Consecration {
 
   private void clientSetup(final FMLClientSetupEvent evt) {
     ConsecrationRenderer.register();
+  }
+
+  private void imcEnqueue(final InterModEnqueueEvent evt) {
+    ACTIVE_MODULES.forEach(AbstractModule::enqueueImc);
   }
 
   private void imcProcess(final InterModProcessEvent evt) {
