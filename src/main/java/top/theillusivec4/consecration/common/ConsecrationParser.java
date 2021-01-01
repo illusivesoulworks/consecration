@@ -9,7 +9,7 @@ public class ConsecrationParser {
 
   public static Optional<Tuple<EntityType<?>, UndeadType>> getUndeadType(String string) {
     String[] parsed = string.split(";");
-    return EntityType.byKey(string).map(type -> {
+    return EntityType.byKey(parsed[0]).map(type -> {
       UndeadType undeadType = UndeadType.NORMAL;
 
       if (parsed.length > 1) {

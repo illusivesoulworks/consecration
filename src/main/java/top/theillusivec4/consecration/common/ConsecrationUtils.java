@@ -138,7 +138,7 @@ public class ConsecrationUtils {
 
   public static boolean isUndying(final LivingEntity livingEntity) {
     return isValidCreature(livingEntity) && isValidDimension(
-        livingEntity.getEntityWorld().func_234923_W_().func_240901_a_());
+        livingEntity.getEntityWorld().getDimensionKey().getRegistryName());
   }
 
   public static boolean isValidCreature(final LivingEntity livingEntity) {
