@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project does not adhere to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 This project uses MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
 
+## [1.16.4-4.0.0.2] - 2021.01.05
+### Changed
+- Fire Arrow recipe is now compatible with modded coals
+- Fire Arrow recipe now only works with the regular Minecraft arrow
+- Fire Stick recipe is now compatible with modded coals
+### Fixed
+- Fixed recipe error with fire arrow [#50](https://github.com/TheIllusiveC4/Consecration/issues/50)
+
 ## [1.16.4-4.0.0.1] - 2020.12.31
 ### Added
 - Added back Tetra, Silent Gear, and Spartan Weaponry compatibility

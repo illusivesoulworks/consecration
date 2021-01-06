@@ -8,10 +8,10 @@
   ],
   "key": {
     "c": {
-      "item": "minecraft:charcoal"
+      "tag": "minecraft:coals"
     },
     "a": {
-      "tag": "forge:arrows"
+      "item": "minecraft:arrow"
     }
   },
   "result": {

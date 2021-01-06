@@ -8,7 +8,7 @@
   ],
   "key": {
     "c": {
-      "item": "minecraft:charcoal"
+      "tag": "minecraft:coals"
     },
     "s": {
       "tag": "forge:rods/wooden"
