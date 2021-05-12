@@ -61,10 +61,10 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${version_forge}"
 
-    compile fg.deobf("curse.maven:tetra-289712:3147835")
+    compile fg.deobf("curse.maven:tetra-289712:3297566")
     compile fg.deobf("curse.maven:spartanweaponry-278141:3148002")
     compile fg.deobf("curse.maven:silentgear-297039:3149998")
-    runtimeOnly fg.deobf("curse.maven:mgui-351914:3104239")
+    runtimeOnly fg.deobf("curse.maven:mgui-351914:3291267")
     runtimeOnly fg.deobf("curse.maven:silentlib-242998:3103851")
 }
 

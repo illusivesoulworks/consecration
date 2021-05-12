@@ -29,7 +29,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.fml.InterModComms;
-import se.mickelus.tetra.items.modular.IItemModular;
+import se.mickelus.tetra.items.modular.IModularItem;
 import top.theillusivec4.consecration.api.ConsecrationApi;
 
 public class TetraModule extends AbstractModule {
@@ -43,7 +43,7 @@ public class TetraModule extends AbstractModule {
             ItemStack stack = ((LivingEntity) damageSource.getImmediateSource())
                 .getHeldItemMainhand();
 
-            if (stack.getItem() instanceof IItemModular && stack.hasTag()) {
+            if (stack.getItem() instanceof IModularItem && stack.hasTag()) {
               CompoundNBT compound = stack.getTag();
               assert compound != null;
               for (String key : compound.keySet()) {
