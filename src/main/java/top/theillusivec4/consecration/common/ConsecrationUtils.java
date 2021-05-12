@@ -120,11 +120,9 @@ public class ConsecrationUtils {
             return DamageType.HOLY;
           }
         }
-      } else if (isHolyItem(item)) {
-        return DamageType.HOLY;
       }
 
-      if (hasHolyEnchantment(stack)) {
+      if (isHolyItem(item) || hasHolyEnchantment(stack)) {
         return DamageType.HOLY;
       }
     }
