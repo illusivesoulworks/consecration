@@ -54,10 +54,7 @@ import top.theillusivec4.consecration.common.ConsecrationConfig;
 import top.theillusivec4.consecration.common.ConsecrationSeed;
 import top.theillusivec4.consecration.common.HolyRegistry;
 import top.theillusivec4.consecration.common.capability.UndyingCapability;
-import top.theillusivec4.consecration.common.integration.AbstractModule;
-import top.theillusivec4.consecration.common.integration.SilentGearModule;
-import top.theillusivec4.consecration.common.integration.SpartanWeaponryModule;
-import top.theillusivec4.consecration.common.integration.TetraModule;
+import top.theillusivec4.consecration.common.integration.*;
 import top.theillusivec4.consecration.common.registry.ConsecrationRegistry;
 import top.theillusivec4.consecration.common.trigger.SmiteTrigger;
 
@@ -74,6 +71,7 @@ public class Consecration {
     MODULES.put("tetra", TetraModule.class);
     MODULES.put("spartanweaponry", SpartanWeaponryModule.class);
     MODULES.put("silentgear", SilentGearModule.class);
+    MODULES.put("tconstruct", TConstructModule.class);
   }
 
   public Consecration() {

@@ -64,6 +64,9 @@ dependencies {
     compile fg.deobf("curse.maven:tetra-289712:3297566")
     compile fg.deobf("curse.maven:spartanweaponry-278141:3148002")
     compile fg.deobf("curse.maven:silentgear-297039:3149998")
+    compile fg.deobf("curse.maven:tconstruct-74072:3352983")
+
+    runtimeOnly fg.deobf("curse.maven:mantle-74924:3352484")
     runtimeOnly fg.deobf("curse.maven:mgui-351914:3291267")
     runtimeOnly fg.deobf("curse.maven:silentlib-242998:3103851")
 }
