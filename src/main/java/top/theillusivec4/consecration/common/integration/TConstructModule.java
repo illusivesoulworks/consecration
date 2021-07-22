@@ -28,11 +28,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.NBTTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.InterModComms;
-import slimeknights.tconstruct.library.tools.item.ToolCore;
+import slimeknights.tconstruct.library.tools.item.ToolItem;
 import top.theillusivec4.consecration.api.ConsecrationApi;
 
 public class TConstructModule extends AbstractModule {
@@ -46,9 +45,10 @@ public class TConstructModule extends AbstractModule {
           if (source instanceof LivingEntity) {
             ItemStack stack = ((LivingEntity) source).getHeldItemMainhand();
 
-            if (stack.getItem() instanceof ToolCore && stack.getTag() != null) {
+            if (stack.getItem() instanceof ToolItem && stack.getTag() != null) {
 
-              for (INBT tic_material : stack.getTag().getList("tic_materials", Constants.NBT.TAG_STRING)) {
+              for (INBT tic_material : stack.getTag()
+                  .getList("tic_materials", Constants.NBT.TAG_STRING)) {
 
                 if (containsHolyMaterial(tic_material.getString().split(":")[1])) {
                   return true;

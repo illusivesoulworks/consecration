@@ -29,6 +29,7 @@ minecraft {
 
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.disableRefMap', 'true'
 
             mods {
                 consecration {
@@ -42,6 +43,7 @@ minecraft {
 
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.disableRefMap', 'true'
 
             mods {
                 consecration {
@@ -61,14 +63,14 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${version_forge}"
 
-    compile fg.deobf("curse.maven:tetra-289712:3297566")
-    compile fg.deobf("curse.maven:spartanweaponry-278141:3148002")
-    compile fg.deobf("curse.maven:silentgear-297039:3149998")
-    compile fg.deobf("curse.maven:tconstruct-74072:3352983")
+    compile fg.deobf("curse.maven:tetra-289712:3371803")
+    compile fg.deobf("curse.maven:spartanweaponry-278141:3164046")
+    compile fg.deobf("curse.maven:silentgear-297039:3386805")
+    compile fg.deobf("curse.maven:tconstruct-74072:3389395")
 
-    runtimeOnly fg.deobf("curse.maven:mantle-74924:3352484")
+    runtimeOnly fg.deobf("curse.maven:mantle-74924:3389377")
     runtimeOnly fg.deobf("curse.maven:mgui-351914:3291267")
-    runtimeOnly fg.deobf("curse.maven:silentlib-242998:3103851")
+    runtimeOnly fg.deobf("curse.maven:silentlib-242998:3235738")
 }
 
 sourceSets {
