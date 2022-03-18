@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
@@ -31,6 +34,7 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
@@ -43,9 +47,9 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import top.theillusivec4.consecration.api.ConsecrationApi;
@@ -54,7 +58,11 @@ import top.theillusivec4.consecration.common.ConsecrationConfig;
 import top.theillusivec4.consecration.common.ConsecrationSeed;
 import top.theillusivec4.consecration.common.HolyRegistry;
 import top.theillusivec4.consecration.common.capability.UndyingCapability;
-import top.theillusivec4.consecration.common.integration.*;
+import top.theillusivec4.consecration.common.integration.AbstractModule;
+import top.theillusivec4.consecration.common.integration.SilentGearModule;
+import top.theillusivec4.consecration.common.integration.SpartanWeaponryModule;
+import top.theillusivec4.consecration.common.integration.TConstructModule;
+import top.theillusivec4.consecration.common.integration.TetraModule;
 import top.theillusivec4.consecration.common.registry.ConsecrationRegistry;
 import top.theillusivec4.consecration.common.trigger.SmiteTrigger;
 
@@ -136,5 +144,21 @@ public class Consecration {
   @SubscribeEvent
   public void serverStopped(final FMLServerStoppedEvent evt) {
     ConsecrationApi.setHolyRegistry(null);
+  }
+
+  @SubscribeEvent
+  public void makeCampfireArrow(final PlayerInteractEvent.RightClickBlock evt) {
+    ItemStack stack = evt.getItemStack();
+
+    if (stack.getItem() == Items.ARROW) {
+      PlayerEntity player = evt.getPlayer();
+      Block block = player.getEntityWorld().getBlockState(evt.getPos()).getBlock();
+
+      if (block == Blocks.CAMPFIRE || block == Blocks.SOUL_CAMPFIRE) {
+        stack.shrink(1);
+        ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ConsecrationRegistry.FIRE_ARROW),
+            player.inventory.currentItem);
+      }
+    }
   }
 }

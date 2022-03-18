@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project does not adhere to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 This project uses MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
 
+## [1.16.5-4.0.1.0] - 2022.03.18
+### Added
+- Added the ability to craft fire arrows by using a regular arrow on a campfire or soul campfire [#52](https://github.com/TheIllusiveC4/Consecration/issues/52)
+
 ## [1.16.5-4.0.0.6] - 2021.07.22
 ### Fixed
 - Fixed Tinkers' Construct compatibility [#59](https://github.com/TheIllusiveC4/Consecration/issues/59)
