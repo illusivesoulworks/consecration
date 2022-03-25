@@ -20,43 +20,43 @@
 package top.theillusivec4.consecration.common.item;
 
 import javax.annotation.Nonnull;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
 import top.theillusivec4.consecration.common.registry.RegistryReference;
 
 public class FireStickItem extends Item {
 
   public FireStickItem() {
-    super(new Item.Properties().maxDamage(13).group(ItemGroup.COMBAT));
+    super(new Item.Properties().durability(13).tab(CreativeModeTab.TAB_COMBAT));
     this.setRegistryName(RegistryReference.FIRE_STICK);
   }
 
   @Override
-  public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity) {
+  public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
 
-    if (!player.world.isRemote && !entity.getType().isImmuneToFire()) {
-      stack.damageItem(1, player, damager -> damager.sendBreakAnimation(Hand.MAIN_HAND));
-      entity.setFire(2);
+    if (!player.level.isClientSide && !entity.getType().fireImmune()) {
+      stack.hurtAndBreak(1, player, damager -> damager.broadcastBreakEvent(InteractionHand.MAIN_HAND));
+      entity.setSecondsOnFire(2);
     }
     return false;
   }
 
   @Nonnull
   @Override
-  public ActionResultType itemInteractionForEntity(ItemStack stack, PlayerEntity playerIn,
-      LivingEntity target, Hand hand) {
+  public InteractionResult interactLivingEntity(@Nonnull ItemStack stack, Player playerIn,
+      @Nonnull LivingEntity target, @Nonnull InteractionHand hand) {
 
-    if (!playerIn.world.isRemote && !target.getType().isImmuneToFire()) {
-      stack.damageItem(1, playerIn, damager -> damager.sendBreakAnimation(hand));
-      target.setFire(2);
-      return ActionResultType.SUCCESS;
+    if (!playerIn.level.isClientSide && !target.getType().fireImmune()) {
+      stack.hurtAndBreak(1, playerIn, damager -> damager.broadcastBreakEvent(hand));
+      target.setSecondsOnFire(2);
+      return InteractionResult.SUCCESS;
     }
-    return super.itemInteractionForEntity(stack, playerIn, target, hand);
+    return super.interactLivingEntity(stack, playerIn, target, hand);
   }
 }

@@ -19,45 +19,48 @@
 
 package top.theillusivec4.consecration.common.enchantment;
 
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentType;
-import net.minecraft.enchantment.ProtectionEnchantment;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.util.DamageSource;
+import javax.annotation.Nonnull;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentCategory;
+import net.minecraft.world.item.enchantment.ProtectionEnchantment;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraftforge.common.util.LazyOptional;
 import top.theillusivec4.consecration.common.capability.UndyingCapability;
 import top.theillusivec4.consecration.common.capability.UndyingCapability.IUndying;
 import top.theillusivec4.consecration.common.registry.RegistryReference;
 
+import net.minecraft.world.item.enchantment.Enchantment.Rarity;
+
 public class ShadowProtection extends Enchantment {
 
   public ShadowProtection() {
-    super(Rarity.UNCOMMON, EnchantmentType.ARMOR,
-        new EquipmentSlotType[]{EquipmentSlotType.CHEST, EquipmentSlotType.FEET,
-            EquipmentSlotType.HEAD, EquipmentSlotType.LEGS});
+    super(Rarity.UNCOMMON, EnchantmentCategory.ARMOR,
+        new EquipmentSlot[]{EquipmentSlot.CHEST, EquipmentSlot.FEET,
+            EquipmentSlot.HEAD, EquipmentSlot.LEGS});
     this.setRegistryName(RegistryReference.SHADOW_PROTECTION);
   }
 
-  public int getMinEnchantability(int enchantmentLevel) {
+  public int getMinCost(int enchantmentLevel) {
     return 8 + (enchantmentLevel - 1) * 6;
   }
 
-  public int getMaxEnchantability(int enchantmentLevel) {
-    return this.getMinEnchantability(enchantmentLevel) + 6;
+  public int getMaxCost(int enchantmentLevel) {
+    return this.getMinCost(enchantmentLevel) + 6;
   }
 
   public int getMaxLevel() {
     return 4;
   }
 
-  public int calcModifierDamage(int level, DamageSource source) {
+  public int getDamageProtection(int level, DamageSource source) {
 
-    if (source.canHarmInCreative()) {
+    if (source.isBypassInvul()) {
       return 0;
     }
-    Entity entity = source.getTrueSource();
+    Entity entity = source.getEntity();
 
     if (entity instanceof LivingEntity) {
       LazyOptional<IUndying> undyingOpt = UndyingCapability.getCapability((LivingEntity) entity);
@@ -66,12 +69,11 @@ public class ShadowProtection extends Enchantment {
     return 0;
   }
 
-  public boolean canApplyTogether(Enchantment ench) {
+  public boolean checkCompatibility(@Nonnull Enchantment enchantment) {
 
-    if (ench instanceof ProtectionEnchantment) {
-      ProtectionEnchantment protectionenchantment = (ProtectionEnchantment) ench;
-      return protectionenchantment.protectionType == ProtectionEnchantment.Type.FALL;
+    if (enchantment instanceof ProtectionEnchantment protectionenchantment) {
+      return protectionenchantment.type == ProtectionEnchantment.Type.FALL;
     }
-    return super.canApplyTogether(ench);
+    return super.checkCompatibility(enchantment);
   }
 }

@@ -20,42 +20,34 @@
 package top.theillusivec4.consecration.common;
 
 import com.google.common.collect.Lists;
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiFunction;
 import javax.annotation.Nullable;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.AreaEffectCloudEntity;
-import net.minecraft.entity.CreatureAttribute;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.PotionEntity;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.IArmorMaterial;
-import net.minecraft.item.IItemTier;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.TieredItem;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import org.apache.logging.log4j.Level;
-import top.theillusivec4.consecration.Consecration;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.AreaEffectCloud;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import top.theillusivec4.consecration.api.ConsecrationApi;
 import top.theillusivec4.consecration.api.ConsecrationApi.UndeadType;
 import top.theillusivec4.consecration.common.ConsecrationConfig.PermissionMode;
 
 public class ConsecrationUtils {
-
-  private static final Field AOE_CLOUD_POTION = ObfuscationReflectionHelper
-      .findField(AreaEffectCloudEntity.class, "field_184502_e");
 
   public static int protect(LivingEntity attacker, LivingEntity protect, DamageSource source) {
 
@@ -65,14 +57,14 @@ public class ConsecrationUtils {
 
     int[] level = new int[1];
 
-    for (ItemStack stack : protect.getArmorInventoryList()) {
+    for (ItemStack stack : protect.getArmorSlots()) {
 
       if (!stack.isEmpty()) {
         Item item = stack.getItem();
 
         if (item instanceof ArmorItem) {
-          IArmorMaterial material = ((ArmorItem) item).getArmorMaterial();
-          for (ItemStack mat : material.getRepairMaterial().getMatchingStacks()) {
+          ArmorMaterial material = ((ArmorItem) item).getMaterial();
+          for (ItemStack mat : material.getRepairIngredient().getItems()) {
             ResourceLocation resourceLocation = mat.getItem().getRegistryName();
 
             if (resourceLocation != null && containsHolyMaterial(resourceLocation)) {
@@ -99,21 +91,19 @@ public class ConsecrationUtils {
       return DamageType.NONE;
     }
 
-    if (!target.getType().isImmuneToFire() && source.isFireDamage()
+    if (!target.getType().fireImmune() && source.isFire()
         && undeadType != UndeadType.UNHOLY) {
       return DamageType.FIRE;
     }
 
-    if (source.getImmediateSource() instanceof LivingEntity) {
-      LivingEntity damager = (LivingEntity) source.getImmediateSource();
-      ItemStack stack = damager.getHeldItemMainhand();
+    if (source.getDirectEntity() instanceof LivingEntity damager) {
+      ItemStack stack = damager.getMainHandItem();
       Item item = stack.getItem();
 
-      if (item instanceof TieredItem) {
-        TieredItem tieredItem = (TieredItem) item;
-        IItemTier tier = tieredItem.getTier();
+      if (item instanceof TieredItem tieredItem) {
+        Tier tier = tieredItem.getTier();
 
-        for (ItemStack mat : tier.getRepairMaterial().getMatchingStacks()) {
+        for (ItemStack mat : tier.getRepairIngredient().getItems()) {
           ResourceLocation resourceLocation = mat.getItem().getRegistryName();
 
           if (resourceLocation != null && containsHolyMaterial(resourceLocation)) {
@@ -127,8 +117,8 @@ public class ConsecrationUtils {
       }
     }
 
-    if (isHolyDamage(source) || isHolyEntity(source.getImmediateSource()) || isHolyPotion(
-        source.getImmediateSource())) {
+    if (isHolyDamage(source) || isHolyEntity(source.getDirectEntity()) || isHolyPotion(
+        source.getDirectEntity())) {
       return DamageType.HOLY;
     }
     return processHolyFunctions(target, source);
@@ -136,12 +126,12 @@ public class ConsecrationUtils {
 
   public static boolean isUndying(final LivingEntity livingEntity) {
     return isValidCreature(livingEntity) && isValidDimension(
-        livingEntity.getEntityWorld().getDimensionKey().getLocation());
+        livingEntity.getCommandSenderWorld().dimension().location());
   }
 
   public static boolean isValidCreature(final LivingEntity livingEntity) {
     return (ConsecrationConfig.defaultUndead
-        && livingEntity.getCreatureAttribute() == CreatureAttribute.UNDEAD) || ConsecrationApi
+        && livingEntity.getMobType() == MobType.UNDEAD) || ConsecrationApi
         .getHolyRegistry().getUndead().containsKey(livingEntity.getType());
   }
 
@@ -167,30 +157,22 @@ public class ConsecrationUtils {
         .getOrDefault(entityType, UndeadType.NORMAL);
   }
 
-  public static boolean isHolyEffect(Effect effect) {
+  public static boolean isHolyEffect(MobEffect effect) {
     return ConsecrationApi.getHolyRegistry().getHolyEffects().contains(effect);
   }
 
   public static boolean isHolyPotion(Entity entity) {
-    List<EffectInstance> effects = Lists.newArrayList();
+    List<MobEffectInstance> effects = Lists.newArrayList();
 
-    if (entity instanceof PotionEntity) {
-      effects.addAll(PotionUtils.getEffectsFromStack(((PotionEntity) entity).getItem()));
-    } else if (entity instanceof AreaEffectCloudEntity) {
-      Potion potion = null;
-      try {
-        potion = (Potion) AOE_CLOUD_POTION.get(entity);
-      } catch (IllegalAccessException e) {
-        Consecration.LOGGER.log(Level.ERROR, "Error getting potion from AoE cloud " + entity);
-      }
-      if (potion != null) {
-        effects.addAll(potion.getEffects());
-      }
+    if (entity instanceof ThrownPotion) {
+      effects.addAll(PotionUtils.getMobEffects(((ThrownPotion) entity).getItem()));
+    } else if (entity instanceof AreaEffectCloud cloud) {
+      effects.addAll(cloud.getPotion().getEffects());
     }
-    Set<Effect> holyEffects = ConsecrationApi.getHolyRegistry().getHolyEffects();
+    Set<MobEffect> holyEffects = ConsecrationApi.getHolyRegistry().getHolyEffects();
 
-    for (EffectInstance effect : effects) {
-      Effect potion = effect.getPotion();
+    for (MobEffectInstance effect : effects) {
+      MobEffect potion = effect.getEffect();
 
       if (holyEffects.contains(potion)) {
         return true;
@@ -229,7 +211,7 @@ public class ConsecrationUtils {
   }
 
   public static boolean isHolyDamage(DamageSource source) {
-    return ConsecrationApi.getHolyRegistry().getHolyDamage().contains(source.getDamageType());
+    return ConsecrationApi.getHolyRegistry().getHolyDamage().contains(source.getMsgId());
   }
 
   public static boolean isHolyItem(Item item) {

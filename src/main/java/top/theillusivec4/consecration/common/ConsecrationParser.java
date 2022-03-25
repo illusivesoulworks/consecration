@@ -1,7 +1,7 @@
 package top.theillusivec4.consecration.common;
 
 import java.util.Optional;
-import net.minecraft.entity.EntityType;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.util.Tuple;
 import top.theillusivec4.consecration.api.ConsecrationApi.UndeadType;
 
@@ -9,7 +9,7 @@ public class ConsecrationParser {
 
   public static Optional<Tuple<EntityType<?>, UndeadType>> getUndeadType(String string) {
     String[] parsed = string.split(";");
-    return EntityType.byKey(parsed[0]).map(type -> {
+    return EntityType.byString(parsed[0]).map(type -> {
       UndeadType undeadType = UndeadType.NORMAL;
 
       if (parsed.length > 1) {

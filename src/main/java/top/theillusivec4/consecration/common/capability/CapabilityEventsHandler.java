@@ -21,19 +21,19 @@ package top.theillusivec4.consecration.common.capability;
 
 import java.util.Set;
 import java.util.UUID;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.AttributeModifier.Operation;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.DamageSource;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -64,11 +64,11 @@ public class CapabilityEventsHandler {
   public void onLivingUpdate(LivingEvent.LivingUpdateEvent evt) {
     LivingEntity livingEntity = evt.getEntityLiving();
 
-    if (!livingEntity.getEntityWorld().isRemote && ConsecrationUtils.isUndying(livingEntity)) {
+    if (!livingEntity.getCommandSenderWorld().isClientSide && ConsecrationUtils.isUndying(livingEntity)) {
       LazyOptional<IUndying> undyingOpt = UndyingCapability.getCapability(livingEntity);
 
       undyingOpt.ifPresent(undying -> {
-        ModifiableAttributeInstance speedAttribute = livingEntity
+        AttributeInstance speedAttribute = livingEntity
             .getAttribute(Attributes.MOVEMENT_SPEED);
 
         if (speedAttribute != null) {
@@ -77,17 +77,17 @@ public class CapabilityEventsHandler {
 
         if (undying.hasSmite()) {
 
-          if (livingEntity.ticksExisted % 10 == 0) {
-            ServerWorld world = (ServerWorld) livingEntity.getEntityWorld();
-            world.spawnParticle(ParticleTypes.INSTANT_EFFECT, livingEntity.getPosX(),
-                livingEntity.getPosY() + livingEntity.getHeight() / 2.0D, livingEntity.getPosZ(), 2,
-                livingEntity.getWidth() / 2.0D, livingEntity.getHeight() / 4.0D,
-                livingEntity.getWidth() / 2.0D, 0.0D);
+          if (livingEntity.tickCount % 10 == 0) {
+            ServerLevel world = (ServerLevel) livingEntity.getCommandSenderWorld();
+            world.sendParticles(ParticleTypes.INSTANT_EFFECT, livingEntity.getX(),
+                livingEntity.getY() + livingEntity.getBbHeight() / 2.0D, livingEntity.getZ(), 2,
+                livingEntity.getBbWidth() / 2.0D, livingEntity.getBbHeight() / 4.0D,
+                livingEntity.getBbWidth() / 2.0D, 0.0D);
           }
           undying.tickSmite();
         } else {
 
-          if (livingEntity.ticksExisted % 20 == 0 && livingEntity.getHealth() < livingEntity
+          if (livingEntity.tickCount % 20 == 0 && livingEntity.getHealth() < livingEntity
               .getMaxHealth()) {
             livingEntity.heal((float) ConsecrationConfig.healthRegen);
           }
@@ -95,7 +95,7 @@ public class CapabilityEventsHandler {
 
           if (speedMod > 0 && speedAttribute != null
               && speedAttribute.getModifier(SPEED_MOD) == null) {
-            speedAttribute.applyNonPersistentModifier(new AttributeModifier(SPEED_MOD, "Undead speed", speedMod,
+            speedAttribute.addTransientModifier(new AttributeModifier(SPEED_MOD, "Undead speed", speedMod,
                 Operation.MULTIPLY_TOTAL));
           }
         }
@@ -107,15 +107,15 @@ public class CapabilityEventsHandler {
   public void onPotionAdded(PotionAddedEvent evt) {
     LivingEntity livingEntity = evt.getEntityLiving();
 
-    if (!livingEntity.getEntityWorld().isRemote && ConsecrationUtils.isUndying(livingEntity)) {
+    if (!livingEntity.getCommandSenderWorld().isClientSide && ConsecrationUtils.isUndying(livingEntity)) {
       LazyOptional<IUndying> undyingOpt = UndyingCapability.getCapability(livingEntity);
 
       undyingOpt.ifPresent(undying -> {
-        EffectInstance effectInstance = evt.getPotionEffect();
-        Set<Effect> effect = ConsecrationApi.getHolyRegistry().getHolyEffects();
-        Effect effect1 = effectInstance.getPotion();
+        MobEffectInstance effectInstance = evt.getPotionEffect();
+        Set<MobEffect> effect = ConsecrationApi.getHolyRegistry().getHolyEffects();
+        MobEffect effect1 = effectInstance.getEffect();
         if (effect.contains(effect1)) {
-          int duration = effect1.isInstant() ? ConsecrationConfig.CONFIG.holySmiteDuration.get()
+          int duration = effect1.isInstantenous() ? ConsecrationConfig.CONFIG.holySmiteDuration.get()
               : effectInstance.getDuration();
           undying.setSmiteDuration(duration * 20);
         }
@@ -127,17 +127,17 @@ public class CapabilityEventsHandler {
   public void onLivingDamage(LivingDamageEvent evt) {
     LivingEntity livingEntity = evt.getEntityLiving();
 
-    if (!livingEntity.getEntityWorld().isRemote && ConsecrationUtils.isUndying(livingEntity)) {
+    if (!livingEntity.getCommandSenderWorld().isClientSide && ConsecrationUtils.isUndying(livingEntity)) {
       LazyOptional<IUndying> undyingOpt = UndyingCapability.getCapability(livingEntity);
 
-      if (!undyingOpt.isPresent() && evt.getSource().getImmediateSource() instanceof LivingEntity) {
-        LivingEntity attacker = (LivingEntity) evt.getSource().getImmediateSource();
+      if (!undyingOpt.isPresent() &&
+          evt.getSource().getDirectEntity() instanceof LivingEntity attacker) {
         LazyOptional<IUndying> undyingOpt2 = UndyingCapability.getCapability(attacker);
 
         undyingOpt2.ifPresent(undying -> {
           int level = ConsecrationUtils.protect(attacker, livingEntity, evt.getSource());
 
-          if (level > 0 && livingEntity.getEntityWorld().rand.nextFloat() < 0.15F * (float) level) {
+          if (level > 0 && livingEntity.getCommandSenderWorld().random.nextFloat() < 0.15F * (float) level) {
             undying.setSmiteDuration(ConsecrationConfig.CONFIG.holySmiteDuration.get() * 20);
           }
         });
@@ -160,13 +160,13 @@ public class CapabilityEventsHandler {
             undying.setSmiteDuration(ConsecrationConfig.holySmiteDuration * 20);
           }
 
-          if (source.getTrueSource() instanceof ServerPlayerEntity) {
-            SmiteTrigger.INSTANCE.trigger((ServerPlayerEntity) source.getTrueSource());
+          if (source.getEntity() instanceof ServerPlayer) {
+            SmiteTrigger.INSTANCE.trigger((ServerPlayer) source.getEntity());
           }
-        } else if (!source.isDamageAbsolute() && !undying.hasSmite()) {
-          Entity trueSource = source.getTrueSource();
+        } else if (!source.isBypassMagic() && !undying.hasSmite()) {
+          Entity trueSource = source.getEntity();
 
-          if ((trueSource != null && (trueSource instanceof PlayerEntity
+          if ((trueSource != null && (trueSource instanceof Player
               || ConsecrationConfig.bystanderNerf))) {
             evt.setAmount(evt.getAmount() * (float) (1 - ConsecrationConfig.damageReduction));
           }

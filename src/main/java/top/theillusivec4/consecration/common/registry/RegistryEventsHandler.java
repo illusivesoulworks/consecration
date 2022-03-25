@@ -19,13 +19,13 @@
 
 package top.theillusivec4.consecration.common.registry;
 
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Potion;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.item.alchemy.Potion;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -46,8 +46,8 @@ public class RegistryEventsHandler {
 
   @SubscribeEvent
   public static void registerEntities(final RegistryEvent.Register<EntityType<?>> evt) {
-    EntityType<?> fireArrow = EntityType.Builder.<FireArrowEntity>create(FireArrowEntity::new,
-        EntityClassification.MISC).size(0.5F, 0.3F).immuneToFire().setTrackingRange(64)
+    EntityType<?> fireArrow = EntityType.Builder.<FireArrowEntity>of(FireArrowEntity::new,
+        MobCategory.MISC).sized(0.5F, 0.3F).fireImmune().setTrackingRange(64)
         .setUpdateInterval(5).setShouldReceiveVelocityUpdates(true)
         .build(RegistryReference.FIRE_ARROW);
     fireArrow.setRegistryName(RegistryReference.FIRE_ARROW);
@@ -57,14 +57,14 @@ public class RegistryEventsHandler {
   @SubscribeEvent
   public static void registerPotions(final RegistryEvent.Register<Potion> evt) {
     evt.getRegistry().registerAll(new Potion(ConsecrationApi.HOLY_ID,
-        new EffectInstance(ConsecrationRegistry.HOLY_EFFECT, 1, 0))
+        new MobEffectInstance(ConsecrationRegistry.HOLY_EFFECT, 1, 0))
         .setRegistryName(RegistryReference.HOLY), new Potion(ConsecrationApi.HOLY_ID,
-        new EffectInstance(ConsecrationRegistry.HOLY_EFFECT, 1, 1))
+        new MobEffectInstance(ConsecrationRegistry.HOLY_EFFECT, 1, 1))
         .setRegistryName(RegistryReference.STRONG_HOLY));
   }
 
   @SubscribeEvent
-  public static void registerEffects(final RegistryEvent.Register<Effect> evt) {
+  public static void registerEffects(final RegistryEvent.Register<MobEffect> evt) {
     evt.getRegistry().register(new HolyEffect());
   }
 

@@ -24,16 +24,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.potion.Potions;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -41,28 +42,22 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.config.ModConfig.ModConfigEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fmlserverevents.FMLServerAboutToStartEvent;
+import net.minecraftforge.fmlserverevents.FMLServerStoppedEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import top.theillusivec4.consecration.api.ConsecrationApi;
-import top.theillusivec4.consecration.client.ConsecrationRenderer;
 import top.theillusivec4.consecration.common.ConsecrationConfig;
 import top.theillusivec4.consecration.common.ConsecrationSeed;
 import top.theillusivec4.consecration.common.HolyRegistry;
 import top.theillusivec4.consecration.common.capability.UndyingCapability;
 import top.theillusivec4.consecration.common.integration.AbstractModule;
-import top.theillusivec4.consecration.common.integration.SilentGearModule;
-import top.theillusivec4.consecration.common.integration.SpartanWeaponryModule;
-import top.theillusivec4.consecration.common.integration.TConstructModule;
-import top.theillusivec4.consecration.common.integration.TetraModule;
 import top.theillusivec4.consecration.common.registry.ConsecrationRegistry;
 import top.theillusivec4.consecration.common.trigger.SmiteTrigger;
 
@@ -75,17 +70,10 @@ public class Consecration {
   public static final Map<String, Class<? extends AbstractModule>> MODULES = new HashMap<>();
   public static final List<AbstractModule> ACTIVE_MODULES = new ArrayList<>();
 
-  static {
-    MODULES.put("tetra", TetraModule.class);
-    MODULES.put("spartanweaponry", SpartanWeaponryModule.class);
-    MODULES.put("silentgear", SilentGearModule.class);
-    MODULES.put("tconstruct", TConstructModule.class);
-  }
-
   public Consecration() {
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     eventBus.addListener(this::setup);
-    eventBus.addListener(this::clientSetup);
+    eventBus.addListener(this::registerCaps);
     eventBus.addListener(this::imcEnqueue);
     eventBus.addListener(this::imcProcess);
     eventBus.addListener(this::config);
@@ -105,19 +93,15 @@ public class Consecration {
     UndyingCapability.register();
     CriteriaTriggers.register(SmiteTrigger.INSTANCE);
     BrewingRecipeRegistry.addRecipe(Ingredient
-            .fromStacks(PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), Potions.AWKWARD)),
-        Ingredient.fromItems(Items.GOLDEN_APPLE), PotionUtils
-            .addPotionToItemStack(new ItemStack(Items.POTION), ConsecrationRegistry.HOLY_POTION));
-    BrewingRecipeRegistry.addRecipe(Ingredient.fromStacks(PotionUtils
-            .addPotionToItemStack(new ItemStack(Items.POTION), ConsecrationRegistry.HOLY_POTION)),
-        Ingredient.fromItems(Items.REDSTONE), PotionUtils
-            .addPotionToItemStack(new ItemStack(Items.POTION),
+            .of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.AWKWARD)),
+        Ingredient.of(Items.GOLDEN_APPLE), PotionUtils
+            .setPotion(new ItemStack(Items.POTION), ConsecrationRegistry.HOLY_POTION));
+    BrewingRecipeRegistry.addRecipe(Ingredient.of(PotionUtils
+            .setPotion(new ItemStack(Items.POTION), ConsecrationRegistry.HOLY_POTION)),
+        Ingredient.of(Items.REDSTONE), PotionUtils
+            .setPotion(new ItemStack(Items.POTION),
                 ConsecrationRegistry.STRONG_HOLY_POTION));
     MinecraftForge.EVENT_BUS.register(this);
-  }
-
-  private void clientSetup(final FMLClientSetupEvent evt) {
-    ConsecrationRenderer.register();
   }
 
   private void imcEnqueue(final InterModEnqueueEvent evt) {
@@ -126,6 +110,10 @@ public class Consecration {
 
   private void imcProcess(final InterModProcessEvent evt) {
     ConsecrationSeed.registerImc(evt.getIMCStream());
+  }
+
+  private void registerCaps(final RegisterCapabilitiesEvent evt) {
+    evt.register(UndyingCapability.IUndying.class);
   }
 
   private void config(final ModConfigEvent evt) {
@@ -151,13 +139,13 @@ public class Consecration {
     ItemStack stack = evt.getItemStack();
 
     if (stack.getItem() == Items.ARROW) {
-      PlayerEntity player = evt.getPlayer();
-      Block block = player.getEntityWorld().getBlockState(evt.getPos()).getBlock();
+      Player player = evt.getPlayer();
+      Block block = player.getCommandSenderWorld().getBlockState(evt.getPos()).getBlock();
 
       if (block == Blocks.CAMPFIRE || block == Blocks.SOUL_CAMPFIRE) {
         stack.shrink(1);
         ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ConsecrationRegistry.FIRE_ARROW),
-            player.inventory.currentItem);
+            player.getInventory().selected);
       }
     }
   }

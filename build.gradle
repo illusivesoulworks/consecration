@@ -1,27 +1,31 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        maven { url 'https://plugins.gradle.org/m2/' }
-        jcenter()
+        maven { url = 'https://maven.minecraftforge.net' }
+        maven { url = 'https://plugins.gradle.org/m2/' }
+        maven { url = 'https://maven.parchmentmc.org' }
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.4.0'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'gradle.plugin.com.matthewprenger', name: 'CurseGradle', version: '1.4.0'
+        classpath group: 'org.parchmentmc', name: 'librarian', version: '1.+'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: 'maven-publish'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 version = "${mod_version}"
-group = "${mod_group}"
-archivesBaseName = "${mod_id}-forge"
+group = "top.theillusivec4.consecration"
+archivesBaseName = "consecration-forge"
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
 minecraft {
-    mappings channel: 'snapshot', version: "${version_mcp}".toString()
+    mappings channel: 'parchment', version: '2021.12.12-1.17.1'
+
+    accessTransformer = file("src/main/resources/META-INF/accesstransformer.cfg")
 
     runs {
         client {
@@ -29,7 +33,8 @@ minecraft {
 
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
-            property 'mixin.env.disableRefMap', 'true'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
 
             mods {
                 consecration {
@@ -43,7 +48,8 @@ minecraft {
 
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
-            property 'mixin.env.disableRefMap', 'true'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
 
             mods {
                 consecration {
@@ -61,16 +67,11 @@ repositories {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${version_forge}"
+    minecraft "net.minecraftforge:forge:${forge_version}"
 
-    compile fg.deobf("curse.maven:tetra-289712:3371803")
-    compile fg.deobf("curse.maven:spartanweaponry-278141:3164046")
-    compile fg.deobf("curse.maven:silentgear-297039:3386805")
-    compile fg.deobf("curse.maven:tconstruct-74072:3389395")
+    implementation fg.deobf("curse.maven:silentgear-297039:${silentgear_file}")
 
-    runtimeOnly fg.deobf("curse.maven:mantle-74924:3389377")
-    runtimeOnly fg.deobf("curse.maven:mgui-351914:3291267")
-    runtimeOnly fg.deobf("curse.maven:silentlib-242998:3235738")
+    runtimeOnly fg.deobf("curse.maven:silentlib-242998:${silentlib_file}")
 }
 
 sourceSets {
@@ -83,88 +84,54 @@ sourceSets {
 
 jar {
     manifest {
-        attributes(["Specification-Title": "${mod_name}",
-                    "Specification-Vendor": "${mod_author}",
-                    "Specification-Version": "${getArchiveVersion()}",
-                    "Implementation-Title": "${mod_name}",
-                    "Implementation-Version": "${getArchiveVersion()}",
-                    "Implementation-Vendor" :"${mod_author}",
-                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")],)
+        attributes(["Specification-Title"     : "Consecration",
+                    "Specification-Vendor"    : "C4",
+                    "Specification-Version"   : "1",
+                    "Implementation-Title"    : "Consecration",
+                    "Implementation-Version"  : "${getArchiveVersion()}",
+                    "Implementation-Vendor"   : "C4",
+                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")])
     }
 }
 
-task apiJar(type: Jar) {
-    setArchiveClassifier('api')
-    include 'top/theillusivec4/consecration/api/**/*'
-    from sourceSets.main.allSource
-    from sourceSets.main.output
+def replaceResources = tasks.register("replaceResources", Copy) {
+    it.outputs.upToDateWhen { false }
+
+    it.from(sourceSets.main.resources) {
+        include "META-INF/mods.toml"
+        expand 'version': version, 'mc_version_range': mc_version_range, 'forge_version_range': forge_version_range, "loader_version": loader_version
+    }
+    it.into "$buildDir/resources/main/"
+}
+
+processResources {
+    duplicatesStrategy(DuplicatesStrategy.FAIL)
+    exclude('META-INF/mods.toml')
+    configure { finalizedBy(replaceResources) }
 }
 
 task sourcesJar(type: Jar) {
-    setArchiveClassifier('sources')
+    archiveClassifier.set('sources')
     from sourceSets.main.allJava
 }
 
-jar.finalizedBy('reobfJar')
-
-tasks.build.dependsOn apiJar, sourcesJar
-
-processResources {
-
-    from(sourceSets.main.resources.srcDirs) {
-        include 'META-INF/mods.toml'
-        expand 'version': project.version, 'mod_id' : mod_id, 'mod_name': mod_name, 'mod_url': mod_url, 'mod_author': mod_author, 'mod_description': mod_description, 'mod_icon': mod_icon
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'META-INF/mods.toml'
-    }
+artifacts {
+    archives sourcesJar
 }
 
+jar.finalizedBy('reobfJar')
 
 curseforge {
 
     project {
         apiKey = findProperty('curseKey') ?: 0
-        id = "${curse_id}"
+        id = "443570"
         releaseType = "${curse_release}"
         changelogType = 'markdown'
         changelog = file('docs/CHANGELOG.md')
         addArtifact(sourcesJar)
-        addArtifact(apiJar)
-        "${curse_versions}".split(",").each {
+        "${curse_versions}".split(',').each {
             addGameVersion "${it}"
-        }
-    }
-}
-
-publishing {
-    tasks.publish.dependsOn 'build'
-    publications {
-
-        mavenJava(MavenPublication) {
-            artifactId project.archivesBaseName
-
-            artifact jar
-            artifact sourcesJar
-            artifact apiJar
-        }
-    }
-
-    repositories {
-
-        if (project.hasProperty('urlMaven')) {
-
-            if (project.hasProperty('userMaven') && project.hasProperty('passMaven')) {
-
-                maven {
-                    url urlMaven
-                    credentials {
-                        username userMaven
-                        password passMaven
-                    }
-                }
-            }
         }
     }
 }

@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
@@ -183,9 +183,11 @@ public class ConsecrationConfig {
           .translation(CONFIG_PREFIX + "defaultUndead").define("defaultUndead", true);
 
       undeadList = builder.comment(
-          "A list of mobs that to classify as undead." + "\nFormat: 'modid:name'"
-              + "\nOptionally, add ';unholy' or ';absolute' to the end."
-              + "\nUnholy mobs will not be smote by fire and absolute mobs will not be smote by anything.")
+              """
+                  A list of mobs that to classify as undead.
+                  Format: 'modid:name'
+                  Optionally, add ';unholy' or ';absolute' to the end.
+                  Unholy mobs will not be smote by fire and absolute mobs will not be smote by anything.""")
           .translation(CONFIG_PREFIX + "undeadList")
           .defineList("undeadList", ArrayList::new, s -> s instanceof String);
 

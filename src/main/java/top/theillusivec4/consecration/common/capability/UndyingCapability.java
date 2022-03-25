@@ -21,50 +21,30 @@ package top.theillusivec4.consecration.common.capability;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.Capability.IStorage;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import top.theillusivec4.consecration.Consecration;
 
 public class UndyingCapability {
 
-  @CapabilityInject(IUndying.class)
-  public static final Capability<IUndying> UNDYING_CAP;
+  public static final Capability<IUndying> UNDYING_CAP =
+      CapabilityManager.get(new CapabilityToken<>() {
+      });
 
   public static final ResourceLocation ID = new ResourceLocation(Consecration.MODID, "undying");
 
   private static final String SMITE_TAG = "smite";
 
-  static {
-    UNDYING_CAP = null;
-  }
-
   public static void register() {
-    CapabilityManager.INSTANCE.register(IUndying.class, new IStorage<IUndying>() {
-
-      @Override
-      public INBT writeNBT(Capability<IUndying> capability, IUndying instance, Direction side) {
-        CompoundNBT compound = new CompoundNBT();
-        compound.putInt(SMITE_TAG, instance.getSmiteDuration());
-        return compound;
-      }
-
-      @Override
-      public void readNBT(Capability<IUndying> capability, IUndying instance, Direction side,
-          INBT nbt) {
-        CompoundNBT compound = (CompoundNBT) nbt;
-        instance.setSmiteDuration(compound.getInt(SMITE_TAG));
-      }
-    }, Undying::new);
     MinecraftForge.EVENT_BUS.register(new CapabilityEventsHandler());
   }
 
@@ -81,6 +61,10 @@ public class UndyingCapability {
     void setSmiteDuration(int duration);
 
     void tickSmite();
+
+    void readTag(CompoundTag tag);
+
+    CompoundTag writeTag();
   }
 
   public static class Undying implements IUndying {
@@ -109,9 +93,21 @@ public class UndyingCapability {
         this.smiteDuration--;
       }
     }
+
+    @Override
+    public void readTag(CompoundTag tag) {
+      this.setSmiteDuration(tag.getInt(SMITE_TAG));
+    }
+
+    @Override
+    public CompoundTag writeTag() {
+      CompoundTag tag = new CompoundTag();
+      tag.putInt(SMITE_TAG, this.getSmiteDuration());
+      return tag;
+    }
   }
 
-  public static class Provider implements ICapabilitySerializable<INBT> {
+  public static class Provider implements ICapabilitySerializable<Tag> {
 
     final LazyOptional<IUndying> optional;
     final IUndying data;
@@ -128,13 +124,16 @@ public class UndyingCapability {
     }
 
     @Override
-    public INBT serializeNBT() {
-      return UNDYING_CAP.writeNBT(data, null);
+    public Tag serializeNBT() {
+      return data.writeTag();
     }
 
     @Override
-    public void deserializeNBT(INBT nbt) {
-      UNDYING_CAP.readNBT(data, null, nbt);
+    public void deserializeNBT(Tag nbt) {
+
+      if (nbt instanceof CompoundTag tag) {
+        data.readTag(tag);
+      }
     }
   }
 }

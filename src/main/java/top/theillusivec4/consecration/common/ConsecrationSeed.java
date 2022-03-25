@@ -27,13 +27,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
-import net.minecraft.potion.Effect;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.fml.InterModComms.IMCMessage;
 import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.consecration.api.ConsecrationApi;
@@ -44,10 +44,12 @@ import top.theillusivec4.consecration.api.IHolyRegistry;
 public class ConsecrationSeed {
 
   private static Map<EntityType<?>, UndeadType> undeadMapImc = new HashMap<>();
-  private static List<BiFunction<LivingEntity, DamageSource, Boolean>> holyAttacksImc = new ArrayList<>();
-  private static List<BiFunction<LivingEntity, DamageSource, Integer>> holyProtectionImc = new ArrayList<>();
+  private static List<BiFunction<LivingEntity, DamageSource, Boolean>> holyAttacksImc =
+      new ArrayList<>();
+  private static List<BiFunction<LivingEntity, DamageSource, Integer>> holyProtectionImc =
+      new ArrayList<>();
   private static Set<EntityType<?>> holyEntitiesImc = new HashSet<>();
-  private static Set<Effect> holyEffectsImc = new HashSet<>();
+  private static Set<MobEffect> holyEffectsImc = new HashSet<>();
   private static Set<Item> holyItemsImc = new HashSet<>();
   private static Set<Enchantment> holyEnchantmentsImc = new HashSet<>();
   private static Set<String> holyDamageImc = new HashSet<>();
@@ -55,7 +57,7 @@ public class ConsecrationSeed {
 
   private static Map<EntityType<?>, UndeadType> undeadMap = new HashMap<>();
   private static Set<EntityType<?>> holyEntities = new HashSet<>();
-  private static Set<Effect> holyEffects = new HashSet<>();
+  private static Set<MobEffect> holyEffects = new HashSet<>();
   private static Set<Item> holyItems = new HashSet<>();
   private static Set<Enchantment> holyEnchantments = new HashSet<>();
   private static Set<String> holyDamage = new HashSet<>();
@@ -90,58 +92,46 @@ public class ConsecrationSeed {
 
     if (imcStream != null) {
       imcStream.forEach(imcMessage -> {
-        Object message = imcMessage.getMessageSupplier().get();
-        String method = imcMessage.getMethod();
+        Object message = imcMessage.messageSupplier().get();
+        String method = imcMessage.method();
 
-        if (message instanceof String) {
-          String content = (String) message;
+        if (message instanceof String content) {
 
           switch (method) {
-            case IMC.UNDEAD:
-              ConsecrationParser.getUndeadType(content)
-                  .ifPresent(tuple -> undeadMapImc.putIfAbsent(tuple.getA(), tuple.getB()));
-              break;
-            case IMC.HOLY_ENTITY:
-              EntityType.byKey(content).ifPresent(type -> holyEntitiesImc.add(type));
-              break;
-            case IMC.HOLY_EFFECT:
-              Effect effect = ForgeRegistries.POTIONS.getValue(new ResourceLocation(content));
-
+            case IMC.UNDEAD -> ConsecrationParser.getUndeadType(content)
+                .ifPresent(tuple -> undeadMapImc.putIfAbsent(tuple.getA(), tuple.getB()));
+            case IMC.HOLY_ENTITY -> EntityType.byString(content)
+                .ifPresent(type -> holyEntitiesImc.add(type));
+            case IMC.HOLY_EFFECT -> {
+              MobEffect effect =
+                  ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(content));
               if (effect != null) {
                 holyEffectsImc.add(effect);
               }
-              break;
-            case IMC.HOLY_ITEM:
+            }
+            case IMC.HOLY_ITEM -> {
               Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(content));
-
               if (item != null) {
                 holyItemsImc.add(item);
               }
-              break;
-            case IMC.HOLY_ENCHANTMENT:
+            }
+            case IMC.HOLY_ENCHANTMENT -> {
               Enchantment enchantment = ForgeRegistries.ENCHANTMENTS
                   .getValue(new ResourceLocation(content));
-
               if (enchantment != null) {
                 holyEnchantmentsImc.add(enchantment);
               }
-              break;
-            case IMC.HOLY_MATERIAL:
-              holyMaterialsImc.add(content);
-              break;
-            case IMC.HOLY_DAMAGE:
-              holyDamageImc.add(content);
-              break;
+            }
+            case IMC.HOLY_MATERIAL -> holyMaterialsImc.add(content);
+            case IMC.HOLY_DAMAGE -> holyDamageImc.add(content);
           }
         } else if (message instanceof BiFunction) {
 
           switch (method) {
-            case IMC.HOLY_ATTACK:
-              holyAttacksImc.add((BiFunction<LivingEntity, DamageSource, Boolean>) message);
-              break;
-            case IMC.HOLY_PROTECTION:
-              holyProtectionImc.add((BiFunction<LivingEntity, DamageSource, Integer>) message);
-              break;
+            case IMC.HOLY_ATTACK -> holyAttacksImc.add(
+                (BiFunction<LivingEntity, DamageSource, Boolean>) message);
+            case IMC.HOLY_PROTECTION -> holyProtectionImc.add(
+                (BiFunction<LivingEntity, DamageSource, Integer>) message);
           }
         }
       });
@@ -160,9 +150,9 @@ public class ConsecrationSeed {
     ConsecrationConfig.undeadList.forEach(undead -> ConsecrationParser.getUndeadType(undead)
         .ifPresent(tuple -> undeadMap.putIfAbsent(tuple.getA(), tuple.getB())));
     ConsecrationConfig.holyEntities
-        .forEach(entity -> EntityType.byKey(entity).ifPresent(type -> holyEntities.add(type)));
+        .forEach(entity -> EntityType.byString(entity).ifPresent(type -> holyEntities.add(type)));
     ConsecrationConfig.holyEffects.forEach(effect -> {
-      Effect type = ForgeRegistries.POTIONS.getValue(new ResourceLocation(effect));
+      MobEffect type = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(effect));
 
       if (type != null) {
         holyEffects.add(type);

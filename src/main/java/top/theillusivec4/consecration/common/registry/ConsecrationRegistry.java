@@ -19,11 +19,11 @@
 
 package top.theillusivec4.consecration.common.registry;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.item.Item;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.Potion;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.item.alchemy.Potion;
 import net.minecraftforge.registries.ObjectHolder;
 import top.theillusivec4.consecration.Consecration;
 
@@ -31,7 +31,7 @@ import top.theillusivec4.consecration.Consecration;
 public class ConsecrationRegistry {
 
   @ObjectHolder(RegistryReference.HOLY)
-  public static final Effect HOLY_EFFECT;
+  public static final MobEffect HOLY_EFFECT;
 
   @ObjectHolder(RegistryReference.HOLY)
   public static final Potion HOLY_POTION;
@@ -43,7 +43,7 @@ public class ConsecrationRegistry {
   public static final Item FIRE_ARROW;
 
   @ObjectHolder(RegistryReference.FIRE_ARROW)
-  public static final EntityType<? extends ArrowEntity> FIRE_ARROW_TYPE;
+  public static final EntityType<? extends Arrow> FIRE_ARROW_TYPE;
 
   static {
     HOLY_EFFECT = null;

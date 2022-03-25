@@ -12,16 +12,16 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
-import net.minecraft.potion.Effect;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityDamageSource;
-import net.minecraft.util.IndirectEntityDamageSource;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.EntityDamageSource;
+import net.minecraft.world.damagesource.IndirectEntityDamageSource;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.consecration.api.ConsecrationApi;
 import top.theillusivec4.consecration.api.ConsecrationApi.UndeadType;
@@ -38,7 +38,7 @@ public class HolyRegistry implements IHolyRegistry {
   // Set of entities that can smite undead
   private static Set<EntityType<?>> holyEntities = new HashSet<>();
   // Set of potion effects that can smite undead
-  private static Set<Effect> holyEffects = new HashSet<>();
+  private static Set<MobEffect> holyEffects = new HashSet<>();
   // Set of items that can smite undead either wearing or using it
   private static Set<Item> holyItems = new HashSet<>();
   // Set of weapon enchantments that can smite undead
@@ -118,7 +118,7 @@ public class HolyRegistry implements IHolyRegistry {
 
   @Override
   public void addHolyEffect(String potion) {
-    Effect type = ForgeRegistries.POTIONS.getValue(new ResourceLocation(potion));
+    MobEffect type = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(potion));
 
     if (type != null) {
       addHolyEffect(type);
@@ -126,18 +126,18 @@ public class HolyRegistry implements IHolyRegistry {
   }
 
   @Override
-  public void addHolyEffect(Effect potion) {
+  public void addHolyEffect(MobEffect potion) {
     holyEffects.add(potion);
   }
 
   @Override
-  public Set<Effect> getHolyEffects() {
+  public Set<MobEffect> getHolyEffects() {
     return ImmutableSet.copyOf(holyEffects);
   }
 
   @Override
   public void addHolyEntity(String entity) {
-    EntityType.byKey(entity).ifPresent(ConsecrationApi.getHolyRegistry()::addHolyEntity);
+    EntityType.byString(entity).ifPresent(ConsecrationApi.getHolyRegistry()::addHolyEntity);
   }
 
   @Override
@@ -194,18 +194,18 @@ public class HolyRegistry implements IHolyRegistry {
 
   @Override
   public DamageSource causeHolyDamage(@Nonnull Entity entity) {
-    return new EntityDamageSource(ConsecrationApi.HOLY_ID, entity).setMagicDamage();
+    return new EntityDamageSource(ConsecrationApi.HOLY_ID, entity).setMagic();
   }
 
   @Override
   public DamageSource causeIndirectHolyDamage(@Nonnull Entity source, @Nullable Entity indirect) {
     return new IndirectEntityDamageSource(ConsecrationApi.HOLY_ID, source, indirect)
-        .setMagicDamage();
+        .setMagic();
   }
 
   @Override
   public DamageSource causeHolyDamage() {
-    return new DamageSource(ConsecrationApi.HOLY_ID).setMagicDamage();
+    return new DamageSource(ConsecrationApi.HOLY_ID).setMagic();
   }
 
   @Override

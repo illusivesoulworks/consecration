@@ -19,84 +19,71 @@
 
 package top.theillusivec4.consecration.common.potion;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.monster.ZombieVillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.EffectType;
-import net.minecraft.potion.Effects;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.ZombieVillager;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import org.apache.logging.log4j.Level;
-import top.theillusivec4.consecration.Consecration;
 import top.theillusivec4.consecration.api.ConsecrationApi;
 import top.theillusivec4.consecration.common.ConsecrationUtils;
 import top.theillusivec4.consecration.common.capability.UndyingCapability;
 import top.theillusivec4.consecration.common.capability.UndyingCapability.IUndying;
 import top.theillusivec4.consecration.common.registry.RegistryReference;
 
-public class HolyEffect extends Effect {
-
-  private static final Method START_CONVERTING = ObfuscationReflectionHelper
-      .findMethod(ZombieVillagerEntity.class, "func_191991_a", UUID.class, Integer.TYPE);
+public class HolyEffect extends MobEffect {
 
   public HolyEffect() {
-    super(EffectType.BENEFICIAL, 0xFFFFFF);
+    super(MobEffectCategory.BENEFICIAL, 0xFFFFFF);
     this.setRegistryName(RegistryReference.HOLY);
   }
 
   @Override
-  public void affectEntity(@Nullable Entity source, @Nullable Entity indirectSource,
-      @Nonnull LivingEntity livingEntity, int amplifier, double health) {
+  public void applyInstantenousEffect(@Nullable Entity source, @Nullable Entity indirectSource,
+                                      @Nonnull LivingEntity livingEntity, int amplifier,
+                                      double health) {
 
-    if (livingEntity instanceof ZombieVillagerEntity) {
-      convertZombieVillager((ZombieVillagerEntity) livingEntity, indirectSource, 1800 >> amplifier);
+    if (livingEntity instanceof ZombieVillager) {
+      convertZombieVillager((ZombieVillager) livingEntity, indirectSource, 1800 >> amplifier);
     } else {
 
       if (ConsecrationUtils.isUndying(livingEntity)) {
         LazyOptional<IUndying> undyingOpt = UndyingCapability.getCapability(livingEntity);
         undyingOpt.ifPresent(undying -> {
           if (source == null) {
-            livingEntity.attackEntityFrom(ConsecrationApi.getHolyRegistry().causeHolyDamage(),
+            livingEntity.hurt(ConsecrationApi.getHolyRegistry().causeHolyDamage(),
                 (float) (8 << amplifier));
           } else {
-            livingEntity.attackEntityFrom(
+            livingEntity.hurt(
                 ConsecrationApi.getHolyRegistry().causeIndirectHolyDamage(source, indirectSource),
                 (float) (8 << amplifier));
           }
         });
       } else {
-        livingEntity.addPotionEffect(new EffectInstance(Effects.REGENERATION, 600, amplifier));
-        livingEntity.addPotionEffect(new EffectInstance(Effects.RESISTANCE, 600, amplifier));
+        livingEntity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 600, amplifier));
+        livingEntity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 600, amplifier));
       }
     }
   }
 
   @Override
-  public boolean isInstant() {
+  public boolean isInstantenous() {
     return true;
   }
 
-  private void convertZombieVillager(ZombieVillagerEntity zombieVillager, @Nullable Entity source,
-      int conversionTime) {
+  private void convertZombieVillager(ZombieVillager zombieVillager, @Nullable Entity source,
+                                     int conversionTime) {
 
     if (zombieVillager.isConverting()) {
       return;
     }
-    UUID uuid = source instanceof PlayerEntity ? source.getUniqueID() : null;
-
-    try {
-      START_CONVERTING
-          .invoke(zombieVillager, uuid, zombieVillager.world.rand.nextInt(200) + conversionTime);
-    } catch (IllegalAccessException | InvocationTargetException e) {
-      Consecration.LOGGER.log(Level.ERROR, "Error in startConverting for entity " + zombieVillager);
-    }
+    UUID uuid = source instanceof Player ? source.getUUID() : null;
+    zombieVillager.startConverting(uuid, conversionTime);
   }
 }

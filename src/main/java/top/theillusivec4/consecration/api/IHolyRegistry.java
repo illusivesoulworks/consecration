@@ -6,13 +6,13 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
-import net.minecraft.potion.Effect;
-import net.minecraft.util.DamageSource;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.damagesource.DamageSource;
 import top.theillusivec4.consecration.api.ConsecrationApi.UndeadType;
 
 public interface IHolyRegistry {
@@ -43,9 +43,9 @@ public interface IHolyRegistry {
 
   void addHolyEffect(String potion);
 
-  void addHolyEffect(Effect potion);
+  void addHolyEffect(MobEffect potion);
 
-  Set<Effect> getHolyEffects();
+  Set<MobEffect> getHolyEffects();
 
   void addHolyEntity(String entity);
 
