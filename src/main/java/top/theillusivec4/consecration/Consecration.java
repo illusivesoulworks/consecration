@@ -58,6 +58,7 @@ import top.theillusivec4.consecration.common.ConsecrationSeed;
 import top.theillusivec4.consecration.common.HolyRegistry;
 import top.theillusivec4.consecration.common.capability.UndyingCapability;
 import top.theillusivec4.consecration.common.integration.AbstractModule;
+import top.theillusivec4.consecration.common.integration.SilentGearModule;
 import top.theillusivec4.consecration.common.registry.ConsecrationRegistry;
 import top.theillusivec4.consecration.common.trigger.SmiteTrigger;
 
@@ -69,6 +70,10 @@ public class Consecration {
 
   public static final Map<String, Class<? extends AbstractModule>> MODULES = new HashMap<>();
   public static final List<AbstractModule> ACTIVE_MODULES = new ArrayList<>();
+
+  static {
+    MODULES.put("silentgear", SilentGearModule.class);
+  }
 
   public Consecration() {
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
