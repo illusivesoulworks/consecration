@@ -125,7 +125,7 @@ curseforge {
 
     project {
         apiKey = findProperty('curseKey') ?: 0
-        id = "443570"
+        id = "284001"
         releaseType = "${curse_release}"
         changelogType = 'markdown'
         changelog = file('docs/CHANGELOG.md')
