@@ -46,7 +46,6 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
@@ -55,7 +54,6 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import org.slf4j.Logger;
 import top.theillusivec4.consecration.api.ConsecrationApi;
 import top.theillusivec4.consecration.api.IUndying;
-import top.theillusivec4.consecration.client.ConsecrationRenderer;
 import top.theillusivec4.consecration.common.ConsecrationConfig;
 import top.theillusivec4.consecration.common.HolySources;
 import top.theillusivec4.consecration.common.capability.CapabilityEventsHandler;
@@ -98,16 +96,19 @@ public class Consecration {
 
   private void setup(final FMLCommonSetupEvent evt) {
     ConsecrationNetwork.setup();
-    MinecraftForge.EVENT_BUS.register(this);
     MinecraftForge.EVENT_BUS.register(new CapabilityEventsHandler());
+    MinecraftForge.EVENT_BUS.addListener(this::serverStart);
+    MinecraftForge.EVENT_BUS.addListener(this::makeCampfireArrow);
     evt.enqueueWork(() -> {
       CriteriaTriggers.register(SmiteTrigger.INSTANCE);
       BrewingRecipeRegistry.addRecipe(
           Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.AWKWARD)),
           Ingredient.of(Items.GOLDEN_APPLE),
-          PotionUtils.setPotion(new ItemStack(Items.POTION), ConsecrationRegistry.HOLY_POTION.get()));
+          PotionUtils.setPotion(new ItemStack(Items.POTION),
+              ConsecrationRegistry.HOLY_POTION.get()));
       BrewingRecipeRegistry.addRecipe(Ingredient.of(
-              PotionUtils.setPotion(new ItemStack(Items.POTION), ConsecrationRegistry.HOLY_POTION.get())),
+              PotionUtils.setPotion(new ItemStack(Items.POTION),
+                  ConsecrationRegistry.HOLY_POTION.get())),
           Ingredient.of(Items.REDSTONE), PotionUtils.setPotion(new ItemStack(Items.POTION),
               ConsecrationRegistry.STRONG_HOLY_POTION.get()));
     });
@@ -139,13 +140,11 @@ public class Consecration {
     }
   }
 
-  @SubscribeEvent
-  public void serverStart(final ServerAboutToStartEvent evt) {
+  private void serverStart(final ServerAboutToStartEvent evt) {
     HolySources.setup();
   }
 
-  @SubscribeEvent
-  public void makeCampfireArrow(final PlayerInteractEvent.RightClickBlock evt) {
+  private void makeCampfireArrow(final PlayerInteractEvent.RightClickBlock evt) {
     ItemStack stack = evt.getItemStack();
 
     if (stack.getItem() == Items.ARROW) {
