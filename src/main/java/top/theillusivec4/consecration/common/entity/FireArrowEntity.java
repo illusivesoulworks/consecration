@@ -50,6 +50,6 @@ public class FireArrowEntity extends Arrow {
   @Override
   @Nonnull
   protected ItemStack getPickupItem() {
-    return new ItemStack(ConsecrationRegistry.FIRE_ARROW);
+    return new ItemStack(ConsecrationRegistry.FIRE_ARROW.get());
   }
 }

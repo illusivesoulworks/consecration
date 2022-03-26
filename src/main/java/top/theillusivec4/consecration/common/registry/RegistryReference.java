@@ -24,10 +24,9 @@ import top.theillusivec4.consecration.api.ConsecrationApi;
 
 public class RegistryReference {
 
-  public static final String HOLY = Consecration.MODID + ":" + ConsecrationApi.HOLY_ID;
-  public static final String STRONG_HOLY =
-      Consecration.MODID + ":strong_" + ConsecrationApi.HOLY_ID;
-  public static final String SHADOW_PROTECTION = Consecration.MODID + ":shadow_protection";
-  public static final String FIRE_STICK = Consecration.MODID + ":fire_stick";
-  public static final String FIRE_ARROW = Consecration.MODID + ":fire_arrow";
+  public static final String HOLY = ConsecrationApi.HOLY_IDENTIFIER;
+  public static final String STRONG_HOLY = "strong_" + ConsecrationApi.HOLY_IDENTIFIER;
+  public static final String UNDEAD_PROTECTION = "undead_protection";
+  public static final String FIRE_STICK = "fire_stick";
+  public static final String FIRE_ARROW = "fire_arrow";
 }

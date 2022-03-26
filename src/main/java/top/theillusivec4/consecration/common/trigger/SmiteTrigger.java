@@ -21,19 +21,19 @@ package top.theillusivec4.consecration.common.trigger;
 
 import com.google.gson.JsonObject;
 import javax.annotation.Nonnull;
-import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
-import net.minecraft.advancements.critereon.EntityPredicate;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.advancements.critereon.DeserializationContext;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.resources.ResourceLocation;
-import top.theillusivec4.consecration.Consecration;
+import net.minecraft.server.level.ServerPlayer;
+import top.theillusivec4.consecration.api.ConsecrationApi;
 import top.theillusivec4.consecration.common.trigger.SmiteTrigger.Instance;
 
 public class SmiteTrigger extends SimpleCriterionTrigger<Instance> {
 
   public static final SmiteTrigger INSTANCE = new SmiteTrigger();
-  public static final ResourceLocation ID = new ResourceLocation(Consecration.MODID, "smite");
+  public static final ResourceLocation ID = new ResourceLocation(ConsecrationApi.MOD_ID, "smite");
 
   @Nonnull
   @Override
@@ -43,20 +43,20 @@ public class SmiteTrigger extends SimpleCriterionTrigger<Instance> {
 
   @Nonnull
   @Override
-  public Instance createInstance(@Nonnull JsonObject p_230241_1_,
-      @Nonnull EntityPredicate.Composite p_230241_2_,
-      @Nonnull DeserializationContext p_230241_3_) {
-    return new Instance(p_230241_2_);
+  public Instance createInstance(@Nonnull JsonObject jsonObject,
+                                 @Nonnull EntityPredicate.Composite predicate,
+                                 @Nonnull DeserializationContext context) {
+    return new Instance(predicate);
   }
 
   public void trigger(ServerPlayer player) {
-    this.trigger(player, (p_241523_0_) -> true);
+    this.trigger(player, (instance) -> true);
   }
 
   public static class Instance extends AbstractCriterionTriggerInstance {
 
-    public Instance(EntityPredicate.Composite p_i232007_1_) {
-      super(ID, p_i232007_1_);
+    public Instance(EntityPredicate.Composite predicate) {
+      super(ID, predicate);
     }
   }
 }

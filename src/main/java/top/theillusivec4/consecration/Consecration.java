@@ -19,6 +19,8 @@
 
 package top.theillusivec4.consecration;
 
+import com.mojang.logging.LogUtils;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +38,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
@@ -43,51 +46,50 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmlserverevents.FMLServerAboutToStartEvent;
-import net.minecraftforge.fmlserverevents.FMLServerStoppedEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import top.theillusivec4.consecration.api.ConsecrationApi;
+import top.theillusivec4.consecration.api.IUndying;
+import top.theillusivec4.consecration.client.ConsecrationRenderer;
 import top.theillusivec4.consecration.common.ConsecrationConfig;
-import top.theillusivec4.consecration.common.ConsecrationSeed;
-import top.theillusivec4.consecration.common.HolyRegistry;
-import top.theillusivec4.consecration.common.capability.UndyingCapability;
-import top.theillusivec4.consecration.common.integration.AbstractModule;
-import top.theillusivec4.consecration.common.integration.SilentGearModule;
+import top.theillusivec4.consecration.common.HolySources;
+import top.theillusivec4.consecration.common.capability.CapabilityEventsHandler;
+import top.theillusivec4.consecration.common.impl.ConsecrationApiImpl;
+import top.theillusivec4.consecration.common.integration.AbstractCompatibilityModule;
+import top.theillusivec4.consecration.common.network.ConsecrationNetwork;
 import top.theillusivec4.consecration.common.registry.ConsecrationRegistry;
 import top.theillusivec4.consecration.common.trigger.SmiteTrigger;
 
-@Mod(Consecration.MODID)
+@Mod(ConsecrationApi.MOD_ID)
 public class Consecration {
 
-  public static final String MODID = "consecration";
-  public static final Logger LOGGER = LogManager.getLogger();
+  public static final Logger LOGGER = LogUtils.getLogger();
 
-  public static final Map<String, Class<? extends AbstractModule>> MODULES = new HashMap<>();
-  public static final List<AbstractModule> ACTIVE_MODULES = new ArrayList<>();
-
-  static {
-    MODULES.put("silentgear", SilentGearModule.class);
-  }
+  public static final Map<String, Class<? extends AbstractCompatibilityModule>> MODULES =
+      new HashMap<>();
+  public static final List<AbstractCompatibilityModule> ACTIVE_MODULES = new ArrayList<>();
 
   public Consecration() {
+    ConsecrationApi.setInstance(new ConsecrationApiImpl());
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    ConsecrationRegistry.setup(eventBus);
     eventBus.addListener(this::setup);
     eventBus.addListener(this::registerCaps);
     eventBus.addListener(this::imcEnqueue);
     eventBus.addListener(this::imcProcess);
-    eventBus.addListener(this::config);
+    eventBus.addListener(this::configLoading);
+    eventBus.addListener(this::configReloading);
     ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ConsecrationConfig.CONFIG_SPEC);
     MODULES.forEach((id, module) -> {
       if (ModList.get().isLoaded(id)) {
         try {
-          ACTIVE_MODULES.add(module.newInstance());
-        } catch (InstantiationException | IllegalAccessException e) {
+          ACTIVE_MODULES.add(module.getDeclaredConstructor().newInstance());
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
           LOGGER.error("Error adding module for mod " + id);
         }
       }
@@ -95,48 +97,51 @@ public class Consecration {
   }
 
   private void setup(final FMLCommonSetupEvent evt) {
-    UndyingCapability.register();
-    CriteriaTriggers.register(SmiteTrigger.INSTANCE);
-    BrewingRecipeRegistry.addRecipe(Ingredient
-            .of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.AWKWARD)),
-        Ingredient.of(Items.GOLDEN_APPLE), PotionUtils
-            .setPotion(new ItemStack(Items.POTION), ConsecrationRegistry.HOLY_POTION));
-    BrewingRecipeRegistry.addRecipe(Ingredient.of(PotionUtils
-            .setPotion(new ItemStack(Items.POTION), ConsecrationRegistry.HOLY_POTION)),
-        Ingredient.of(Items.REDSTONE), PotionUtils
-            .setPotion(new ItemStack(Items.POTION),
-                ConsecrationRegistry.STRONG_HOLY_POTION));
+    ConsecrationNetwork.setup();
     MinecraftForge.EVENT_BUS.register(this);
+    MinecraftForge.EVENT_BUS.register(new CapabilityEventsHandler());
+    evt.enqueueWork(() -> {
+      CriteriaTriggers.register(SmiteTrigger.INSTANCE);
+      BrewingRecipeRegistry.addRecipe(
+          Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.AWKWARD)),
+          Ingredient.of(Items.GOLDEN_APPLE),
+          PotionUtils.setPotion(new ItemStack(Items.POTION), ConsecrationRegistry.HOLY_POTION.get()));
+      BrewingRecipeRegistry.addRecipe(Ingredient.of(
+              PotionUtils.setPotion(new ItemStack(Items.POTION), ConsecrationRegistry.HOLY_POTION.get())),
+          Ingredient.of(Items.REDSTONE), PotionUtils.setPotion(new ItemStack(Items.POTION),
+              ConsecrationRegistry.STRONG_HOLY_POTION.get()));
+    });
   }
 
   private void imcEnqueue(final InterModEnqueueEvent evt) {
-    ACTIVE_MODULES.forEach(AbstractModule::enqueueImc);
+    ACTIVE_MODULES.forEach(AbstractCompatibilityModule::enqueueImc);
   }
 
   private void imcProcess(final InterModProcessEvent evt) {
-    ConsecrationSeed.registerImc(evt.getIMCStream());
+    HolySources.processImc(evt.getIMCStream());
   }
 
   private void registerCaps(final RegisterCapabilitiesEvent evt) {
-    evt.register(UndyingCapability.IUndying.class);
+    evt.register(IUndying.class);
   }
 
-  private void config(final ModConfigEvent evt) {
+  private void configLoading(final ModConfigEvent.Loading evt) {
 
-    if (evt.getConfig().getModId().equals(MODID)) {
+    if (evt.getConfig().getModId().equals(ConsecrationApi.MOD_ID)) {
+      ConsecrationConfig.bake();
+    }
+  }
+
+  private void configReloading(final ModConfigEvent.Reloading evt) {
+
+    if (evt.getConfig().getModId().equals(ConsecrationApi.MOD_ID)) {
       ConsecrationConfig.bake();
     }
   }
 
   @SubscribeEvent
-  public void serverStart(final FMLServerAboutToStartEvent evt) {
-    ConsecrationApi.setHolyRegistry(new HolyRegistry());
-    ConsecrationSeed.fillRegistry();
-  }
-
-  @SubscribeEvent
-  public void serverStopped(final FMLServerStoppedEvent evt) {
-    ConsecrationApi.setHolyRegistry(null);
+  public void serverStart(final ServerAboutToStartEvent evt) {
+    HolySources.setup();
   }
 
   @SubscribeEvent
@@ -149,8 +154,8 @@ public class Consecration {
 
       if (block == Blocks.CAMPFIRE || block == Blocks.SOUL_CAMPFIRE) {
         stack.shrink(1);
-        ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ConsecrationRegistry.FIRE_ARROW),
-            player.getInventory().selected);
+        ItemHandlerHelper.giveItemToPlayer(player,
+            new ItemStack(ConsecrationRegistry.FIRE_ARROW.get()), player.getInventory().selected);
       }
     }
   }

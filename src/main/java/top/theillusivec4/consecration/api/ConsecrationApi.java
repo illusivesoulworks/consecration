@@ -19,38 +19,56 @@
 
 package top.theillusivec4.consecration.api;
 
-public class ConsecrationApi {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraftforge.common.util.LazyOptional;
 
-  // The identifier for the holy damage type
-  public static final String HOLY_ID = "holy";
+public abstract class ConsecrationApi {
 
-  public enum UndeadType {
-    NORMAL, UNHOLY, ABSOLUTE
+  public static final String HOLY_IDENTIFIER = "holy";
+  public static final String MOD_ID = "consecration";
+
+  private static ConsecrationApi INSTANCE;
+
+  public static void setInstance(ConsecrationApi instance) {
+    INSTANCE = instance;
   }
 
-  public static class IMC {
-
-    public static final String UNDEAD = "undead";
-    public static final String HOLY_ENTITY = "holy_entity";
-    public static final String HOLY_EFFECT = "holy_effect";
-    public static final String HOLY_ITEM = "holy_item";
-    public static final String HOLY_ENCHANTMENT = "holy_enchantment";
-    public static final String HOLY_MATERIAL = "holy_material";
-    public static final String HOLY_DAMAGE = "holy_damage";
-    public static final String HOLY_ATTACK = "holy_attack";
-    public static final String HOLY_PROTECTION = "holy_protection";
+  public static ConsecrationApi getInstance() {
+    return INSTANCE;
   }
 
-  private static IHolyRegistry holyRegistry;
+  public abstract LazyOptional<IUndying> getUndying(LivingEntity livingEntity);
 
-  public static void setHolyRegistry(IHolyRegistry registryIn) {
+  public abstract boolean isHolyEntity(Entity entity);
 
-    if (holyRegistry == null) {
-      holyRegistry = registryIn;
-    }
-  }
+  public abstract boolean isHolyItem(Item item);
 
-  public static IHolyRegistry getHolyRegistry() {
-    return holyRegistry;
-  }
+  public abstract boolean isHolyEnchantment(Enchantment enchantment);
+
+  public abstract boolean isHolyEffect(MobEffect mobEffect);
+
+  public abstract boolean isHolyDamage(String damageType);
+
+  public abstract boolean isHolyMaterial(String material);
+
+  public abstract int getHolyProtectionLevel(LivingEntity attacker,
+                                             LivingEntity livingEntity, DamageSource damageSource);
+
+  public abstract boolean isHolyAttack(LivingEntity livingEntity, DamageSource damageSource);
+
+  public abstract DamageSource causeHolyDamage(@Nonnull Entity entity);
+
+  public abstract DamageSource causeIndirectHolyDamage(@Nonnull Entity source,
+                                                       @Nullable Entity indirect);
+
+  public abstract DamageSource causeHolyDamage();
+
+  public abstract UndeadType getUndeadType(LivingEntity livingEntity);
 }

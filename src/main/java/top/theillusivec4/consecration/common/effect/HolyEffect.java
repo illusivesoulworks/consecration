@@ -17,7 +17,7 @@
  * License along with Consecration.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package top.theillusivec4.consecration.common.potion;
+package top.theillusivec4.consecration.common.effect;
 
 import java.util.UUID;
 import javax.annotation.Nonnull;
@@ -32,16 +32,13 @@ import net.minecraft.world.entity.monster.ZombieVillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.util.LazyOptional;
 import top.theillusivec4.consecration.api.ConsecrationApi;
-import top.theillusivec4.consecration.common.ConsecrationUtils;
+import top.theillusivec4.consecration.api.IUndying;
 import top.theillusivec4.consecration.common.capability.UndyingCapability;
-import top.theillusivec4.consecration.common.capability.UndyingCapability.IUndying;
-import top.theillusivec4.consecration.common.registry.RegistryReference;
 
 public class HolyEffect extends MobEffect {
 
   public HolyEffect() {
     super(MobEffectCategory.BENEFICIAL, 0xFFFFFF);
-    this.setRegistryName(RegistryReference.HOLY);
   }
 
   @Override
@@ -52,16 +49,16 @@ public class HolyEffect extends MobEffect {
     if (livingEntity instanceof ZombieVillager) {
       convertZombieVillager((ZombieVillager) livingEntity, indirectSource, 1800 >> amplifier);
     } else {
+      LazyOptional<IUndying> maybeUndying = UndyingCapability.get(livingEntity);
 
-      if (ConsecrationUtils.isUndying(livingEntity)) {
-        LazyOptional<IUndying> undyingOpt = UndyingCapability.getCapability(livingEntity);
-        undyingOpt.ifPresent(undying -> {
+      if (maybeUndying.isPresent()) {
+        maybeUndying.ifPresent(undying -> {
           if (source == null) {
-            livingEntity.hurt(ConsecrationApi.getHolyRegistry().causeHolyDamage(),
+            livingEntity.hurt(ConsecrationApi.getInstance().causeHolyDamage(),
                 (float) (8 << amplifier));
           } else {
             livingEntity.hurt(
-                ConsecrationApi.getHolyRegistry().causeIndirectHolyDamage(source, indirectSource),
+                ConsecrationApi.getInstance().causeIndirectHolyDamage(source, indirectSource),
                 (float) (8 << amplifier));
           }
         });

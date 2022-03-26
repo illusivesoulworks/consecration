@@ -19,37 +19,68 @@
 
 package top.theillusivec4.consecration.common.registry;
 
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.projectile.Arrow;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraftforge.registries.ObjectHolder;
-import top.theillusivec4.consecration.Consecration;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
+import top.theillusivec4.consecration.api.ConsecrationApi;
+import top.theillusivec4.consecration.common.enchantment.UndeadProtection;
+import top.theillusivec4.consecration.common.entity.FireArrowEntity;
+import top.theillusivec4.consecration.common.item.FireArrowItem;
+import top.theillusivec4.consecration.common.item.FireStickItem;
+import top.theillusivec4.consecration.common.effect.HolyEffect;
 
-@ObjectHolder(Consecration.MODID)
 public class ConsecrationRegistry {
 
-  @ObjectHolder(RegistryReference.HOLY)
-  public static final MobEffect HOLY_EFFECT;
+  private static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(
+      ForgeRegistries.MOB_EFFECTS, ConsecrationApi.MOD_ID);
+  private static final DeferredRegister<Item> ITEMS =
+      DeferredRegister.create(ForgeRegistries.ITEMS, ConsecrationApi.MOD_ID);
+  private static final DeferredRegister<Enchantment> ENCHANTMENTS =
+      DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, ConsecrationApi.MOD_ID);
+  private static final DeferredRegister<Potion> POTIONS =
+      DeferredRegister.create(ForgeRegistries.POTIONS, ConsecrationApi.MOD_ID);
+  private static final DeferredRegister<EntityType<?>> ENTITY_TYPES =
+      DeferredRegister.create(ForgeRegistries.ENTITIES, ConsecrationApi.MOD_ID);
 
-  @ObjectHolder(RegistryReference.HOLY)
-  public static final Potion HOLY_POTION;
+  public static final RegistryObject<MobEffect> HOLY_EFFECT =
+      EFFECTS.register(RegistryReference.HOLY,
+          HolyEffect::new);
 
-  @ObjectHolder(RegistryReference.STRONG_HOLY)
-  public static final Potion STRONG_HOLY_POTION;
+  public static final RegistryObject<Item> FIRE_ARROW =
+      ITEMS.register(RegistryReference.FIRE_ARROW, FireArrowItem::new);
+  public static final RegistryObject<Item> FIRE_STICK =
+      ITEMS.register(RegistryReference.FIRE_STICK, FireStickItem::new);
 
-  @ObjectHolder(RegistryReference.FIRE_ARROW)
-  public static final Item FIRE_ARROW;
+  public static final RegistryObject<Enchantment> UNDEAD_PROTECTION =
+      ENCHANTMENTS.register(RegistryReference.UNDEAD_PROTECTION, UndeadProtection::new);
 
-  @ObjectHolder(RegistryReference.FIRE_ARROW)
-  public static final EntityType<? extends Arrow> FIRE_ARROW_TYPE;
+  public static final RegistryObject<Potion> HOLY_POTION =
+      POTIONS.register(RegistryReference.HOLY, () -> new Potion(ConsecrationApi.HOLY_IDENTIFIER,
+          new MobEffectInstance(ConsecrationRegistry.HOLY_EFFECT.get(), 1, 0)));
+  public static final RegistryObject<Potion> STRONG_HOLY_POTION =
+      POTIONS.register(RegistryReference.STRONG_HOLY, () -> new Potion(ConsecrationApi.HOLY_IDENTIFIER,
+          new MobEffectInstance(ConsecrationRegistry.HOLY_EFFECT.get(), 1, 1)));
 
-  static {
-    HOLY_EFFECT = null;
-    HOLY_POTION = null;
-    STRONG_HOLY_POTION = null;
-    FIRE_ARROW = null;
-    FIRE_ARROW_TYPE = null;
+  public static final RegistryObject<EntityType<FireArrowEntity>> FIRE_ARROW_TYPE =
+      ENTITY_TYPES.register(RegistryReference.FIRE_ARROW,
+          () -> EntityType.Builder.<FireArrowEntity>of(FireArrowEntity::new,
+                  MobCategory.MISC).sized(0.5F, 0.3F).fireImmune().setTrackingRange(64)
+              .setUpdateInterval(5).setShouldReceiveVelocityUpdates(true)
+              .build(RegistryReference.FIRE_ARROW));
+
+  public static void setup(IEventBus eventBus) {
+    EFFECTS.register(eventBus);
+    ITEMS.register(eventBus);
+    POTIONS.register(eventBus);
+    ENCHANTMENTS.register(eventBus);
+    ENTITY_TYPES.register(eventBus);
   }
 }

@@ -20,7 +20,6 @@
 package top.theillusivec4.consecration.common;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -33,13 +32,13 @@ import net.minecraftforge.common.ForgeConfigSpec.DoubleValue;
 import net.minecraftforge.common.ForgeConfigSpec.EnumValue;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 import org.apache.commons.lang3.tuple.Pair;
-import top.theillusivec4.consecration.Consecration;
+import top.theillusivec4.consecration.api.ConsecrationApi;
 
 public class ConsecrationConfig {
 
   public static final ForgeConfigSpec CONFIG_SPEC;
   public static final Config CONFIG;
-  private static final String CONFIG_PREFIX = "gui." + Consecration.MODID + ".config.";
+  private static final String CONFIG_PREFIX = "gui." + ConsecrationApi.MOD_ID + ".config.";
 
   static {
     final Pair<Config, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
@@ -53,159 +52,119 @@ public class ConsecrationConfig {
   }
 
   public static Set<ResourceLocation> dimensions;
-  public static PermissionMode dimensionPermission;
+  public static PermissionMode dimensionsPermission;
 
-  public static int fireSmiteDuration;
-  public static int holySmiteDuration;
+  public static int fireVulnerableDuration;
+  public static int holyVulnerableDuration;
 
-  public static List<? extends String> holyEntities;
-  public static List<? extends String> holyEffects;
-  public static List<? extends String> holyItems;
-  public static List<? extends String> holyEnchantments;
   public static List<? extends String> holyDamage;
   public static List<? extends String> holyMaterials;
 
-  public static boolean defaultUndead;
-  public static List<? extends String> undeadList;
+  public static boolean giveDefaultUndeadUndying;
   public static double damageReduction;
-  public static double healthRegen;
+  public static double healthRegeneration;
   public static double speedModifier;
-  public static boolean bystanderNerf;
+  public static double damageReductionVsMobs;
 
   public static void bake() {
     dimensions = new HashSet<>();
     CONFIG.dimensions.get().forEach(dimension -> dimensions.add(new ResourceLocation(dimension)));
-    dimensionPermission = CONFIG.dimensionPermission.get();
+    dimensionsPermission = CONFIG.dimensionsPermission.get();
 
-    fireSmiteDuration = CONFIG.fireSmiteDuration.get();
-    holySmiteDuration = CONFIG.holySmiteDuration.get();
+    fireVulnerableDuration = CONFIG.fireVulnerableDuration.get();
+    holyVulnerableDuration = CONFIG.holyVulnerableDuration.get();
 
-    holyEntities = CONFIG.holyEntities.get();
-    holyEffects = CONFIG.holyEffects.get();
-    holyItems = CONFIG.holyItems.get();
-    holyEnchantments = CONFIG.holyEnchantments.get();
     holyDamage = CONFIG.holyDamage.get();
     holyMaterials = CONFIG.holyMaterials.get();
 
-    defaultUndead = CONFIG.defaultUndead.get();
-    undeadList = CONFIG.undeadList.get();
+    giveDefaultUndeadUndying = CONFIG.giveDefaultUndeadUndying.get();
     damageReduction = CONFIG.damageReduction.get();
-    healthRegen = CONFIG.healthRegen.get();
+    healthRegeneration = CONFIG.healthRegeneration.get();
     speedModifier = CONFIG.speedModifier.get();
-    bystanderNerf = CONFIG.bystanderNerf.get();
+    damageReductionVsMobs = CONFIG.damageReductionVsMobs.get();
   }
 
   public static class Config {
 
     public final ConfigValue<List<? extends String>> dimensions;
-    public final EnumValue<PermissionMode> dimensionPermission;
+    public final EnumValue<PermissionMode> dimensionsPermission;
 
-    public final IntValue fireSmiteDuration;
-    public final IntValue holySmiteDuration;
-    public final ConfigValue<List<? extends String>> holyEntities;
-    public final ConfigValue<List<? extends String>> holyEffects;
-    public final ConfigValue<List<? extends String>> holyItems;
-    public final ConfigValue<List<? extends String>> holyEnchantments;
+    public final IntValue fireVulnerableDuration;
+    public final IntValue holyVulnerableDuration;
     public final ConfigValue<List<? extends String>> holyDamage;
     public final ConfigValue<List<? extends String>> holyMaterials;
 
-    public final BooleanValue defaultUndead;
-    public final ConfigValue<List<? extends String>> undeadList;
+    public final BooleanValue giveDefaultUndeadUndying;
     public final DoubleValue damageReduction;
-    public final IntValue healthRegen;
+    public final IntValue healthRegeneration;
     public final DoubleValue speedModifier;
-    public final BooleanValue bystanderNerf;
+    public final DoubleValue damageReductionVsMobs;
 
     public Config(ForgeConfigSpec.Builder builder) {
       builder.push("dimension");
 
       dimensions = builder
-          .comment("Set which dimensions are blacklisted or whitelisted for affected undead")
+          .comment("Set which dimensions are blacklisted or whitelisted for empowered undead")
           .translation(CONFIG_PREFIX + "dimensions")
           .defineList("dimensions", ArrayList::new, s -> s instanceof String);
 
-      dimensionPermission = builder
+      dimensionsPermission = builder
           .comment("Set whether the dimension configuration is blacklisted or whitelisted")
-          .translation(CONFIG_PREFIX + "dimensionPermission")
-          .defineEnum("dimensionPermission", PermissionMode.BLACKLIST);
+          .translation(CONFIG_PREFIX + "dimensionsPermission")
+          .defineEnum("dimensionsPermission", PermissionMode.BLACKLIST);
 
       builder.pop();
 
-      builder.push("holy");
+      builder.push("vulnerability");
 
-      fireSmiteDuration = builder
-          .comment("The amount of time, in seconds, that smiting from fire lasts")
-          .translation(CONFIG_PREFIX + "fireSmiteDuration")
-          .defineInRange("fireSmiteDuration", 10, 0, 100);
+      fireVulnerableDuration = builder
+          .comment("The amount of time, in seconds, that vulnerability from fire lasts")
+          .translation(CONFIG_PREFIX + "fireWeakeningDuration")
+          .defineInRange("fireWeakeningDuration", 10, 0, 100);
 
-      holySmiteDuration = builder
-          .comment("The amount of time, in seconds, that smiting from holy sources lasts")
-          .translation(CONFIG_PREFIX + "holySmiteDuration")
-          .defineInRange("holySmiteDuration", 10, 0, 100);
-
-      holyEntities = builder
-          .comment("A list of entities that will be able to damage and smite undead")
-          .translation(CONFIG_PREFIX + "holyEntities")
-          .defineList("holyEntities", ArrayList::new, s -> s instanceof String);
-
-      holyEffects = builder
-          .comment("A list of potion effects that will be able to damage and smite undead")
-          .translation(CONFIG_PREFIX + "holyEffects")
-          .defineList("holyEffects", Arrays.asList("minecraft:instant_health", "consecration:holy"),
-              s -> s instanceof String);
-
-      holyItems = builder.comment("A list of items that will be able to damage and smite undead")
-          .translation(CONFIG_PREFIX + "holyItems")
-          .defineList("holyItems", ArrayList::new, s -> s instanceof String);
-
-      holyEnchantments = builder
-          .comment("A list of enchantments that will be able to damage and smite undead")
-          .translation(CONFIG_PREFIX + "holyEnchantments")
-          .defineList("holyEnchantments", Collections.singletonList("minecraft:smite"),
-              s -> s instanceof String);
+      holyVulnerableDuration = builder
+          .comment("The amount of time, in seconds, that vulnerability from holy sources lasts")
+          .translation(CONFIG_PREFIX + "holyWeakeningDuration")
+          .defineInRange("holyWeakeningDuration", 10, 0, 100);
 
       holyDamage = builder
-          .comment("A list of damage types that will be able to damage and smite undead")
+          .comment("A list of damage types that will be able to damage and make undead vulnerable")
           .translation(CONFIG_PREFIX + "holyDamage")
           .defineList("holyDamage", Collections.singletonList("holy"), s -> s instanceof String);
 
       holyMaterials = builder
-          .comment("A list of materials that will be able to damage and smite undead")
-          .translation(CONFIG_PREFIX + "holyMaterial")
-          .defineList("holyMaterial", Collections.singletonList("silver"),
+          .comment("A list of materials that will be able to damage and make undead vulnerable")
+          .translation(CONFIG_PREFIX + "holyMaterials")
+          .defineList("holyMaterials", Collections.singletonList("silver"),
               s -> s instanceof String);
 
       builder.pop();
 
       builder.push("undying");
 
-      defaultUndead = builder.comment("Set to true to give default undead the undying trait")
-          .translation(CONFIG_PREFIX + "defaultUndead").define("defaultUndead", true);
-
-      undeadList = builder.comment(
-              """
-                  A list of mobs that to classify as undead.
-                  Format: 'modid:name'
-                  Optionally, add ';unholy' or ';absolute' to the end.
-                  Unholy mobs will not be smote by fire and absolute mobs will not be smote by anything.""")
-          .translation(CONFIG_PREFIX + "undeadList")
-          .defineList("undeadList", ArrayList::new, s -> s instanceof String);
+      giveDefaultUndeadUndying =
+          builder.comment("Set to true to give default undead creatures the undying trait")
+              .translation(CONFIG_PREFIX + "giveDefaultUndeadUndying")
+              .define("giveDefaultUndeadUndying", true);
 
       damageReduction = builder
-          .comment("Set undead natural damage reduction, in percent, against all non-holy damage")
+          .comment("Set undead natural damage reduction, in percent, against non-vulnerable damage")
           .translation(CONFIG_PREFIX + "damageReduction")
           .defineInRange("damageReduction", 0.8D, 0.0D, 1.0D);
 
-      healthRegen = builder.comment("Set undead natural health regen, in half-hearts per second")
-          .translation(CONFIG_PREFIX + "healthRegen").defineInRange("healthRegen", 1, 0, 1000);
+      healthRegeneration =
+          builder.comment("Set undead natural health regeneration in half-hearts per second")
+              .translation(CONFIG_PREFIX + "healthRegeneration")
+              .defineInRange("healthRegeneration", 1, 0, 1000);
 
       speedModifier = builder.comment("Set undead natural bonus speed modifier")
           .translation(CONFIG_PREFIX + "speedModifier")
           .defineInRange("speedModifier", 0.0D, 0.0D, 100.0D);
 
-      bystanderNerf = builder
-          .comment("Set to true to have undead reduce damage against non-player non-holy entities")
-          .translation(CONFIG_PREFIX + "bystanderNerf").define("bystanderNerf", true);
+      damageReductionVsMobs = builder
+          .comment("Set undead natural damage reduction, in percent, against non-vulnerable mob damage")
+          .translation(CONFIG_PREFIX + "damageReductionVsMobs")
+          .defineInRange("damageReductionVsMobs", 0.8D, 0.0D, 1.0D);
 
       builder.pop();
     }

@@ -23,7 +23,7 @@
 
 package top.theillusivec4.consecration.common.integration;
 
-public abstract class AbstractModule {
+public abstract class AbstractCompatibilityModule {
 
   public abstract void enqueueImc();
 }

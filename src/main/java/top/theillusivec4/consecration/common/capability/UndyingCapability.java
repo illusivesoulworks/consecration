@@ -1,139 +1,135 @@
-/*
- * Copyright (c) 2017-2020 C4
- *
- * This file is part of Consecration, a mod made for Minecraft.
- *
- * Consecration is free software: you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published
- * by the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Consecration is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with Consecration.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package top.theillusivec4.consecration.common.capability;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.world.entity.MobType;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
-import top.theillusivec4.consecration.Consecration;
+import top.theillusivec4.consecration.api.ConsecrationApi;
+import top.theillusivec4.consecration.api.IUndying;
+import top.theillusivec4.consecration.api.UndeadType;
+import top.theillusivec4.consecration.api.VulnerabilityType;
+import top.theillusivec4.consecration.common.ConsecrationConfig;
+import top.theillusivec4.consecration.common.UndeadTypes;
 
 public class UndyingCapability {
 
-  public static final Capability<IUndying> UNDYING_CAP =
+  public static final Capability<IUndying> INSTANCE =
       CapabilityManager.get(new CapabilityToken<>() {
       });
 
-  public static final ResourceLocation ID = new ResourceLocation(Consecration.MODID, "undying");
+  public static final ResourceLocation ID = new ResourceLocation(ConsecrationApi.MOD_ID, "undying");
 
-  private static final String SMITE_TAG = "smite";
+  private static final Map<LivingEntity, LazyOptional<IUndying>> SERVER_CACHE = new HashMap<>();
+  private static final Map<LivingEntity, LazyOptional<IUndying>> CLIENT_CACHE = new HashMap<>();
 
-  public static void register() {
-    MinecraftForge.EVENT_BUS.register(new CapabilityEventsHandler());
+  private static Map<LivingEntity, LazyOptional<IUndying>> getCache(Level level) {
+    return level.isClientSide() ? CLIENT_CACHE : SERVER_CACHE;
   }
 
-  public static LazyOptional<IUndying> getCapability(final LivingEntity entity) {
-    return entity.getCapability(UNDYING_CAP);
+  public static LazyOptional<IUndying> get(final LivingEntity livingEntity) {
+
+    if (!isUndying(livingEntity)) {
+      return LazyOptional.empty();
+    }
+    Level level = livingEntity.getLevel();
+    Map<LivingEntity, LazyOptional<IUndying>> cache = getCache(level);
+    LazyOptional<IUndying> optional = cache.get(livingEntity);
+
+    if (optional == null) {
+      optional = livingEntity.getCapability(INSTANCE);
+      cache.put(livingEntity, optional);
+      optional.addListener(self -> cache.remove(livingEntity));
+    }
+    return optional;
   }
 
-  public interface IUndying {
-
-    boolean hasSmite();
-
-    int getSmiteDuration();
-
-    void setSmiteDuration(int duration);
-
-    void tickSmite();
-
-    void readTag(CompoundTag tag);
-
-    CompoundTag writeTag();
+  private static boolean isUndying(final LivingEntity livingEntity) {
+    return isValidCreature(livingEntity) && isValidDimension(
+        livingEntity.getCommandSenderWorld().dimension().location());
   }
 
-  public static class Undying implements IUndying {
+  private static boolean isValidCreature(final LivingEntity livingEntity) {
+    return (ConsecrationConfig.giveDefaultUndeadUndying &&
+        livingEntity.getMobType() == MobType.UNDEAD) ||
+        ConsecrationApi.getInstance().getUndeadType(livingEntity) != UndeadType.NOT;
+  }
 
-    private int smiteDuration = 0;
+  private static boolean isValidDimension(final ResourceLocation resourceLocation) {
+    Set<ResourceLocation> dimensions = ConsecrationConfig.dimensions;
+    ConsecrationConfig.PermissionMode permissionMode = ConsecrationConfig.dimensionsPermission;
 
-    @Override
-    public boolean hasSmite() {
-      return smiteDuration > 0;
+    if (dimensions.isEmpty()) {
+      return true;
+    } else if (permissionMode == ConsecrationConfig.PermissionMode.BLACKLIST) {
+      return !dimensions.contains(resourceLocation);
+    } else {
+      return dimensions.contains(resourceLocation);
+    }
+  }
+
+  public static VulnerabilityType createVulnerability(LivingEntity target, DamageSource source) {
+    UndeadType undeadType = UndeadTypes.get(target);
+    ConsecrationApi consecration = ConsecrationApi.getInstance();
+
+    if (undeadType == UndeadType.RESISTANT) {
+      return VulnerabilityType.NONE;
     }
 
-    @Override
-    public int getSmiteDuration() {
-      return smiteDuration;
+    if (!target.getType().fireImmune() && source.isFire() &&
+        undeadType != UndeadType.FIRE_RESISTANT) {
+      return VulnerabilityType.FIRE;
     }
 
-    @Override
-    public void setSmiteDuration(int duration) {
-      this.smiteDuration = duration;
-    }
+    if (source.getDirectEntity() instanceof LivingEntity damager) {
+      ItemStack stack = damager.getMainHandItem();
+      Item item = stack.getItem();
 
-    @Override
-    public void tickSmite() {
+      if (item instanceof TieredItem tieredItem) {
+        Tier tier = tieredItem.getTier();
 
-      if (this.smiteDuration > 0) {
-        this.smiteDuration--;
+        for (ItemStack mat : tier.getRepairIngredient().getItems()) {
+          ResourceLocation resourceLocation = mat.getItem().getRegistryName();
+
+          if (resourceLocation != null &&
+              consecration.isHolyMaterial(resourceLocation.toString())) {
+            return VulnerabilityType.HOLY;
+          }
+        }
+      }
+
+      if (consecration.isHolyItem(item)) {
+        return VulnerabilityType.HOLY;
+      }
+
+      for (Enchantment enchantment : EnchantmentHelper.getEnchantments(stack).keySet()) {
+
+        if (consecration.isHolyEnchantment(enchantment)) {
+          return VulnerabilityType.HOLY;
+        }
       }
     }
 
-    @Override
-    public void readTag(CompoundTag tag) {
-      this.setSmiteDuration(tag.getInt(SMITE_TAG));
+    if (consecration.isHolyDamage(source.getMsgId()) ||
+        consecration.isHolyEntity(source.getDirectEntity()) ||
+        consecration.isHolyAttack(target, source)) {
+      return VulnerabilityType.HOLY;
     }
-
-    @Override
-    public CompoundTag writeTag() {
-      CompoundTag tag = new CompoundTag();
-      tag.putInt(SMITE_TAG, this.getSmiteDuration());
-      return tag;
-    }
-  }
-
-  public static class Provider implements ICapabilitySerializable<Tag> {
-
-    final LazyOptional<IUndying> optional;
-    final IUndying data;
-
-    Provider() {
-      this.data = new Undying();
-      this.optional = LazyOptional.of(() -> data);
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nullable Capability<T> capability, Direction side) {
-      return UNDYING_CAP.orEmpty(capability, optional);
-    }
-
-    @Override
-    public Tag serializeNBT() {
-      return data.writeTag();
-    }
-
-    @Override
-    public void deserializeNBT(Tag nbt) {
-
-      if (nbt instanceof CompoundTag tag) {
-        data.readTag(tag);
-      }
-    }
+    return VulnerabilityType.NONE;
   }
 }

@@ -20,27 +20,21 @@
 package top.theillusivec4.consecration.common.enchantment;
 
 import javax.annotation.Nonnull;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.ProtectionEnchantment;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraftforge.common.util.LazyOptional;
-import top.theillusivec4.consecration.common.capability.UndyingCapability;
-import top.theillusivec4.consecration.common.capability.UndyingCapability.IUndying;
-import top.theillusivec4.consecration.common.registry.RegistryReference;
+import top.theillusivec4.consecration.api.ConsecrationApi;
 
-import net.minecraft.world.item.enchantment.Enchantment.Rarity;
+public class UndeadProtection extends Enchantment {
 
-public class ShadowProtection extends Enchantment {
-
-  public ShadowProtection() {
+  public UndeadProtection() {
     super(Rarity.UNCOMMON, EnchantmentCategory.ARMOR,
-        new EquipmentSlot[]{EquipmentSlot.CHEST, EquipmentSlot.FEET,
-            EquipmentSlot.HEAD, EquipmentSlot.LEGS});
-    this.setRegistryName(RegistryReference.SHADOW_PROTECTION);
+        new EquipmentSlot[] {EquipmentSlot.CHEST, EquipmentSlot.FEET, EquipmentSlot.HEAD,
+            EquipmentSlot.LEGS});
   }
 
   public int getMinCost(int enchantmentLevel) {
@@ -62,9 +56,9 @@ public class ShadowProtection extends Enchantment {
     }
     Entity entity = source.getEntity();
 
-    if (entity instanceof LivingEntity) {
-      LazyOptional<IUndying> undyingOpt = UndyingCapability.getCapability((LivingEntity) entity);
-      return undyingOpt.map(undying -> level * 2).orElse(0);
+    if (entity instanceof LivingEntity livingEntity) {
+      return ConsecrationApi.getInstance().getUndying(livingEntity).map(undying -> level * 2)
+          .orElse(0);
     }
     return 0;
   }

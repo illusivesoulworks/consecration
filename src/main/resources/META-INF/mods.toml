@@ -1,8 +1,9 @@
 modLoader="javafml"
-loaderVersion="[37,)"
+loaderVersion="${loader_version}"
 issueTrackerURL="https://github.com/TheIllusiveC4/Consecration/issues"
 logoFile="consecration_icon.png"
 license="LGPL-3.0-or-later"
+logoBlur=false
 [[mods]]
 modId="consecration"
 version="${version}"
@@ -15,12 +16,12 @@ Makes the undead more resilent except against fire and holy damage and adds new 
 [[dependencies.consecration]]
     modId="forge"
     mandatory=true
-    versionRange="[37,)"
+    versionRange="${forge_version_range}"
     ordering="NONE"
     side="BOTH"
 [[dependencies.consecration]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.17,1.18)"
+    versionRange="${mc_version_range}"
     ordering="NONE"
     side="BOTH"
