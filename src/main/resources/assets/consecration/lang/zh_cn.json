@@ -6,8 +6,8 @@
   "item.consecration.fire_stick": "烧火棍",
   "item.consecration.fire_arrow": "火矢",
   "effect.consecration.holy": "圣化",
-  "enchantment.consecration.shadow_protection": "御影",
-  "enchantment.consecration.shadow_protection.desc": "减少来自僵尸或骷髅等亡灵生物的伤害",
+  "enchantment.consecration.undead_protection": "御影",
+  "enchantment.consecration.undead_protection.desc": "减少来自僵尸或骷髅等亡灵生物的伤害",
   "advancements.consecration.smite.title": "暗夜狩猎",
   "advancements.consecration.smite.description": "击杀一个亡灵生物"
 }
