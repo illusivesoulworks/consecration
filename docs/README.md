@@ -31,7 +31,7 @@ Unless you can somehow make the undead drink this potion yourself, you're also g
 
 ### Enchantments
 
-#### Shadow Protection
+#### Undead Protection
 Armor enchantment that reduces damage from undead attacks. Works like Protection enchantments, including not being able to stack with them except for Feather Falling.
 
 ## Credits
