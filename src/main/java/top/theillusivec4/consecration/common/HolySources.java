@@ -95,6 +95,10 @@ public class HolySources {
   }
 
   public static boolean contains(Entity entity) {
+
+    if (entity == null) {
+      return false;
+    }
     List<MobEffectInstance> effects = new ArrayList<>();
 
     if (entity instanceof ThrownPotion) {
