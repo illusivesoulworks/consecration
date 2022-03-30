@@ -6,6 +6,7 @@
   "item.consecration.fire_stick": "Fire Stick",
   "item.consecration.fire_arrow": "Fire Arrow",
   "effect.consecration.holy": "Consecration",
+  "effect.consecration.holy.description": "Grants regeneration and damage resistance to living creatures and hurts undead.",
   "enchantment.consecration.undead_protection": "Undead Protection",
   "enchantment.consecration.undead_protection.desc": "Reduces damage from undead mobs such as zombies and skeletons.",
   "advancements.consecration.smite.title": "Hunt the Night",
