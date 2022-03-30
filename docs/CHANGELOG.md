@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project does not adhere to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 This project uses MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
 
+## [1.18.2-5.0.0.2] - 2022.03.29
+### Added
+- Added JEED support [#62](https://github.com/TheIllusiveC4/Consecration/issues/62)
+### Fixed
+- Fixed missing Consecration effect texture
+- Fixed NPE crashes
+
 ## [1.18.2-5.0.0.1] - 2022.03.26
 ### Fixed
 - Fixed CurseForge upload
