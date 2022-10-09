@@ -7,8 +7,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
@@ -107,7 +105,8 @@ public class UndyingCapability {
           ResourceLocation resourceLocation = mat.getItem().getRegistryName();
 
           if (resourceLocation != null &&
-              consecration.isHolyMaterial(resourceLocation.toString())) {
+              (ConsecrationApi.getInstance().isHolyMaterial(resourceLocation.toString()) ||
+                  ConsecrationApi.getInstance().isHolyMaterial(resourceLocation.getPath()))) {
             return VulnerabilityType.HOLY;
           }
         }
