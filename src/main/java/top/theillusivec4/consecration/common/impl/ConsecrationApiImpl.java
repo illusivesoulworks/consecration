@@ -9,7 +9,10 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraftforge.common.ToolAction;
+import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.common.util.LazyOptional;
 import top.theillusivec4.consecration.api.ConsecrationApi;
 import top.theillusivec4.consecration.api.IUndying;
@@ -19,6 +22,8 @@ import top.theillusivec4.consecration.common.UndeadTypes;
 import top.theillusivec4.consecration.common.capability.UndyingCapability;
 
 public class ConsecrationApiImpl extends ConsecrationApi {
+
+  private static final ToolAction SMITE_ACTION = ToolAction.get("smite");
 
   @Override
   public LazyOptional<IUndying> getUndying(LivingEntity livingEntity) {
@@ -33,6 +38,11 @@ public class ConsecrationApiImpl extends ConsecrationApi {
   @Override
   public boolean isHolyItem(Item item) {
     return HolySources.contains(item);
+  }
+
+  @Override
+  public boolean isHolyItem(ItemStack stack) {
+    return isHolyItem(stack.getItem()) || stack.canPerformAction(SMITE_ACTION);
   }
 
   @Override

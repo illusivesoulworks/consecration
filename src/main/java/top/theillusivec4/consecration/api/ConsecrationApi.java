@@ -26,6 +26,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -49,6 +50,8 @@ public abstract class ConsecrationApi {
   public abstract boolean isHolyEntity(Entity entity);
 
   public abstract boolean isHolyItem(Item item);
+
+  public abstract boolean isHolyItem(ItemStack stack);
 
   public abstract boolean isHolyEnchantment(Enchantment enchantment);
 

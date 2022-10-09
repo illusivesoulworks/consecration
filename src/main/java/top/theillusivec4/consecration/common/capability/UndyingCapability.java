@@ -113,7 +113,7 @@ public class UndyingCapability {
         }
       }
 
-      if (consecration.isHolyItem(item)) {
+      if (consecration.isHolyItem(stack)) {
         return VulnerabilityType.HOLY;
       }
 

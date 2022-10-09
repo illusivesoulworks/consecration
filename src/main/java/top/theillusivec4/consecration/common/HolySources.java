@@ -141,7 +141,7 @@ public class HolySources {
               level++;
             }
           }
-        } else if (ConsecrationApi.getInstance().isHolyItem(item)) {
+        } else if (ConsecrationApi.getInstance().isHolyItem(stack)) {
           level++;
         }
       }
