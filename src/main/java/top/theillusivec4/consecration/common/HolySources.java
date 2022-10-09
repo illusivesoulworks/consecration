@@ -135,8 +135,9 @@ public class HolySources {
           for (ItemStack mat : material.getRepairIngredient().getItems()) {
             ResourceLocation resourceLocation = mat.getItem().getRegistryName();
 
-            if (resourceLocation != null && ConsecrationApi.getInstance()
-                .isHolyMaterial(resourceLocation.toString())) {
+            if (resourceLocation != null && (ConsecrationApi.getInstance()
+                .isHolyMaterial(resourceLocation.toString()) || ConsecrationApi.getInstance()
+                .isHolyMaterial(resourceLocation.getPath()))) {
               level++;
             }
           }
