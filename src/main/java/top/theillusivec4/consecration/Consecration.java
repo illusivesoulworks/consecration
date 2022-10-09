@@ -40,7 +40,6 @@ import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -59,6 +58,10 @@ import top.theillusivec4.consecration.common.HolySources;
 import top.theillusivec4.consecration.common.capability.CapabilityEventsHandler;
 import top.theillusivec4.consecration.common.impl.ConsecrationApiImpl;
 import top.theillusivec4.consecration.common.integration.AbstractCompatibilityModule;
+import top.theillusivec4.consecration.common.integration.SilentGearModule;
+import top.theillusivec4.consecration.common.integration.TConstructModule;
+import top.theillusivec4.consecration.common.integration.TetraModule;
+import top.theillusivec4.consecration.common.integration.WerewolvesModule;
 import top.theillusivec4.consecration.common.network.ConsecrationNetwork;
 import top.theillusivec4.consecration.common.registry.ConsecrationRegistry;
 import top.theillusivec4.consecration.common.trigger.SmiteTrigger;
@@ -71,6 +74,13 @@ public class Consecration {
   public static final Map<String, Class<? extends AbstractCompatibilityModule>> MODULES =
       new HashMap<>();
   public static final List<AbstractCompatibilityModule> ACTIVE_MODULES = new ArrayList<>();
+
+  static {
+    MODULES.put("tetra", TetraModule.class);
+    MODULES.put("tconstruct", TConstructModule.class);
+    MODULES.put("werewolves", WerewolvesModule.class);
+    MODULES.put("silentgear", SilentGearModule.class);
+  }
 
   public Consecration() {
     ConsecrationApi.setInstance(new ConsecrationApiImpl());

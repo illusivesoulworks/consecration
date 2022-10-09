@@ -68,6 +68,16 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${forge_version}"
+
+    implementation fg.deobf("curse.maven:tetra-289712:${tetra_file}")
+    implementation fg.deobf("curse.maven:silentgear-297039:${silentgear_file}")
+    implementation fg.deobf("curse.maven:tconstruct-74072:${tconstruct_file}")
+    implementation fg.deobf("curse.maven:werewolves-417851:${werewolves_file}")
+
+    runtimeOnly fg.deobf("curse.maven:mantle-74924:${mantle_file}")
+    runtimeOnly fg.deobf("curse.maven:mutil-351914:${mutil_file}")
+    runtimeOnly fg.deobf("curse.maven:silentlib-242998:${silentlib_file}")
+    runtimeOnly fg.deobf("curse.maven:vampires-233029:${vampires_file}")
 }
 
 sourceSets {
