@@ -167,7 +167,7 @@ public class HolySources {
   public static boolean containsMaterial(String material) {
 
     for (String holyMaterial : HOLY_MATERIALS) {
-      String pattern = "^" + holyMaterial + "(\\b|[_-]\\w*)";
+      String pattern = "(^|\\w*[_-])" + holyMaterial + "(\\b|[_-]\\w*)";
 
       if (material.matches(pattern)) {
         return true;
