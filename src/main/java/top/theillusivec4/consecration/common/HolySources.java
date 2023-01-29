@@ -22,6 +22,7 @@ import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -132,13 +133,18 @@ public class HolySources {
 
         if (item instanceof ArmorItem) {
           ArmorMaterial material = ((ArmorItem) item).getMaterial();
-          for (ItemStack mat : material.getRepairIngredient().getItems()) {
-            ResourceLocation resourceLocation = mat.getItem().getRegistryName();
+          Ingredient ing = material.getRepairIngredient();
+          // Some mods are returning null here, so we have to check for it
+          if (ing != null) {
 
-            if (resourceLocation != null && (ConsecrationApi.getInstance()
-                .isHolyMaterial(resourceLocation.toString()) || ConsecrationApi.getInstance()
-                .isHolyMaterial(resourceLocation.getPath()))) {
-              level++;
+            for (ItemStack mat : ing.getItems()) {
+              ResourceLocation resourceLocation = mat.getItem().getRegistryName();
+
+              if (resourceLocation != null && (ConsecrationApi.getInstance()
+                  .isHolyMaterial(resourceLocation.toString()) || ConsecrationApi.getInstance()
+                  .isHolyMaterial(resourceLocation.getPath()))) {
+                level++;
+              }
             }
           }
         } else if (ConsecrationApi.getInstance().isHolyItem(stack)) {
