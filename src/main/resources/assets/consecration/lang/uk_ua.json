@@ -1,0 +1,14 @@
+{
+  "item.minecraft.potion.effect.holy": "Освячувальне зілля",
+  "item.minecraft.splash_potion.effect.holy": "Вибухове освячувальне зілля",
+  "item.minecraft.lingering_potion.effect.holy": "Осідаюче освячувальне зілля",
+  "item.minecraft.tipped_arrow.effect.holy": "Освячувальна стріла",
+  "item.consecration.fire_stick": "Тліюча палиця",
+  "item.consecration.fire_arrow": "Вогняна стріла",
+  "effect.consecration.holy": "Освячення",
+  "effect.consecration.holy.description": "Надає регенерацію і спротив шкоді живим істотам і шкодить нежиті.",
+  "enchantment.consecration.undead_protection": "Захист від Нежиті",
+  "enchantment.consecration.undead_protection.desc": "Зменшує шкоду від нежиті - як зомбі чи скелетів.",
+  "advancements.consecration.smite.title": "Спопели темряву",
+  "advancements.consecration.smite.description": "Очищує нежить"
+}
