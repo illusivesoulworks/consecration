@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project does not adhere to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 This project uses MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
 
+## [1.18.2-5.0.1.3] - 2023.07.03
+### Added
+- Added `uk_ua` localization (thanks cmbcoldspot!) [#70](https://github.com/illusivesoulworks/consecration/pull/70)
+
 ## [1.18.2-5.0.1.2] - 2023.01.29
 ### Fixed
 - Fixed certain mods crashing with Consecration when using their armor
