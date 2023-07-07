@@ -1,0 +1,27 @@
+modLoader="javafml"
+loaderVersion="[41,)"
+issueTrackerURL="https://github.com/illusivesoulworks/consecration/issues"
+logoFile= "consecration_icon.png"
+license="LGPL-3.0-or-later"
+logoBlur=false
+[[mods]]
+modId="consecration"
+version="${version}"
+displayName="Consecration"
+displayURL="https://github.com/illusivesoulworks/consecration"
+authors="C4"
+description='''
+Makes the undead more resilent except against fire and holy damage and adds new features to help you slay them
+'''
+[[dependencies.consecration]]
+    modId="forge"
+    mandatory=true
+    versionRange="${forge_version_range}"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.consecration]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="${forge_mc_version_range}"
+    ordering="NONE"
+    side="BOTH"

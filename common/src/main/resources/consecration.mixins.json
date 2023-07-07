@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.illusivesoulworks.consecration.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "AccessorZombieVillager",
+    "MixinConsecrationApi"
+  ],
+  "client": [
+  ],
+  "server": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "${refmap_target}refmap.json"
+}
