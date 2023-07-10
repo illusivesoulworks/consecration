@@ -8,7 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class ForgeCapabilityService implements ICapabilityService {
 
   @Override
-  public Optional<IUndying> getUndying(LivingEntity livingEntity) {
+  public Optional<? extends IUndying> getUndying(LivingEntity livingEntity) {
     return livingEntity.getCapability(UndyingCapability.INSTANCE).resolve();
   }
 }

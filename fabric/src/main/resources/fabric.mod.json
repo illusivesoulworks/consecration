@@ -15,12 +15,26 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.examplemod.ExampleMod"
+      "com.illusivesoulworks.consecration.ConsecrationFabricMod"
+    ],
+    "client": [
+      "com.illusivesoulworks.consecration.ConsecrationFabricClientMod"
+    ],
+    "spectrelib": [
+      "com.illusivesoulworks.consecration.ConsecrationConfigInitializer"
+    ],
+    "cardinal-components-entity": [
+      "com.illusivesoulworks.consecration.common.capability.ConsecrationComponents"
+    ]
+  },
+  "custom": {
+    "cardinal-components": [
+      "consecration:undying"
     ]
   },
   "mixins": [
-    "examplemod.mixins.json",
-    "examplemod.fabric.mixins.json"
+    "consecration.mixins.json",
+    "consecration.fabric.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.14",

@@ -6,5 +6,5 @@ import net.minecraft.world.entity.LivingEntity;
 
 public interface ICapabilityService {
 
-  Optional<IUndying> getUndying(LivingEntity livingEntity);
+  Optional<? extends IUndying> getUndying(LivingEntity livingEntity);
 }

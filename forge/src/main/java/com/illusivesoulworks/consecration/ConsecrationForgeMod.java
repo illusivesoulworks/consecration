@@ -21,6 +21,7 @@ package com.illusivesoulworks.consecration;
 
 import com.illusivesoulworks.consecration.api.ConsecrationImc;
 import com.illusivesoulworks.consecration.api.IUndying;
+import com.illusivesoulworks.consecration.common.ConsecrationEvents;
 import com.illusivesoulworks.consecration.common.capability.UndyingCapability;
 import com.illusivesoulworks.consecration.common.config.ConsecrationConfig;
 import com.illusivesoulworks.consecration.common.impl.HolySources;
@@ -138,7 +139,7 @@ public class ConsecrationForgeMod {
   }
 
   private void makeCampfireArrow(final PlayerInteractEvent.RightClickBlock evt) {
-    ConsecrationCommonMod.createCampfireArrow(evt.getEntity(), evt.getItemStack(), evt.getPos(),
+    ConsecrationEvents.createCampfireArrow(evt.getEntity(), evt.getItemStack(), evt.getPos(),
         (player, stack) -> ItemHandlerHelper.giveItemToPlayer(player, stack,
             player.getInventory().selected));
   }
