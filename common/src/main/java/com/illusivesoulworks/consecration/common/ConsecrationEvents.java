@@ -38,7 +38,7 @@ public class ConsecrationEvents {
                                          BiConsumer<Player, ItemStack> giver) {
 
     if (stack.getItem() == Items.ARROW) {
-      Block block = player.level.getBlockState(pos).getBlock();
+      Block block = player.level().getBlockState(pos).getBlock();
 
       if (block == Blocks.CAMPFIRE || block == Blocks.SOUL_CAMPFIRE) {
         stack.shrink(1);
@@ -49,7 +49,7 @@ public class ConsecrationEvents {
 
   public static float onDamaged(LivingEntity livingEntity, DamageSource source, float damage) {
 
-    if (!livingEntity.getLevel().isClientSide()) {
+    if (!livingEntity.level().isClientSide()) {
       float[] result = {damage};
       ConsecrationApi api = ConsecrationApi.getInstance();
       api.getUndying(livingEntity)
@@ -62,7 +62,7 @@ public class ConsecrationEvents {
                     int level = api.getHolyProtectionLevel(attacker, livingEntity, source);
 
                     if (level > 0 &&
-                        livingEntity.getLevel().getRandom().nextFloat() < 0.15F * (float) level) {
+                        livingEntity.level().getRandom().nextFloat() < 0.15F * (float) level) {
                       undying.setVulnerableDuration(
                           ConsecrationConfig.CONFIG.holyVulnerableDuration.get());
                     }

@@ -51,7 +51,7 @@ public class UndeadTypes {
 
   public static boolean isUndying(final LivingEntity livingEntity) {
     return isValidCreature(livingEntity) &&
-        isValidDimension(livingEntity.level.dimension().location());
+        isValidDimension(livingEntity.level().dimension().location());
   }
 
   private static boolean isValidCreature(final LivingEntity livingEntity) {

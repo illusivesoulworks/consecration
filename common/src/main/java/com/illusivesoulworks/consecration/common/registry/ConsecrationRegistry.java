@@ -23,7 +23,13 @@ import com.illusivesoulworks.consecration.common.enchantment.UndeadProtection;
 import com.illusivesoulworks.consecration.common.entity.FireArrowEntity;
 import com.illusivesoulworks.consecration.common.item.FireArrowItem;
 import com.illusivesoulworks.consecration.common.item.FireStickItem;
-import net.minecraft.core.Registry;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
@@ -31,19 +37,20 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.Level;
 
 public class ConsecrationRegistry {
 
   public static final RegistryProvider<Enchantment> ENCHANTMENTS =
-      RegistryProvider.get(Registry.ENCHANTMENT, ConsecrationConstants.MOD_ID);
+      RegistryProvider.get(Registries.ENCHANTMENT, ConsecrationConstants.MOD_ID);
   public static final RegistryProvider<Item> ITEMS =
-      RegistryProvider.get(Registry.ITEM, ConsecrationConstants.MOD_ID);
+      RegistryProvider.get(Registries.ITEM, ConsecrationConstants.MOD_ID);
   public static final RegistryProvider<MobEffect> EFFECTS =
-      RegistryProvider.get(Registry.MOB_EFFECT, ConsecrationConstants.MOD_ID);
+      RegistryProvider.get(Registries.MOB_EFFECT, ConsecrationConstants.MOD_ID);
   public static final RegistryProvider<Potion> POTIONS =
-      RegistryProvider.get(Registry.POTION, ConsecrationConstants.MOD_ID);
+      RegistryProvider.get(Registries.POTION, ConsecrationConstants.MOD_ID);
   public static final RegistryProvider<EntityType<?>> ENTITY_TYPES =
-      RegistryProvider.get(Registry.ENTITY_TYPE, ConsecrationConstants.MOD_ID);
+      RegistryProvider.get(Registries.ENTITY_TYPE, ConsecrationConstants.MOD_ID);
 
   public static final RegistryObject<MobEffect> HOLY_EFFECT =
       EFFECTS.register(ConsecrationConstants.Registry.HOLY, HolyEffect::new);
@@ -71,6 +78,14 @@ public class ConsecrationRegistry {
           () -> EntityType.Builder.<FireArrowEntity>of(FireArrowEntity::new, MobCategory.MISC)
               .sized(0.5F, 0.3F).fireImmune().clientTrackingRange(64).updateInterval(5)
               .build(ConsecrationConstants.Registry.FIRE_ARROW));
+
+  private static final ResourceKey<DamageType> HOLY_DAMAGE_KEY =
+      ResourceKey.create(Registries.DAMAGE_TYPE,
+          new ResourceLocation(ConsecrationConstants.MOD_ID, ConsecrationConstants.Registry.HOLY));
+
+  public static Holder<DamageType> getHolyDamageType(RegistryAccess registryAccess) {
+    return registryAccess.registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(HOLY_DAMAGE_KEY);
+  }
 
   public static void init() {
   }

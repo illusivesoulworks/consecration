@@ -20,6 +20,7 @@ package com.illusivesoulworks.consecration.api;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
@@ -27,6 +28,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.Level;
 
 public abstract class ConsecrationApi {
 
@@ -50,7 +52,11 @@ public abstract class ConsecrationApi {
 
   public abstract boolean isHolyEffect(MobEffect mobEffect);
 
-  public abstract boolean isHolyDamage(String damageType);
+  public abstract boolean isHolyDamage(DamageSource damageSource);
+
+  public boolean isHolyDamage(String damage) {
+    return damage.equals("holy");
+  }
 
   public abstract boolean isHolyMaterial(String material);
 
@@ -64,9 +70,10 @@ public abstract class ConsecrationApi {
   public abstract DamageSource causeIndirectHolyDamage(@Nonnull Entity source,
                                                        @Nullable Entity indirect);
 
-  public abstract DamageSource causeHolyDamage();
+  public abstract DamageSource causeHolyDamage(RegistryAccess registryAccess);
 
-  public abstract VulnerabilityType getVulnerabilityType(LivingEntity livingEntity, DamageSource source);
+  public abstract VulnerabilityType getVulnerabilityType(LivingEntity livingEntity,
+                                                         DamageSource source);
 
   public abstract UndeadType getUndeadType(LivingEntity livingEntity);
 }

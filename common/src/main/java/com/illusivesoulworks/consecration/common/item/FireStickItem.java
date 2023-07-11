@@ -23,19 +23,18 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 public class FireStickItem extends Item {
 
   public FireStickItem() {
-    super(new Item.Properties().durability(13).tab(CreativeModeTab.TAB_COMBAT));
+    super(new Item.Properties().durability(13));
   }
 
   public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
 
-    if (!player.getLevel().isClientSide() && !entity.getType().fireImmune()) {
+    if (!player.level().isClientSide() && !entity.getType().fireImmune()) {
       stack.hurtAndBreak(1, player,
           damager -> damager.broadcastBreakEvent(InteractionHand.MAIN_HAND));
       entity.setSecondsOnFire(2);
@@ -49,7 +48,7 @@ public class FireStickItem extends Item {
                                                 @Nonnull LivingEntity target,
                                                 @Nonnull InteractionHand hand) {
 
-    if (!playerIn.getLevel().isClientSide() && !target.getType().fireImmune()) {
+    if (!playerIn.level().isClientSide() && !target.getType().fireImmune()) {
       stack.hurtAndBreak(1, playerIn, damager -> damager.broadcastBreakEvent(hand));
       target.setSecondsOnFire(2);
       return InteractionResult.SUCCESS;

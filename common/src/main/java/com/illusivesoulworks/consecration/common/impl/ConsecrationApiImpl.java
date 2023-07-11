@@ -22,14 +22,15 @@ import com.illusivesoulworks.consecration.api.ConsecrationApi;
 import com.illusivesoulworks.consecration.api.IUndying;
 import com.illusivesoulworks.consecration.api.UndeadType;
 import com.illusivesoulworks.consecration.api.VulnerabilityType;
+import com.illusivesoulworks.consecration.common.registry.ConsecrationRegistry;
 import com.illusivesoulworks.consecration.platform.Services;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.EntityDamageSource;
-import net.minecraft.world.damagesource.IndirectEntityDamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -89,8 +90,8 @@ public class ConsecrationApiImpl extends ConsecrationApi {
   }
 
   @Override
-  public boolean isHolyDamage(String damageType) {
-    return HolySources.containsDamage(damageType);
+  public boolean isHolyDamage(DamageSource damageSource) {
+    return HolySources.containsDamage(damageSource);
   }
 
   @Override
@@ -111,18 +112,19 @@ public class ConsecrationApiImpl extends ConsecrationApi {
 
   @Override
   public DamageSource causeHolyDamage(@Nonnull Entity entity) {
-    return new EntityDamageSource(ConsecrationConstants.Registry.HOLY, entity).setMagic();
+    return new DamageSource(ConsecrationRegistry.getHolyDamageType(entity.level().registryAccess()),
+        entity);
   }
 
   @Override
   public DamageSource causeIndirectHolyDamage(@Nonnull Entity source, @Nullable Entity indirect) {
-    return new IndirectEntityDamageSource(ConsecrationConstants.Registry.HOLY, source, indirect)
-        .setMagic();
+    return new DamageSource(ConsecrationRegistry.getHolyDamageType(source.level().registryAccess()),
+        source, indirect);
   }
 
   @Override
-  public DamageSource causeHolyDamage() {
-    return Services.REGISTRY.getDamageSource("holy").setMagic();
+  public DamageSource causeHolyDamage(RegistryAccess registryAccess) {
+    return new DamageSource(ConsecrationRegistry.getHolyDamageType(registryAccess));
   }
 
   @Override
@@ -134,7 +136,7 @@ public class ConsecrationApiImpl extends ConsecrationApi {
       return VulnerabilityType.NONE;
     }
 
-    if (!livingEntity.getType().fireImmune() && source.isFire() &&
+    if (!livingEntity.getType().fireImmune() && source.is(DamageTypeTags.IS_FIRE) &&
         undeadType != UndeadType.FIRE_RESISTANT) {
       return VulnerabilityType.FIRE;
     }
@@ -168,7 +170,7 @@ public class ConsecrationApiImpl extends ConsecrationApi {
       }
     }
 
-    if (api.isHolyDamage(source.getMsgId()) ||
+    if (api.isHolyDamage(source) ||
         api.isHolyEntity(source.getDirectEntity()) ||
         api.isHolyAttack(livingEntity, source)) {
       return VulnerabilityType.HOLY;

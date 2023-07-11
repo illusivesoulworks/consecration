@@ -47,8 +47,7 @@ public class ConsecrationConfig {
   public static void setup() {
     SpectreConfig config = SpectreConfigLoader.add(SpectreConfig.Type.SERVER, CONFIG_SPEC,
         ConsecrationConstants.MOD_ID);
-    config.addLoadListener(cfg -> HolySources.reloadConfigs());
-    config.addReloadListener(cfg -> HolySources.reloadConfigs());
+    config.addLoadListener((cfg, flag) -> HolySources.reloadConfigs());
   }
 
   public static class Config {
@@ -58,7 +57,6 @@ public class ConsecrationConfig {
 
     public final SpectreConfigSpec.IntValue fireVulnerableDuration;
     public final SpectreConfigSpec.IntValue holyVulnerableDuration;
-    public final SpectreConfigSpec.ConfigValue<List<? extends String>> holyDamage;
     public final SpectreConfigSpec.ConfigValue<List<? extends String>> holyMaterials;
 
     public final SpectreConfigSpec.BooleanValue giveDefaultUndeadUndying;
@@ -73,7 +71,7 @@ public class ConsecrationConfig {
       dimensionsList = builder
           .comment("Dimensions for empowered undead.")
           .translation(CONFIG_PREFIX + "dimensionsList")
-          .defineList("dimensions", ArrayList::new, s -> s instanceof String);
+          .defineList("dimensionsList", ArrayList::new, s -> s instanceof String);
 
       dimensionsListType = builder
           .comment("Determines if dimensionsList contains allowed dimensions or denied dimensions.")
@@ -93,11 +91,6 @@ public class ConsecrationConfig {
           .comment("The number of seconds that vulnerability from holy sources lasts.")
           .translation(CONFIG_PREFIX + "holyVulnerableDuration")
           .defineInRange("holyVulnerableDuration", 10, 0, 100);
-
-      holyDamage = builder
-          .comment("The damage types that will be considered holy.")
-          .translation(CONFIG_PREFIX + "holyDamage")
-          .defineList("holyDamage", Collections.singletonList("holy"), s -> s instanceof String);
 
       holyMaterials = builder
           .comment("The materials that will be considered holy.")

@@ -27,6 +27,7 @@ import java.util.UUID;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -53,7 +54,7 @@ public class Undying implements IUndying {
   @Override
   public void tick() {
 
-    if (!livingEntity.getLevel().isClientSide()) {
+    if (!livingEntity.level().isClientSide()) {
 
       if (livingEntity.tickCount % 20 == 0) {
         AttributeInstance speedAttribute = livingEntity.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -82,7 +83,7 @@ public class Undying implements IUndying {
     } else {
 
       if (this.isVulnerable()) {
-        livingEntity.getLevel().addParticle(ParticleTypes.INSTANT_EFFECT,
+        livingEntity.level().addParticle(ParticleTypes.INSTANT_EFFECT,
             livingEntity.position().x +
                 (livingEntity.getRandom().nextDouble() - 0.5D) * (double) livingEntity.getBbWidth(),
             livingEntity.position().y +
@@ -117,7 +118,7 @@ public class Undying implements IUndying {
   @Override
   public void onEffectAdded(MobEffectInstance effectInstance) {
 
-    if (!livingEntity.getLevel().isClientSide()) {
+    if (!livingEntity.level().isClientSide()) {
       ConsecrationApi api = ConsecrationApi.getInstance();
       api.getUndying(livingEntity).ifPresent(undying -> {
         MobEffect effect = effectInstance.getEffect();
@@ -135,8 +136,7 @@ public class Undying implements IUndying {
   @Override
   public float onDamaged(DamageSource source, float damage) {
 
-    if (source == DamageSource.OUT_OF_WORLD || source == DamageSource.CRAMMING
-        || source == DamageSource.IN_WALL) {
+    if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
       return damage;
     }
     VulnerabilityType type =
@@ -153,7 +153,7 @@ public class Undying implements IUndying {
       if (source.getEntity() instanceof ServerPlayer) {
         SmiteTrigger.INSTANCE.trigger((ServerPlayer) source.getEntity());
       }
-    } else if (!source.isBypassMagic() && !this.isVulnerable()) {
+    } else if (!source.is(DamageTypeTags.BYPASSES_RESISTANCE) && !this.isVulnerable()) {
       Entity trueSource = source.getEntity();
 
       if (trueSource != null) {
@@ -173,7 +173,7 @@ public class Undying implements IUndying {
   @Override
   public void sync() {
 
-    if (!livingEntity.getLevel().isClientSide()) {
+    if (!livingEntity.level().isClientSide()) {
       Services.NETWORK.sendVulnerabilitySyncS2C(livingEntity, this.vulnerableDuration);
     }
   }

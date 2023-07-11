@@ -24,11 +24,13 @@ import com.illusivesoulworks.consecration.common.registry.ConsecrationRegistry;
 import com.illusivesoulworks.consecration.common.trigger.SmiteTrigger;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistry;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.alchemy.Potions;
@@ -57,6 +59,10 @@ public class ConsecrationFabricMod implements ModInitializer {
       if (trackedEntity instanceof LivingEntity livingEntity) {
         ConsecrationApi.getInstance().getUndying(livingEntity).ifPresent(IUndying::sync);
       }
+    });
+    ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.COMBAT).register(entries -> {
+      entries.accept(ConsecrationRegistry.FIRE_ARROW.get());
+      entries.accept(ConsecrationRegistry.FIRE_STICK.get());
     });
   }
 }

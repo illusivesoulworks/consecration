@@ -23,10 +23,12 @@ import com.illusivesoulworks.consecration.common.ConsecrationEvents;
 import com.illusivesoulworks.consecration.common.registry.ConsecrationRegistry;
 import com.illusivesoulworks.consecration.common.trigger.SmiteTrigger;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistry;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.alchemy.Potions;
@@ -53,11 +55,15 @@ public class ConsecrationQuiltMod implements ModInitializer {
           hitResult.getBlockPos(), ((player1, stack) -> player1.getInventory().add(stack)));
       return InteractionResult.PASS;
     });
-    EntityTrackingEvents.START_TRACKING.register((trackedEntity, player) -> {
+    EntityTrackingEvents.AFTER_START_TRACKING.register((trackedEntity, player) -> {
 
       if (trackedEntity instanceof LivingEntity livingEntity) {
         ConsecrationApi.getInstance().getUndying(livingEntity).ifPresent(IUndying::sync);
       }
+    });
+    ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.COMBAT).register(entries -> {
+      entries.accept(ConsecrationRegistry.FIRE_ARROW.get());
+      entries.accept(ConsecrationRegistry.FIRE_STICK.get());
     });
   }
 }

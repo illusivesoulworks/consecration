@@ -22,7 +22,6 @@ import javax.annotation.Nonnull;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ArrowItem;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -30,7 +29,7 @@ import net.minecraft.world.level.Level;
 public class FireArrowItem extends ArrowItem {
 
   public FireArrowItem() {
-    super(new Item.Properties().tab(CreativeModeTab.TAB_COMBAT));
+    super(new Item.Properties());
   }
 
   @Nonnull

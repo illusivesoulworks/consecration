@@ -32,7 +32,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -96,11 +95,6 @@ public class ForgeRegistryService implements IRegistryService {
     } else {
       throw new ClassCastException("The container of the mod " + modId + " is not a FML one!");
     }
-  }
-
-  @Override
-  public DamageSource getDamageSource(String id) {
-    return new DamageSource(id);
   }
 
   @Override

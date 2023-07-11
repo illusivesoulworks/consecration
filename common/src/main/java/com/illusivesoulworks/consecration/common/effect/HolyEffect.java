@@ -51,7 +51,8 @@ public class HolyEffect extends MobEffect {
           ConsecrationApi.getInstance().getUndying(livingEntity);
       maybeUndying.ifPresentOrElse(undying -> {
         if (source == null) {
-          livingEntity.hurt(ConsecrationApi.getInstance().causeHolyDamage(),
+          livingEntity.hurt(
+              ConsecrationApi.getInstance().causeHolyDamage(livingEntity.level().registryAccess()),
               (float) (8 << amplifier));
         } else {
           livingEntity.hurt(

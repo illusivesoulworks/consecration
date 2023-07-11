@@ -30,6 +30,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -42,37 +44,32 @@ import net.minecraft.world.item.enchantment.Enchantment;
 
 public class QuiltRegistryService implements IRegistryService {
 
-  public static final TagKey<EntityType<?>> UNDEAD = TagKey.create(Registry.ENTITY_TYPE_REGISTRY,
+  public static final TagKey<EntityType<?>> UNDEAD = TagKey.create(Registries.ENTITY_TYPE,
       new ResourceLocation(ConsecrationConstants.MOD_ID, "undead"));
   public static final TagKey<EntityType<?>> FIRE_RESISTANT =
-      TagKey.create(Registry.ENTITY_TYPE_REGISTRY,
+      TagKey.create(Registries.ENTITY_TYPE,
           new ResourceLocation(ConsecrationConstants.MOD_ID, "fire_resistant"));
   public static final TagKey<EntityType<?>> HOLY_RESISTANT =
-      TagKey.create(Registry.ENTITY_TYPE_REGISTRY,
+      TagKey.create(Registries.ENTITY_TYPE,
           new ResourceLocation(ConsecrationConstants.MOD_ID, "holy_resistant"));
-  public static final TagKey<EntityType<?>> RESISTANT = TagKey.create(Registry.ENTITY_TYPE_REGISTRY,
+  public static final TagKey<EntityType<?>> RESISTANT = TagKey.create(Registries.ENTITY_TYPE,
       new ResourceLocation(ConsecrationConstants.MOD_ID, "resistant"));
 
-  public static final TagKey<Item> HOLY_ITEMS = TagKey.create(Registry.ITEM_REGISTRY,
+  public static final TagKey<Item> HOLY_ITEMS = TagKey.create(Registries.ITEM,
       new ResourceLocation(ConsecrationConstants.MOD_ID, ConsecrationConstants.Registry.HOLY));
-  public static final TagKey<MobEffect> HOLY_EFFECTS = TagKey.create(Registry.MOB_EFFECT_REGISTRY,
+  public static final TagKey<MobEffect> HOLY_EFFECTS = TagKey.create(Registries.MOB_EFFECT,
       new ResourceLocation(ConsecrationConstants.MOD_ID, ConsecrationConstants.Registry.HOLY));
   public static final TagKey<Enchantment> HOLY_ENCHANTMENTS =
-      TagKey.create(Registry.ENCHANTMENT_REGISTRY,
+      TagKey.create(Registries.ENCHANTMENT,
           new ResourceLocation(ConsecrationConstants.MOD_ID, ConsecrationConstants.Registry.HOLY));
   public static final TagKey<EntityType<?>> HOLY_ENTITIES =
-      TagKey.create(Registry.ENTITY_TYPE_REGISTRY,
+      TagKey.create(Registries.ENTITY_TYPE,
           new ResourceLocation(ConsecrationConstants.MOD_ID, ConsecrationConstants.Registry.HOLY));
-
-  @Override
-  public DamageSource getDamageSource(String holy) {
-    return new DamageSource(holy);
-  }
 
   @Override
   public void processUndeadTypes(BiConsumer<EntityType<?>, UndeadType> biConsumer) {
 
-    for (EntityType<?> entity : Registry.ENTITY_TYPE.stream().toList()) {
+    for (EntityType<?> entity : BuiltInRegistries.ENTITY_TYPE.stream().toList()) {
       UndeadType type = UndeadType.NOT;
 
       if (entity.is(UNDEAD)) {
@@ -90,7 +87,7 @@ public class QuiltRegistryService implements IRegistryService {
 
   @Override
   public ResourceLocation getKey(Item item) {
-    return Registry.ITEM.getKey(item);
+    return BuiltInRegistries.ITEM.getKey(item);
   }
 
   @Override
@@ -105,13 +102,13 @@ public class QuiltRegistryService implements IRegistryService {
 
   @Override
   public boolean isHolyTag(MobEffect mobEffect) {
-    return Registry.MOB_EFFECT.getTag(HOLY_EFFECTS).map(holders -> holders.stream()
+    return BuiltInRegistries.MOB_EFFECT.getTag(HOLY_EFFECTS).map(holders -> holders.stream()
         .anyMatch(mobEffectHolder -> mobEffectHolder.value() == mobEffect)).orElse(false);
   }
 
   @Override
   public boolean isHolyTag(Enchantment enchantment) {
-    return Registry.ENCHANTMENT.getTag(HOLY_ENCHANTMENTS).map(holders -> holders.stream()
+    return BuiltInRegistries.ENCHANTMENT.getTag(HOLY_ENCHANTMENTS).map(holders -> holders.stream()
         .anyMatch(enchantmentHolder -> enchantmentHolder.value() == enchantment)).orElse(false);
   }
 
@@ -142,7 +139,7 @@ public class QuiltRegistryService implements IRegistryService {
     private Provider(String modId, ResourceKey<? extends Registry<T>> key) {
       this.modId = modId;
 
-      final var reg = Registry.REGISTRY.get(key.location());
+      final var reg = BuiltInRegistries.REGISTRY.get(key.location());
       if (reg == null) {
         throw new RuntimeException("Registry with name " + key.location() + " was not found!");
       }
@@ -180,7 +177,7 @@ public class QuiltRegistryService implements IRegistryService {
 
         @Override
         public Holder<I> asHolder() {
-          return (Holder<I>) registry.getOrCreateHolder((ResourceKey<T>) this.key);
+          return (Holder<I>) registry.getHolderOrThrow((ResourceKey<T>) this.key);
         }
       };
       entries.add((RegistryObject<T>) ro);

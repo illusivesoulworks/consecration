@@ -38,8 +38,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
@@ -48,6 +51,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
@@ -82,6 +86,7 @@ public class ConsecrationForgeMod {
     eventBus.addListener(this::registerCaps);
     eventBus.addListener(this::imcEnqueue);
     eventBus.addListener(this::imcProcess);
+    eventBus.addListener(this::creativeTab);
     MODULES.forEach((id, module) -> {
       if (ModList.get().isLoaded(id)) {
         try {
@@ -140,5 +145,14 @@ public class ConsecrationForgeMod {
     ConsecrationEvents.createCampfireArrow(evt.getEntity(), evt.getItemStack(), evt.getPos(),
         (player, stack) -> ItemHandlerHelper.giveItemToPlayer(player, stack,
             player.getInventory().selected));
+  }
+
+  private void creativeTab(final BuildCreativeModeTabContentsEvent evt) {
+    ResourceKey<CreativeModeTab> tab = evt.getTabKey();
+
+    if (tab == CreativeModeTabs.COMBAT) {
+      evt.accept(ConsecrationRegistry.FIRE_STICK.get());
+      evt.accept(ConsecrationRegistry.FIRE_ARROW.get());
+    }
   }
 }

@@ -18,14 +18,9 @@
 package com.illusivesoulworks.consecration;
 
 import com.illusivesoulworks.consecration.common.config.ConsecrationConfig;
-import com.illusivesoulworks.spectrelib.config.SpectreConfigInitializer;
+import com.illusivesoulworks.spectrelib.config.SpectreLibInitializer;
 
-public class ConsecrationConfigInitializer implements SpectreConfigInitializer {
-
-  @Override
-  public void onInitialize() {
-    // NO-OP
-  }
+public class ConsecrationConfigInitializer implements SpectreLibInitializer {
 
   @Override
   public void onInitializeConfig() {

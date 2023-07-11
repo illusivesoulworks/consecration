@@ -17,6 +17,7 @@
 
 package com.illusivesoulworks.consecration.common.impl;
 
+import com.illusivesoulworks.consecration.ConsecrationConstants;
 import com.illusivesoulworks.consecration.api.ConsecrationApi;
 import com.illusivesoulworks.consecration.api.UndeadType;
 import com.illusivesoulworks.consecration.common.config.ConsecrationConfig;
@@ -28,8 +29,11 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.BiFunction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.AreaEffectCloud;
@@ -50,12 +54,9 @@ public class HolySources {
       new ConcurrentLinkedQueue<>();
   private static final Queue<BiFunction<LivingEntity, DamageSource, Integer>> HOLY_PROTECTION =
       new ConcurrentLinkedQueue<>();
-  private static final Set<String> HOLY_DAMAGE = new HashSet<>();
   private static final Set<String> HOLY_MATERIALS = new HashSet<>();
 
   public static void reloadConfigs() {
-    HOLY_DAMAGE.clear();
-    HOLY_DAMAGE.addAll(ConsecrationConfig.CONFIG.holyDamage.get());
     HOLY_MATERIALS.clear();
     HOLY_MATERIALS.addAll(ConsecrationConfig.CONFIG.holyMaterials.get());
   }
@@ -166,7 +167,10 @@ public class HolySources {
     return false;
   }
 
-  public static boolean containsDamage(String damage) {
-    return HOLY_DAMAGE.contains(damage);
+  private static final TagKey<DamageType> HOLY_DAMAGES = TagKey.create(Registries.DAMAGE_TYPE,
+      new ResourceLocation(ConsecrationConstants.MOD_ID, ConsecrationConstants.Registry.HOLY));
+
+  public static boolean containsDamage(DamageSource damageSource) {
+    return damageSource.is(HOLY_DAMAGES);
   }
 }

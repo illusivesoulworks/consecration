@@ -1,6 +1,6 @@
 {
-  "parent": "item/handheld",
+  "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "consecration:items/fire_stick"
+    "layer0": "consecration:item/fire_stick"
   }
 }

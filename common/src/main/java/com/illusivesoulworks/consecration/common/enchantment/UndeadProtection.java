@@ -19,6 +19,7 @@ package com.illusivesoulworks.consecration.common.enchantment;
 
 import com.illusivesoulworks.consecration.api.ConsecrationApi;
 import javax.annotation.Nonnull;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -49,7 +50,7 @@ public class UndeadProtection extends Enchantment {
 
   public int getDamageProtection(int level, DamageSource source) {
 
-    if (source.isBypassInvul()) {
+    if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
       return 0;
     }
     Entity entity = source.getEntity();

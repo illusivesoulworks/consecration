@@ -22,8 +22,8 @@ import com.illusivesoulworks.consecration.ConsecrationConstants;
 import com.illusivesoulworks.consecration.common.trigger.SmiteTrigger.Instance;
 import javax.annotation.Nonnull;
 import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
+import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.DeserializationContext;
-import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -43,7 +43,7 @@ public class SmiteTrigger extends SimpleCriterionTrigger<Instance> {
   @Nonnull
   @Override
   public Instance createInstance(@Nonnull JsonObject jsonObject,
-                                 @Nonnull EntityPredicate.Composite predicate,
+                                 @Nonnull ContextAwarePredicate predicate,
                                  @Nonnull DeserializationContext context) {
     return new Instance(predicate);
   }
@@ -54,7 +54,7 @@ public class SmiteTrigger extends SimpleCriterionTrigger<Instance> {
 
   public static class Instance extends AbstractCriterionTriggerInstance {
 
-    public Instance(EntityPredicate.Composite predicate) {
+    public Instance(ContextAwarePredicate predicate) {
       super(ID, predicate);
     }
   }
