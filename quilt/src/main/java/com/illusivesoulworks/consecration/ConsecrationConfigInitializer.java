@@ -10,4 +10,9 @@ public class ConsecrationConfigInitializer implements SpectreConfigInitializer {
   public void onInitializeConfig(ModContainer modContainer) {
     ConsecrationConfig.setup();
   }
+
+  // Hotfix to avoid crashing when loaded with the Fabric-version of SpectreLib
+  public void onInitializeConfig() {
+    onInitializeConfig(null);
+  }
 }
