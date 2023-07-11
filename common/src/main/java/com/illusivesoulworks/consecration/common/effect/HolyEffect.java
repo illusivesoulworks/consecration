@@ -49,7 +49,8 @@ public class HolyEffect extends MobEffect {
     if (livingEntity instanceof ZombieVillager) {
       convertZombieVillager((ZombieVillager) livingEntity, indirectSource, 1800 >> amplifier);
     } else {
-      Optional<IUndying> maybeUndying = ConsecrationApi.getInstance().getUndying(livingEntity);
+      Optional<? extends IUndying> maybeUndying =
+          ConsecrationApi.getInstance().getUndying(livingEntity);
       maybeUndying.ifPresentOrElse(undying -> {
         if (source == null) {
           livingEntity.hurt(ConsecrationApi.getInstance().causeHolyDamage(),

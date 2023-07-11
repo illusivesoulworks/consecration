@@ -40,7 +40,7 @@ public abstract class ConsecrationApi {
 
   public abstract String getHolyIdentifier();
 
-  public abstract Optional<IUndying> getUndying(LivingEntity livingEntity);
+  public abstract Optional<? extends IUndying> getUndying(LivingEntity livingEntity);
 
   public abstract boolean isHolyEntity(Entity entity);
 

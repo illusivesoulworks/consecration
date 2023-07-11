@@ -38,7 +38,7 @@ public class ConsecrationApiImpl extends ConsecrationApi {
   }
 
   @Override
-  public Optional<IUndying> getUndying(LivingEntity livingEntity) {
+  public Optional<? extends IUndying> getUndying(LivingEntity livingEntity) {
 
     if (!UndeadTypes.isUndying(livingEntity)) {
       return Optional.empty();

@@ -46,7 +46,7 @@ public class ConsecrationRegistry {
               new MobEffectInstance(HOLY_EFFECT.get(), 1, 0)));
   public static final RegistryObject<Potion> STRONG_HOLY_POTION =
       POTIONS.register(ConsecrationConstants.Registry.STRONG_HOLY,
-          () -> new Potion(ConsecrationConstants.Registry.STRONG_HOLY,
+          () -> new Potion(ConsecrationConstants.Registry.HOLY,
               new MobEffectInstance(HOLY_EFFECT.get(), 1, 1)));
 
   public static final RegistryObject<EntityType<FireArrowEntity>> FIRE_ARROW_TYPE =

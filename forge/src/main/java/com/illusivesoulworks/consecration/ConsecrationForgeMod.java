@@ -108,7 +108,7 @@ public class ConsecrationForgeMod {
               ConsecrationRegistry.HOLY_POTION.get()));
       BrewingRecipeRegistry.addRecipe(Ingredient.of(
               PotionUtils.setPotion(new ItemStack(Items.POTION),
-                  ConsecrationRegistry.HOLY_POTION.get())), Ingredient.of(Items.GLOWSTONE),
+                  ConsecrationRegistry.HOLY_POTION.get())), Ingredient.of(Items.GLOWSTONE_DUST),
           PotionUtils.setPotion(new ItemStack(Items.POTION),
               ConsecrationRegistry.STRONG_HOLY_POTION.get()));
     });

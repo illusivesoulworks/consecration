@@ -39,7 +39,7 @@ public class ConsecrationEvents {
           .ifPresentOrElse(undying -> result[0] = undying.onDamaged(source, damage),
               () -> {
                 if (source.getDirectEntity() instanceof LivingEntity attacker) {
-                  Optional<IUndying> attackerUndying = api.getUndying(attacker);
+                  Optional<? extends IUndying> attackerUndying = api.getUndying(attacker);
 
                   attackerUndying.ifPresent(undying -> {
                     int level = api.getHolyProtectionLevel(attacker, livingEntity, source);

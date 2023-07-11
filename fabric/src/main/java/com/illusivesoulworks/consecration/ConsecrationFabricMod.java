@@ -29,7 +29,7 @@ public class ConsecrationFabricMod implements ModInitializer {
     FabricBrewingRecipeRegistry.registerItemRecipe((PotionItem) Items.POTION,
         Ingredient.of(Items.DRAGON_BREATH), (PotionItem) Items.LINGERING_POTION);
     FabricBrewingRecipeRegistry.registerPotionRecipe(ConsecrationRegistry.HOLY_POTION.get(),
-        Ingredient.of(Items.REDSTONE), ConsecrationRegistry.STRONG_HOLY_POTION.get());
+        Ingredient.of(Items.GLOWSTONE_DUST), ConsecrationRegistry.STRONG_HOLY_POTION.get());
     UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
       ConsecrationEvents.createCampfireArrow(player, player.getItemInHand(hand),
           hitResult.getBlockPos(), ((player1, stack) -> player1.getInventory().add(stack)));

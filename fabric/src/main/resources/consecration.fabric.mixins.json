@@ -4,7 +4,8 @@
   "package": "com.illusivesoulworks.consecration.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "MixinLivingEntity"
+    "MixinLivingEntity",
+    "MixinPlayer"
   ],
   "client": [
   ],
