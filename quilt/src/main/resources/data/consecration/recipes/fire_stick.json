@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "fire_stick",
+  "pattern": [
+    " c ",
+    "csc",
+    "sc "
+  ],
+  "key": {
+    "c": {
+      "tag": "minecraft:coals"
+    },
+    "s": {
+      "tag": "c:wooden_rods"
+    }
+  },
+  "result": {
+    "item": "consecration:fire_stick"
+  }
+}
