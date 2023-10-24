@@ -2,12 +2,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 This is a copy of the changelog for the most recent version. For the full version history, go [here](https://github.com/illusivesoulworks/consecration/blob/1.19.2/CHANGELOG.md).
 
-## [6.0.0+1.19.2] - 2023.07.10
-### Added
-- Added Fabric and Quilt support
+## [6.0.1+1.19.2] - 2023.10.23
 ### Changed
-- Changed Consecration I -> Consecration II potion brewing to use Glowstone Dust instead of Redstone Dust
-- Configuration system is now provided by SpectreLib
-- Configuration file is now located in the root folder's `defaultconfigs` folder
-- Changed to [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
-- Updated to Minecraft 1.19.2
+- Updated to SpectreLib 0.12.6
+- [Fabric] Requires Fabric Loader >=0.14.23
