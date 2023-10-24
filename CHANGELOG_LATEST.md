@@ -2,12 +2,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 This is a copy of the changelog for the most recent version. For the full version history, go [here](https://github.com/illusivesoulworks/consecration/blob/1.20.x/CHANGELOG.md).
 
-## [7.0.0+1.20.1] - 2023.07.11
-### Added
-- Added in-game configuration GUI
+## [7.0.1+1.20.1] - 2023.10.23
 ### Changed
-- Updated to Minecraft 1.20.1
-- Moved holy damage types to `damage_type` tag: `consecration:holy`
-- [API] Updated API to handle new damage type construction methods
-### Removed
-- Removed `holyDamage` configuration option
+- Updated to SpectreLib 0.13.14
+- [Fabric] Requires Fabric Loader >=0.14.23
