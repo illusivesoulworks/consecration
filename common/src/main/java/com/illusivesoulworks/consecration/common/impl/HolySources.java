@@ -167,10 +167,14 @@ public class HolySources {
     return false;
   }
 
-  private static final TagKey<DamageType> HOLY_DAMAGES = TagKey.create(Registries.DAMAGE_TYPE,
-      new ResourceLocation(ConsecrationConstants.MOD_ID, ConsecrationConstants.Registry.HOLY));
+  private static TagKey<DamageType> HOLY_DAMAGES = null;
 
   public static boolean containsDamage(DamageSource damageSource) {
+
+    if (HOLY_DAMAGES == null) {
+      HOLY_DAMAGES = TagKey.create(Registries.DAMAGE_TYPE,
+          new ResourceLocation(ConsecrationConstants.MOD_ID, ConsecrationConstants.Registry.HOLY));
+    }
     return damageSource.is(HOLY_DAMAGES);
   }
 }
