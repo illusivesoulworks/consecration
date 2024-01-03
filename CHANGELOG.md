@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 Prior to version 6.0.0, this project used MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
 
+## [7.0.2+1.20.1] - 2024.01.03
+### Changed
+- Updated SpectreLib to 0.13.15+1.20.1
+- [Fabric] No longer requires Fabric Loader 0.14.23+
+### Fixed
+- [Fabric/Quilt] Fixed dedicated server crash [#76](https://github.com/illusivesoulworks/consecration/issues/76)
+
 ## [7.0.1+1.20.1] - 2023.10.23
 ### Changed
 - Updated to SpectreLib 0.13.14
