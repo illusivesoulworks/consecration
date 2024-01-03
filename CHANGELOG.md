@@ -6,7 +6,7 @@ Prior to version 6.0.0, this project used MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATC
 
 ## [7.0.3+1.20.1] - 2024.01.03
 ### Changed
-- Updated `fabric.mod.json`
+- [Fabric] Updated `fabric.mod.json`
 
 ## [7.0.2+1.20.1] - 2024.01.03
 ### Changed

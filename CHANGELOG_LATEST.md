@@ -4,4 +4,4 @@ This is a copy of the changelog for the most recent version. For the full versio
 
 ## [7.0.3+1.20.1] - 2024.01.03
 ### Changed
-- Updated `fabric.mod.json`
+- [Fabric] Updated `fabric.mod.json`
